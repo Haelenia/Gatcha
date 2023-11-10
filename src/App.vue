@@ -1,20 +1,24 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { useTestStore } from './stores/test'
+
+let store = useTestStore()
+
+
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
+    
+      <h1 v-if="store.getSelectedGame">Welcome to {{ store.selectedGame }} :)</h1>
+      <h1 v-else>Choisis ton jeu young padawan</h1>
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink v-if="store.getSelectedGame" to="/">Home</RouterLink> 
+        <RouterLink v-if="store.getSelectedGame" to="/add">Ajouter un élément</RouterLink>
+        <RouterLink v-if="store.getSelectedGame" to="/characters">Liste des personnages</RouterLink>
+        <RouterLink v-if="store.getSelectedGame" to="/dongeons">Listes des donjons</RouterLink>
+        <RouterLink v-if="store.getSelectedGame" to="/sets">Liste des sets</RouterLink>
       </nav>
-    </div>
   </header>
 
   <RouterView />
@@ -24,6 +28,7 @@ import HelloWorld from './components/HelloWorld.vue'
 header {
   line-height: 1.5;
   max-height: 100vh;
+  flex-direction: column;
 }
 
 .logo {
@@ -35,7 +40,6 @@ nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-top: 2rem;
 }
 
 nav a.router-link-exact-active {
