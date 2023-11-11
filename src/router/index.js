@@ -38,7 +38,6 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   let store = useTestStore()
-  console.log('store', store.getSelectedGame)
   if (!store.getSelectedGame && to.name !== 'home') {
     return { name: 'home'}
   }

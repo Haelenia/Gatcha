@@ -10,23 +10,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 const db = useFirestore();
 const charactersList = useCollection(collection(db, 'characters'))
 
-charactersList.value.push({
-    id: 1,
-    name: 'Nahida',
-    element: 'Dendro',
-    game: 'Genshin',
-    roles: [
-        {
-            name: 'support DPS',
-            set: ['rêve doré', 'souvenir de forêt'],
-            statToFocus:['DC', 'TC', 'ME', 'ATQ%', 'RE%'],
-            sablier: 'ME',
-            coupe: ['ME', 'Dendro%'],
-            plume: ['ME', 'DC', 'TC'],
-            weapon: ['Mille rêves flottants', 'vérité de kagura', 'mouvement vagabond'],
-        }
-    ]    
-})
+
 
 let dj = {
     id: '1',

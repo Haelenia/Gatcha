@@ -18,9 +18,11 @@
     "save": "^2.9.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5",
-    "vuefire": "^3.1.18"
+    "vuefire": "^3.1.18",
+    "vuetify": "^3.4.0"
   },
   "devDependencies": {
+    "@mdi/font": "^7.3.67",
     "@rushstack/eslint-patch": "^1.3.3",
     "@vitejs/plugin-vue": "^4.4.0",
     "@vue/eslint-config-prettier": "^8.0.0",
