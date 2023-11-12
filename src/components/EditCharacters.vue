@@ -10,28 +10,52 @@
         <div>
             <div  class="roles-list">
                 <fieldset v-for="(role, index) in currentCharacter.roles" :key="index" class="role-card">
-                        <v-text-field label="Nom" v-model="currentCharacter.roles[index].name" placeholder="nom du rôle"></v-text-field>
-                        <fieldset class="role-card">
-                            <v-text-field label="Set" v-model="currentCharacter.roles[index].name" placeholder="nom du rôle"></v-text-field>
+                  <legend>Rôle</legend>
+                        <v-text-field label="Nom" v-model="role.name" placeholder="nom du rôle"></v-text-field>
+                        
+                        <fieldset class="role-card" >
+                            <template v-for="(s, index2) in role.set" :key="index2">
+                              <v-text-field label="Sets à privilégier" v-model="role.set[index2]" placeholder="ombre de la verte chasseuse"></v-text-field>
+                            </template>
+                            <v-btn @click="addElement('set', index)">+ Ajouter un set</v-btn>
                         </fieldset>
-                        <fieldset class="m-top16 role-card">
-                            <v-text-field label="Stat a privilégier" v-model="currentCharacter.roles[index].name" placeholder="nom du rôle"></v-text-field>
-                        </fieldset>
-                        <fieldset class="m-top16 role-card">
-                            <v-text-field label="Sablier" v-model="currentCharacter.roles[index].name" placeholder="nom du rôle"></v-text-field>
-                        </fieldset>
-                        <fieldset class="m-top16 role-card">
-                            <v-text-field label="Coupe" v-model="currentCharacter.roles[index].name" placeholder="nom du rôle"></v-text-field>
-                        </fieldset>
-                        <fieldset class="m-top16 role-card">
-                            <v-text-field label="Plume" v-model="currentCharacter.roles[index].name" placeholder="nom du rôle"></v-text-field>
-                        </fieldset>
-                </fieldset>
-                <v-btn v-if="currentCharacter.roles.length > 1" @click="removeRole(index)">
-                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                </v-btn>
-            </div>
 
+                        <fieldset class="m-top16 role-card">
+                            <template v-for="(st, index2) in role.statToFocus" :key="index2">
+                                <v-text-field label="Stat a privilégier" v-model="role.statToFocus[index2]" placeholder="PV%"></v-text-field>
+                            </template>
+                            <v-btn @click="addElement('statToFocus', index)">+ Ajouter une stat</v-btn>
+                          
+                        </fieldset>
+
+                        <fieldset class="m-top16 role-card" >
+                            <template v-for="(sa, index2) in role.sablier" :key="index2">
+                                <v-text-field label="Sablier" v-model="role.sablier[index2]" placeholder="PV%"></v-text-field>
+                            </template>
+                            <v-btn @click="addElement('sablier', index)">+ Ajouter une stat</v-btn>
+                        </fieldset>
+
+                        <fieldset class="m-top16 role-card">
+                            <template v-for="(c, index2) in role.coupe" :key="index2">
+                                <v-text-field label="Coupe" v-model="role.coupe[index2]" placeholder="PV%"></v-text-field>
+                            </template>
+                            <v-btn @click="addElement('coupe', index)">+ Ajouter une stat</v-btn>
+                        </fieldset>
+
+                        <fieldset class="m-top16 role-card">
+                            <template v-for="(p, index2) in role.plume" :key="index2">
+                                <v-text-field label="Plume" v-model="role.plume[index2]" placeholder="PV%"></v-text-field>
+                            </template>
+                            <v-btn @click="addElement('plume', index)">+ Ajouter une stat</v-btn>
+                        </fieldset>
+
+                        <v-btn v-if="currentCharacter.roles.length > 1" @click="removeRole(index)">
+                          <v-icon icon="mdi-trash-can-outline"></v-icon>
+                        </v-btn>
+                </fieldset>
+                
+            </div>
+              
             <v-btn @click="addRole">+ Ajouter un rôle</v-btn>  
         </div>
 
@@ -56,12 +80,12 @@
     roles: [
         {
             name: '',
-            set: [],
-            statToFocus: {},
-            sablier: [],
-            coupe: [],
-            plume: [],
-            weapon: [],
+            set: [''],
+            statToFocus: [''],
+            sablier: [''],
+            coupe: [''],
+            plume: [''],
+            weapon: [''],
         }
     ]
   })  
@@ -74,6 +98,10 @@
   
   function removeRole(index) {
     currentCharacter.value.roles.splice(index, 1)
+  }
+
+  function addElement(type, roleIndex) {
+    currentCharacter.value.roles[roleIndex][type].push('')
   }
   
 
