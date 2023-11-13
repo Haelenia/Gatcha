@@ -1,11 +1,15 @@
 <template>
-    <div class="filters">
-
-        <v-text-field label="Piéce d'artefact (plume, couronne...)" v-model="filter.type" class="label"></v-text-field>
-        <v-text-field label="stat" v-model="filter.stat" class="label"></v-text-field>
-        <v-btn @click="clearFilter">Reset</v-btn>
-
+    <div class="header">
+        <div class="filters">
+            <v-text-field label="Piéce d'artefact (plume, couronne...)" v-model="filter.type" class="label"></v-text-field>
+            <v-text-field label="stat" v-model="filter.stat" class="label"></v-text-field>
+        </div>
+        <div class="actions">
+            <v-btn @click="clearFilter">Reset</v-btn>
+            <v-btn :to="{ name: 'add', hash: '#pnj'}"> + Nouveau</v-btn>
+        </div>
     </div>
+    
     <div class="characters-list">
         <v-card class="mx-auto" v-for="character in filteredList" :key="character.id">
             <v-toolbar :color="getColor(character?.element?.toLowerCase())">
@@ -140,6 +144,28 @@ onMounted(async () => {
 </script>
 
 <style lang="scss">
+.header {
+    background-color: lightgray;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: none;
+    .filters {
+        display: flex;
+        gap: 32px;
+        .v-input {
+            width: 300px;
+        }
+    }
+    
+    .actions {
+        .v-btn {
+            margin-left: 16px;
+        }
+    }
+}
 .characters-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
