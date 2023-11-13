@@ -64,9 +64,9 @@
   </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { useFirestore, useCollection } from "vuefire";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 
 
 
@@ -99,7 +99,6 @@ function clearFilter() {
 }
 
 function getColor(element) {
-    console.log('element', element)
     if (element === 'geo') {
         return 'orange'
     }
