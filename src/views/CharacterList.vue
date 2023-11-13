@@ -1,4 +1,11 @@
 <template>
+    <div class="filters">
+
+        <v-text-field label="Piéce d'artefact (plume, couronne...)" v-model="filter.type" class="label"></v-text-field>
+        <v-text-field label="stat" v-model="filter.stat" class="label"></v-text-field>
+        <v-btn @click="clearFilter">Reset</v-btn>
+
+    </div>
     <div class="characters-list">
         <v-card class="mx-auto" v-for="character in filteredList" :key="character.id">
             <v-toolbar :color="getColor(character?.element?.toLowerCase())">
@@ -45,7 +52,7 @@
                 <v-list-item>
                     <v-list-item-title>Couronne</v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ role.plume }}
+                        {{ role.couronne }}
                     </v-list-item-subtitle>
                 </v-list-item>
 
@@ -67,23 +74,29 @@ const db = useFirestore();
 
 // const charactersList = useCollection(collection(db, 'characters', where('role', 'array-contains', 'coupe')))
 let charactersList = useCollection(collection(db, 'characters'))
-
+let filter = ref({type:'', stat: ''})
 
 const filteredList = computed(() => {
-    let type = 'plume'
+    const { type, stat } = filter.value
     
-    //return charactersList.value
-
-   return charactersList.value.filter(character => {
-        let test =  character.roles?.filter(r => r[type] && r[type].includes('ME')) || []
-        return test.length > 0
-    })
+    if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
+        const { stat } = filter.value 
+        return charactersList.value.filter(character => {
+            let test =  character.roles?.filter(r => r.statToFocus && r.statToFocus.includes(stat)) || []
+            return test.length > 0
+        })
+    } else if (type && stat) {
+        return charactersList.value.filter(character => {
+            let test =  character.roles?.filter(r => r[type] && r[type].includes(stat)) || []
+            return test.length > 0
+        })
+    }
+    return charactersList.value
 })
 
-
-let data = [ { id: 1, role: [{ name: 'toto'}]}, { id:2, role: [{ name: 'titi'}]}]
-
-console.log('test',data.filter(e => e.role.filter(r => r.name === 'toto').length > 0))
+function clearFilter() {
+    filter.value = { type: '', stat: '' }
+}
 
 function getColor(element) {
     console.log('element', element)
@@ -100,10 +113,13 @@ function getColor(element) {
         return 'blue'
     }
     if (element === 'cryo') {
-        return 'light blue'
+        return 'cyan'
     }
     if (element === 'pyro') {
         return 'red'
+    }
+    if (element === 'anemo') {
+        return 'light green'
     }
     
 }

@@ -43,10 +43,10 @@
                         </fieldset>
 
                         <fieldset class="m-top16 role-card">
-                            <template v-for="(p, index2) in role.plume" :key="index2">
-                                <v-text-field label="Plume" v-model="role.plume[index2]" placeholder="PV%"></v-text-field>
+                            <template v-for="(p, index2) in role.couronne" :key="index2">
+                                <v-text-field label="Couronne" v-model="role.couronne[index2]" placeholder="PV%"></v-text-field>
                             </template>
-                            <v-btn @click="addElement('plume', index)">+ Ajouter une stat</v-btn>
+                            <v-btn @click="addElement('couronne', index)">+ Ajouter une stat</v-btn>
                         </fieldset>
 
                         <v-btn v-if="currentCharacter.roles.length > 1" @click="removeRole(index)">
@@ -84,7 +84,7 @@
             statToFocus: [''],
             sablier: [''],
             coupe: [''],
-            plume: [''],
+            couronne: [''],
             weapon: [''],
         }
     ]
@@ -116,7 +116,7 @@
             statToFocus:['DC', 'TC', 'ME', 'ATQ%', 'RE%'],
             sablier: 'ME',
             coupe: ['ME', 'Dendro%'],
-            plume: ['ME', 'DC', 'TC'],
+            couronne: ['ME', 'DC', 'TC'],
             weapon: ['Mille rêves flottants', 'vérité de kagura', 'mouvement vagabond'],
         }
     ]    
