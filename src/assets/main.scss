@@ -1,0 +1,128 @@
+#app {
+
+    background-color: #0e0e10;
+    padding-top: 0;
+    min-height: 100vh;
+    color: white;
+
+    header.main-header {
+        margin-left: -2rem;;
+        padding-right: 0;
+        margin-bottom: 16px;
+        position: fixed;
+        z-index: 1;
+        width: 100%;
+        nav {
+            background-color: #18181B;
+            width: 100%;
+            margin-left: 0;
+            margin-top: 0;
+        }
+    }
+
+    main {
+        padding-top: 34px;
+
+        .header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: none;
+
+            .v-btn {
+                margin-left: 16px;
+            }
+        }
+    
+        .filters-bloc {
+            background-color: #1F1F23;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: none;
+            .filters-bloc__input {
+                
+                display: flex;
+                gap: 32px;
+                .v-input {
+                    width: 300px;
+                }
+            }
+            
+            .filters-bloc__action {
+                .v-btn {
+                    margin-left: 16px;
+                }
+            }
+        }
+
+        .roles-list {
+            column-gap: 16px;
+            row-gap: 16px;
+        
+            .fieldset-card {
+                padding: 16px;
+                border: 1px solid gray;
+                border-radius: 5px;
+                margin-bottom: 8px;
+            }
+        
+            .group {
+                display: grid;
+                grid-template-columns: minmax(350px, 1fr) repeat(auto-fit, minmax(200px, 1fr));
+                grid-gap: 32px;
+        
+                .group-bloc {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                    column-gap: 16px;
+                }
+        
+                .individual-bloc {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+        
+                    button {
+                        width: 40px;
+                        min-width: 40px;
+                    }
+        
+                }
+        
+                .card {
+                    //padding: 16px;
+                }
+        
+            }
+        }
+    
+    }
+
+    .m-right16 {
+        margin-right: 16px;
+    }
+
+    .m-top16 {
+        margin-top: 16px;
+    }
+    
+    
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+}

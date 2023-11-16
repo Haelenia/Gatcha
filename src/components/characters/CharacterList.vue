@@ -1,25 +1,24 @@
 <template>
     <div class="header">
-        <div class="filters">
+        <h1>{{`Liste des personnages (${filteredList.length})`}}</h1>
+        <v-btn :to="{ name: 'add', hash: '#pnj'}"> + Nouveau</v-btn>
+    </div>
+    
+    <div class="filters-bloc">
+        <div class="filters-bloc__input">
             <v-text-field label="Piéce d'artefact (plume, couronne...)" v-model="filter.type" class="label"></v-text-field>
             <v-text-field label="stat" v-model="filter.stat" class="label"></v-text-field>
         </div>
-        <div class="actions">
+        <div class="filters-bloc__action">
             <v-btn @click="clearFilter">Reset</v-btn>
-            <v-btn :to="{ name: 'add', hash: '#pnj'}"> + Nouveau</v-btn>
+            
         </div>
     </div>
     
     <div class="characters-list">
-        <v-card class="mx-auto" v-for="character in filteredList" :key="character.id">
+        <v-card class="mx-auto" v-for="character in filteredList" :key="character.id" >
             <v-toolbar :color="getColor(character?.element?.toLowerCase())">
-                <!-- <v-btn icon="mdi-menu"></v-btn> -->
-        
                 <v-toolbar-title>{{ character.name }}</v-toolbar-title>
-        
-                <v-spacer></v-spacer>
-        
-                <!-- <v-btn icon="mdi-magnify"></v-btn> -->
             </v-toolbar>
         
             <v-list lines="two" v-for="(role, index) in character.roles" :key="index">
@@ -27,40 +26,40 @@
         
                 <v-list-item>
                     <v-list-item-title>Substat à privilégier</v-list-item-title>
-                    <v-list-item-subtitle>
-                        {{ role.statToFocus}}
+                    <v-list-item-subtitle >
+                        <span v-for="(el, index2) in role.statToFocus" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
         
                 <v-list-item>
                     <v-list-item-title>Set d'artefact</v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ role.set }}
+                        <span v-for="(el, index2) in role.set" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
                 <v-list-item>
                     <v-list-item-title>Sablier</v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ role.sablier }}
+                        <span v-for="(el, index2) in role.sablier" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
                 <v-list-item>
                     <v-list-item-title>Coupe</v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ role.coupe }}
+                        <span v-for="(el, index2) in role.coupe" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
                 <v-list-item>
                     <v-list-item-title>Couronne</v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ role.couronne }}
+                        <span v-for="(el, index2) in role.couronne" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
-                <v-divider></v-divider>
+                <v-divider v-if="index + 1 !== character.roles.length"></v-divider>
             </v-list>
     
         </v-card>
@@ -69,33 +68,45 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useTestStore } from '../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
-import { collection } from "firebase/firestore";
+import { collection, where, query } from "firebase/firestore";
 
+const db = useFirestore()
+const store = useTestStore()
 
+let charactersRef = collection(db, 'characters')
+const q = query(charactersRef, where("game", "==", store.getSelectedGame))
 
-const db = useFirestore();
-
-// const charactersList = useCollection(collection(db, 'characters', where('role', 'array-contains', 'coupe')))
-let charactersList = useCollection(collection(db, 'characters'))
+let charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })
 let filter = ref({type:'', stat: ''})
 
 const filteredList = computed(() => {
     const { type, stat } = filter.value
+
+    let list = charactersList.value
     
     if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
         const { stat } = filter.value 
-        return charactersList.value.filter(character => {
+        list = charactersList.value.filter(character => {
             let test =  character.roles?.filter(r => r.statToFocus && r.statToFocus.includes(stat)) || []
             return test.length > 0
         })
     } else if (type && stat) {
-        return charactersList.value.filter(character => {
+        list = charactersList.value.filter(character => {
             let test =  character.roles?.filter(r => r[type] && r[type].includes(stat)) || []
             return test.length > 0
         })
     }
-    return charactersList.value
+    return list && list.sort(function (a, b) {
+        if (a.name < b.name) {
+            return -1;
+        }
+        if (a.name > b.name) {
+            return 1;
+        }
+        return 0;
+    }) || []
 })
 
 function clearFilter() {
@@ -116,13 +127,13 @@ function getColor(element) {
         return 'blue'
     }
     if (element === 'cryo') {
-        return 'cyan'
+        return 'light-blue-accent-1'
     }
     if (element === 'pyro') {
         return 'red'
     }
     if (element === 'anemo') {
-        return 'light green'
+        return 'teal-accent-3'
     }
     
 }
@@ -144,34 +155,18 @@ onMounted(async () => {
 </script>
 
 <style lang="scss">
-.header {
-    background-color: lightgray;
-    padding: 16px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: none;
-    .filters {
-        display: flex;
-        gap: 32px;
-        .v-input {
-            width: 300px;
-        }
-    }
-    
-    .actions {
-        .v-btn {
-            margin-left: 16px;
-        }
-    }
-}
+
 .characters-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     column-gap: 16px;
     row-gap: 16px;
 
-    .v-card { width: 100%;}
+    .v-card { 
+        width: 100%;
+        .v-list-subheader {
+            font-size: 1.1rem;
+        }
+    }
 }
 </style>

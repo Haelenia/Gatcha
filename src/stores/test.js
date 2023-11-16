@@ -12,7 +12,7 @@ export const useTestStore = defineStore('test', {
         isAdmin: true,
         items: [],
         hasChanged: true,
-        selectedGame: 'Genshin',//null,
+        selectedGame: null,
         initSet: null,
         currentSet: null,
         dungeons: null,
@@ -26,7 +26,6 @@ export const useTestStore = defineStore('test', {
     },
     actions: {
         selectGame(game) {
-            console.log('ici', game)
             this.selectedGame = game
         },
         setDungeonsList() {

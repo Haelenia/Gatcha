@@ -21,7 +21,7 @@ const router = createRouter({
     {
       path: '/characters',
       name: 'characters',
-      component: () => import('../views/CharacterList.vue')
+      component: () => import('../components/characters/CharacterList.vue')
     },
     {
       path: '/dongeons',

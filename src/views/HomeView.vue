@@ -12,15 +12,15 @@ store.selectGame()
 
 function goToList(game) {
   store.selectGame(game)
-  router.push({name: 'perso'})
+  router.push({name: 'characters'})
 }
 
 </script>
 
 <template>
   <main>
-    <div @click="goToList('genshin')" role="link">GENSHIN</div>
-    <div @click="goToList('hsr')" role="link">HSR</div>
+    <div @click="goToList('Genshin')" role="link">GENSHIN</div>
+    <div @click="goToList('HSR')" role="link">HSR</div>
   </main>
 </template>
 

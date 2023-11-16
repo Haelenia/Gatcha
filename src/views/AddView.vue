@@ -19,7 +19,7 @@ import { useTestStore } from '../stores/test'
 import { useRoute, useRouter } from 'vue-router'
 
 import EditDungeon from '@/components/EditDungeon.vue'
-import EditCharacters from '../components/EditCharacters.vue';
+import EditCharacters from '../components/characters/EditCharacters.vue';
 
 const store = useTestStore()
 const router = useRouter()
