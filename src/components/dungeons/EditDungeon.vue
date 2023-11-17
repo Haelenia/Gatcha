@@ -9,6 +9,7 @@
     <div>
         <div>
             <v-text-field label="Nom" v-model="currentDj.name" class="label"></v-text-field>
+            <v-text-field label="Région" v-model="currentDj.region" class="label"></v-text-field>
         </div>
         <div>
             <div v-for="(s, index) in currentDj.set" :key="index" class="set-list">
@@ -36,7 +37,7 @@ const db = useFirestore();
 const store = useTestStore()
 
 let isEditMode = ref(false)
-const currentDj = ref({ name: '', set: [''] })
+const currentDj = ref({ name: '', region: '', set: [''] })
 const initDj = ref()
 
 let docRef = null

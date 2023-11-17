@@ -7,6 +7,12 @@
         <div class="filters-bloc__input">
             <v-text-field label="Piéce d'artefact (plume, couronne...)" v-model="filter.type" class="label"></v-text-field>
             <v-text-field label="stat" v-model="filter.stat" class="label"></v-text-field>
+            <v-select
+                label="Donjon"
+                :items="sortByName(djList)"
+                :item-props="itemProps"
+                v-model="filter.dj"
+                ></v-select>
         </div>
         <div class="filters-bloc__action">
             <v-btn @click="clearFilter">Reset</v-btn>
@@ -39,7 +45,10 @@
                 <v-list-item>
                     <v-list-item-title>Set d'artefact</v-list-item-title>
                     <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.set" :key="index2" class="m-right16">{{ el }}</span>
+                        <span v-for="(el, index2) in role.set"
+                        :key="index2"
+                        :class="{ 'toto' : surligne.includes(el)}"
+                        class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
@@ -72,7 +81,7 @@
   </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { reactive, ref, computed, watch } from "vue";
 import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query,  deleteDoc, doc } from "firebase/firestore";
@@ -86,14 +95,47 @@ let charactersRef = collection(db, 'characters')
 let q = query(charactersRef, where("game", "==", store.getSelectedGame))
 
 let charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })
-let filter = ref({type:'', stat: ''})
+let filter = ref({type:'', stat: '', dj: ''})
+let surligne = ref([])
+
+let djRef = collection(db, 'dungeons')
+let qu = query(djRef, where("game", "==", store.getSelectedGame))
+let djList = useCollection(qu, { ssrKey: 'justToStopWarning' })
+
+function sortByName(list) {
+    return list.sort(function (a, b) {
+        if (a.name < b.name) {
+            return -1;
+        }
+        if (a.name > b.name) {
+            return 1;
+        }
+        return 0;
+    }) 
+}
 
 const filteredList = computed(() => {
-    const { type, stat } = filter.value
+    const { type, stat, dj } = filter.value
 
     let list = charactersList.value
-    
-    if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
+
+    if (dj) {
+        const sets = dj.set
+        list = charactersList.value.filter(character => {
+            let roles =  character.roles?.filter(r => {
+                let test2 =  r.set && r.set.filter(s => {
+                    return sets.some(el => {
+                        if (el.toLowerCase().includes(s.toLowerCase())) {
+                            surligne.value.push(s)
+                        }
+                        return el.toLowerCase().includes(s.toLowerCase())
+                    }) 
+                })
+                return test2.length > 0
+            }) || []
+            return roles.length > 0
+        })
+    } else if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
         const { stat } = filter.value 
         list = charactersList.value.filter(character => {
             let test =  character.roles?.filter(r => r.statToFocus && r.statToFocus.includes(stat)) || []
@@ -117,7 +159,8 @@ const filteredList = computed(() => {
 })
 
 function clearFilter() {
-    filter.value = { type: '', stat: '' }
+    filter.value = { type: '', stat: '', dj: '' }
+    surligne.value = []
 }
 
 function getColor(element) {
@@ -146,7 +189,6 @@ function getColor(element) {
 }
 
 async function deleteCharacter(pnj) {
-    console.log('')
     await deleteDoc(doc(db, 'characters', pnj.id))
     charactersRef = collection(db, 'characters')
     q = query(charactersRef, where("game", "==", store.getSelectedGame))
@@ -157,9 +199,25 @@ function updateCharacter(pnj) {
     router.push({ name: 'character-edit', params: {id: pnj.id }})
 }
 
+function itemProps (item) {
+    return {
+        title: item.name
+    }
+}
+
+watch(filter, (newFilter, oldFilter) => {
+    console.log('ici', newFilter, oldFilter)
+    if (newFilter.dj?.name != oldFilter.dj?.name) {
+        surligne.value = []
+    }
+}, { deep: true })
+
 </script>
 
 <style lang="scss">
-
+.toto {
+        background-color: forestgreen;
+        font-weight: bold;
+    }
 
 </style>

@@ -27,7 +27,7 @@
     
             <v-list lines="five">
                 <v-list-item >
-                    <v-list-item-title>Set d'artefact</v-list-item-title>
+                    <v-list-item-title>Sets disponibles</v-list-item-title>
                     <v-list-item-subtitle>
                         <div v-for="(el, index2) in dj.set" :key="index2" class="m-right16">{{ el }}</div>
                     </v-list-item-subtitle>
@@ -98,9 +98,21 @@ async function deleteDj(dj) {
 }
 
 function updateDj(dj) {
-    console.log('dj', dj)
     router.push({ name: 'dungeon-edit', params: {id: dj.id }})
 }
 
 
 </script>
+
+<style lang="scss">
+#app main .characters-list {
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+
+    .v-card { 
+        width: 100%;
+        .v-list-subheader {
+            font-size: 1.1rem;
+        }
+    }
+}
+</style>

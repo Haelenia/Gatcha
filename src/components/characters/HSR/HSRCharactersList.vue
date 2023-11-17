@@ -6,8 +6,14 @@
     
     <div class="filters-bloc">
         <div class="filters-bloc__input">
-            <v-text-field label="Piéce d'artefact (plume, couronne...)" v-model="filter.type" class="label"></v-text-field>
-            <v-text-field label="stat" v-model="filter.stat" class="label"></v-text-field>
+            <v-text-field label="Pièce de set (torse, bottes...)" v-model="filter.type" class="label"></v-text-field>
+            <v-text-field label="Stat" v-model="filter.stat" class="label"></v-text-field>
+            <v-select
+                label="Donjon"
+                :items="sortByName(djList)"
+                :item-props="itemProps"
+                v-model="filter.dj"
+                ></v-select>
         </div>
         <div class="filters-bloc__action">
             <v-btn @click="clearFilter">Reset</v-btn>
@@ -40,7 +46,11 @@
                 <v-list-item>
                     <v-list-item-title>Set d'artefact</v-list-item-title>
                     <v-list-item-subtitle class="long-item">
-                        <div v-for="(el, index2) in role.set" :key="index2" class="m-right16">{{ `${el.armor} / ${el.jewel}` }}</div>
+                        <div v-for="(el, index2) in role.set" :key="index2" class="m-right16">
+                            <span :class="{ 'toto' : surligne.includes(el.armor)}">{{ el.armor }}</span>
+                            <span> / </span>
+                            <span :class="{ 'toto' : surligne.includes(el.jewel)}">{{ el.jewel }}</span>
+                        </div>
                     </v-list-item-subtitle>
                 </v-list-item>
 
@@ -80,7 +90,7 @@
   </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query, deleteDoc, doc } from "firebase/firestore";
@@ -93,15 +103,54 @@ const router = useRouter()
 let charactersRef = collection(db, 'characters')
 let q = query(charactersRef, where("game", "==", store.getSelectedGame))
 let charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })
-let filter = ref({type:'', stat: ''})
+
+
+let djRef = collection(db, 'dungeons')
+let qu = query(djRef, where("game", "==", store.getSelectedGame))
+let djList = useCollection(qu, { ssrKey: 'justToStopWarning' })
+
+let filter = ref({type:'', stat: '', dj: ''})
+
+let surligne = ref([])
+
+function sortByName(list) {
+    return list.sort(function (a, b) {
+        if (a.name < b.name) {
+            return -1;
+        }
+        if (a.name > b.name) {
+            return 1;
+        }
+        return 0;
+    }) 
+}
+
 
 const filteredList = computed(() => {
-    const { type, stat } = filter.value
+    const { type, stat, dj } = filter.value
 
     let list = charactersList.value
-    
-    if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
-        const { stat } = filter.value 
+
+    if (dj) {
+        const sets = dj.set
+        list = charactersList.value.filter(character => {
+            let roles =  character.roles?.filter(r => {
+                let test2 =  r.set && r.set.filter(s => {
+                    return sets.some(el => {
+                        if (el.toLowerCase().includes(s.armor.toLowerCase())) {
+                            surligne.value.push(s.armor)
+                        }
+                        if (el.toLowerCase().includes(s.jewel.toLowerCase())) {
+                            surligne.value.push(s.jewel)
+                        }
+                        return el.toLowerCase().includes(s.armor.toLowerCase()) || el.toLowerCase().includes(s.jewel.toLowerCase())
+                    }) 
+                })
+                return test2.length > 0
+            }) || []
+            return roles.length > 0
+        })
+    } else if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
         list = charactersList.value.filter(character => {
             let test =  character.roles?.filter(r => r.statToFocus && r.statToFocus.includes(stat)) || []
             return test.length > 0
@@ -124,7 +173,8 @@ const filteredList = computed(() => {
 })
 
 function clearFilter() {
-    filter.value = { type: '', stat: '' }
+    filter.value = { type: '', stat: '', dj: '' }
+    surligne.value = []
 }
 
 function getColor(element) {
@@ -152,7 +202,6 @@ function getColor(element) {
 }
 
 async function deleteCharacter(pnj) {
-    console.log('')
     await deleteDoc(doc(db, 'characters', pnj.id))
     charactersRef = collection(db, 'characters')
     q = query(charactersRef, where("game", "==", store.getSelectedGame))
@@ -162,6 +211,18 @@ async function deleteCharacter(pnj) {
 function updateCharacter(pnj) {
     router.push({ name: 'character-edit', params: {id: pnj.id }})
 }
+
+function itemProps (item) {
+    return {
+        title: item.name
+    }
+}
+
+watch(() => filter, (newFilter, oldFilter) =>{
+    if (newFilter.dj?.name != oldFilter.dj?.name) {
+        surligne.value = []
+    }
+})
 
 /* without vueFire
 const q = query(collection(db, "characters"));//, where("capital", "==", true));
@@ -179,11 +240,16 @@ onMounted(async () => {
 </script>
 
 <style lang="scss">
-.characters-list {
+#app main .characters-list {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     .v-card { 
         .long-item {
             -webkit-line-clamp: unset;
         }
+    }
+    .toto {
+        background-color: forestgreen;
+        font-weight: bold;
     }
 }
 </style>
