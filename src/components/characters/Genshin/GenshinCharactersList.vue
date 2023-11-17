@@ -44,29 +44,29 @@
         
                 <v-list-item>
                     <v-list-item-title>Set d'artefact</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.set"
+                    <v-list-item-subtitle class="long-item">
+                        <div v-for="(el, index2) in role.set"
                         :key="index2"
                         :class="{ 'toto' : surligne.includes(el)}"
-                        class="m-right16">{{ el }}</span>
+                        class="m-right16">{{ el }}</div>
                     </v-list-item-subtitle>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item class="small">
                     <v-list-item-title>Sablier</v-list-item-title>
                     <v-list-item-subtitle>
                         <span v-for="(el, index2) in role.sablier" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item class="small">
                     <v-list-item-title>Coupe</v-list-item-title>
                     <v-list-item-subtitle>
                         <span v-for="(el, index2) in role.coupe" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item class="small">
                     <v-list-item-title>Couronne</v-list-item-title>
                     <v-list-item-subtitle>
                         <span v-for="(el, index2) in role.couronne" :key="index2" class="m-right16">{{ el }}</span>
@@ -206,7 +206,6 @@ function itemProps (item) {
 }
 
 watch(filter, (newFilter, oldFilter) => {
-    console.log('ici', newFilter, oldFilter)
     if (newFilter.dj?.name != oldFilter.dj?.name) {
         surligne.value = []
     }

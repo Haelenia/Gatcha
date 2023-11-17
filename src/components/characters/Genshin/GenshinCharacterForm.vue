@@ -96,7 +96,10 @@
 
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+
+defineEmits(['cancel', 'save'])
+const props = defineProps(['id', 'isEditMode', 'source'])
 
 const role = {
     name: '',
@@ -131,6 +134,13 @@ function addElement(type, roleIndex) {
 function removeElement(type, roleIndex, index) {
     currentCharacter.value.roles[roleIndex][type].splice(index, 1)
 }
+
+watch(() => props.source, (characterSource) => {
+    currentCharacter.value = {
+      ...characterSource,
+    }
+})
+
 </script>
 
 <style scoped lang="scss">

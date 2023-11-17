@@ -50,7 +50,7 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   let store = useTestStore()
-  let game = window.sessionStorage.getItem('game')
+  let game = window.localStorage.getItem('game')
 
   if (game && !store.getSelectedGame) {
     store.selectGame(game)

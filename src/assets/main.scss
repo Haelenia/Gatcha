@@ -67,8 +67,33 @@
         
             .v-card { 
                 width: 100%;
+                .long-item {
+                    -webkit-line-clamp: unset;
+                }
                 .v-list-subheader {
                     font-size: 1.1rem;
+                }
+                .v-list-item-title {
+                    opacity: 0.65;
+                    margin-bottom: 8px;
+                }
+                .v-list-item-subtitle {
+                    opacity: 0.9;
+                    font-size: 0.9rem;
+                    div { margin-bottom: 4px;}
+                }
+                .v-list-item.small {
+                    .v-list-item__content {
+                        display: flex;
+                        align-items: baseline;
+                        gap: 32px;
+                    }
+                    .v-list-item-title {
+                        margin-bottom: 0;
+                    }
+                }
+                .v-list-item--density-default.v-list-item--two-line.small {
+                    min-height: 50px;
                 }
             }
         }

@@ -17,7 +17,7 @@ store.selectGame()
 
 function goToList(game) {
   store.selectGame(game)
-  window.sessionStorage.setItem('game', game)
+  window.localStorage.setItem('game', game)
   router.push({name: 'characters'})
 }
 

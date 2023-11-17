@@ -242,11 +242,7 @@ onMounted(async () => {
 <style lang="scss">
 #app main .characters-list {
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    .v-card { 
-        .long-item {
-            -webkit-line-clamp: unset;
-        }
-    }
+    
     .toto {
         background-color: forestgreen;
         font-weight: bold;

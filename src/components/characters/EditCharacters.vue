@@ -2,17 +2,13 @@
     <div>
         <GenshinCharacterForm v-if="store.getSelectedGame === 'Genshin'"
                             :is-edit-mode="isEditMode"
-                            :id="id"
                             :source="characterSource"
                             @save="saveElement"
-                            @cancel="$emit('cancel')"
         />
         <HSRCharactersForm v-if="store.getSelectedGame === 'HSR'"
                             :is-edit-mode="isEditMode"
-                            :id="id"
                             :source="characterSource"
                             @save1="saveElement"
-                            @cancel="$emit('cancel')"
         />
     </div>
 </template>
@@ -32,7 +28,6 @@ const route = useRoute()
 const db = useFirestore();
 
 const store = useTestStore() 
-let id = ref()
 let isEditMode = ref(false)
 
 let docRef = null
@@ -40,12 +35,10 @@ let characterSource = null
 
 onMounted(() => {
     if (route.params?.id) {
-        id.value = route.params.id
         isEditMode.value = true
         docRef = doc(db, 'characters', route.params.id)
         characterSource = useDocument(docRef)
     } else {
-        id.value = null
         isEditMode.value = false
     }
 })

@@ -47,7 +47,6 @@ if (route.params?.id) {
     isEditMode.value = true
     docRef = doc(db, 'dungeons', route.params.id)
     djSource = useDocument(docRef)
-    console.log('djsoure', djSource)
 } else {
     isEditMode.value = false
 }

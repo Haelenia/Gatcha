@@ -15,7 +15,7 @@
     </div>
     <div class="characters-list">
         <v-card class="mx-auto" v-for="dj in filteredList" :key="dj.id" >
-            <v-toolbar>
+            <v-toolbar :color="getColor(dj?.region)">
                 <v-toolbar-title>{{ dj.name }}</v-toolbar-title>
                 <v-btn @click="updateDj(dj)">
                     <v-icon icon="mdi-pencil"></v-icon>
@@ -101,6 +101,23 @@ function updateDj(dj) {
     router.push({ name: 'dungeon-edit', params: {id: dj.id }})
 }
 
+function getColor(region) {
+    if (region === 'Mondstadt') {
+        return 'teal-accent-3'
+    }
+    if (region === 'Liyue') {
+        return 'orange'
+    }
+    if (region === 'Inazuma') {
+        return 'purple'
+    }
+    if (region === 'Sumeru') {
+        return 'green'
+    }
+    if (region === 'Fontaine') {
+        return 'blue'
+    }
+}
 
 </script>
 

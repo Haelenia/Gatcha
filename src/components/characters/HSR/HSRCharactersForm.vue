@@ -128,10 +128,6 @@ const currentCharacter = ref({
     ]
 })
 
-onMounted(() => {
-    console.log('props', props)
-})
-
 function addRole() {
     currentCharacter.value.roles.push(JSON.parse(JSON.stringify(role)))
 }
