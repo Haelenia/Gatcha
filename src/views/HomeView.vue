@@ -1,28 +1,28 @@
-<script setup>
-import { useRouter, useRoute } from 'vue-router'
-
-import { useTestStore } from '../stores/test'
-
-const router = useRouter()
-
-
-
-const store = useTestStore()
-store.selectGame()
-
-function goToList(game) {
-  store.selectGame(game)
-  router.push({name: 'characters'})
-}
-
-</script>
-
 <template>
   <main>
     <div @click="goToList('Genshin')" role="link">GENSHIN</div>
     <div @click="goToList('HSR')" role="link">HSR</div>
   </main>
 </template>
+
+
+<script setup>
+import { useRouter } from 'vue-router'
+import { useTestStore } from '../stores/test'
+
+const router = useRouter()
+const store = useTestStore()
+
+store.selectGame()
+
+function goToList(game) {
+  store.selectGame(game)
+  window.sessionStorage.setItem('game', game)
+  router.push({name: 'characters'})
+}
+
+</script>
+
 
 <style scoped lang="scss">
 main {

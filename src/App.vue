@@ -2,10 +2,10 @@
     <header class="main-header">
         <nav>
             <RouterLink v-if="store.getSelectedGame" to="/">Home</RouterLink>
-            <RouterLink v-if="store.getSelectedGame" to="/add">Ajouter un élément</RouterLink>
             <RouterLink v-if="store.getSelectedGame" to="/characters">Liste des personnages</RouterLink>
-            <RouterLink v-if="store.getSelectedGame" to="/dongeons">Listes des donjons</RouterLink>
-            <RouterLink v-if="store.getSelectedGame" to="/sets">Liste des sets</RouterLink>
+            <RouterLink v-if="store.getSelectedGame" :to="{ name: 'character-create'}">Ajouter un personnage</RouterLink>
+            <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeons'}">Listes des donjons</RouterLink>
+            <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeon-create'}">Ajouter un donjon</RouterLink>
             <span>{{ store.selectedGame }}</span>
         </nav>
     </header>

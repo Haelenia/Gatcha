@@ -1,9 +1,9 @@
 <template>
     <div class="header">
-        <h1>Nouveau personnage</h1>
+        <h1>{{props.isEditMode ? currentCharacter.name : 'Nouveau personnage'}}</h1>
         <div class="actions">
             <v-btn @click="$emit('cancel')">Annuler</v-btn>
-            <v-btn @click="$emit('save', currentCharacter)">Enregistrer</v-btn>
+            <v-btn @click="$emit('save1', currentCharacter)">Enregistrer</v-btn>
         </div>
     </div>
     <div class="identity">
@@ -50,7 +50,7 @@
                                 </v-btn>
                             </div>
                         </div>
-                        <v-btn @click="addElement('sablier', index)">+ Ajouter une stat</v-btn>
+                        <v-btn @click="addElement('torse', index)">+ Ajouter une stat</v-btn>
                     </div>
 
                     <div class="card short-text">
@@ -62,7 +62,7 @@
                                 </v-btn>
                             </div>
                         </div>
-                        <v-btn @click="addElement('coupe', index)">+ Ajouter une stat</v-btn>
+                        <v-btn @click="addElement('botte', index)">+ Ajouter une stat</v-btn>
                     </div>
 
                     <div class="card short-text">
@@ -74,7 +74,7 @@
                                 </v-btn>
                             </div>
                         </div>
-                        <v-btn @click="addElement('couronne', index)">+ Ajouter une stat</v-btn>
+                        <v-btn @click="addElement('orbe', index)">+ Ajouter une stat</v-btn>
                     </div>
 
                     <div class="card short-text">
@@ -101,18 +101,14 @@
         </div>
         <v-btn @click="addRole">+ Ajouter un rôle</v-btn>
     </div>
-
-
-
-
-    <div class="m-top16">
-        <label for="">results: {{ currentCharacter }}</label>
-    </div>
 </template>
 
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+
+defineEmits(['cancel', 'save1'])
+const props = defineProps(['id', 'isEditMode', 'source'])
 
 const role = {
     set: [{armor: '', jewel: ''}],
@@ -123,8 +119,6 @@ const role = {
     chaine: [''],
 }
 
-
-
 const currentCharacter = ref({
     name: '',
     role: '',
@@ -134,7 +128,9 @@ const currentCharacter = ref({
     ]
 })
 
-
+onMounted(() => {
+    console.log('props', props)
+})
 
 function addRole() {
     currentCharacter.value.roles.push(JSON.parse(JSON.stringify(role)))
@@ -155,7 +151,16 @@ function addElement(type, roleIndex) {
 function removeElement(type, roleIndex, index) {
     currentCharacter.value.roles[roleIndex][type].splice(index, 1)
 }
+
+watch(() => props.source, (characterSource) => {
+    currentCharacter.value = {
+      ...characterSource,
+    }
+})
+
 </script>
+
+
 
 
 

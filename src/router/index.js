@@ -11,22 +11,34 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/add',
-      name: 'add',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AddView.vue')
-    },
-    {
       path: '/characters',
       name: 'characters',
       component: () => import('../components/characters/CharacterList.vue')
     },
     {
-      path: '/dongeons',
-      name: 'dongeons',
-      component: () => import('../views/DungeonList.vue')
+      path: '/character',
+      name: 'character-create',
+      component: () => import('../components/characters/EditCharacters.vue')
+    },
+    {
+      path: '/character/:id',
+      name: 'character-edit',
+      component: () => import('../components/characters/EditCharacters.vue')
+    },
+    {
+      path: '/dungeons',
+      name: 'dungeons',
+      component: () => import('../components/dungeons/DungeonList.vue')
+    },
+    {
+      path: '/dungeon',
+      name: 'dungeon-create',
+      component: () => import('../components/dungeons/EditDungeon.vue')
+    },
+    {
+      path: '/dungeon/:id',
+      name: 'dungeon-edit',
+      component: () => import('../components/dungeons/EditDungeon.vue')
     },
     {
       path: '/sets',
@@ -36,9 +48,14 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   let store = useTestStore()
-  if (!store.getSelectedGame && to.name !== 'home') {
+  let game = window.sessionStorage.getItem('game')
+
+  if (game && !store.getSelectedGame) {
+    store.selectGame(game)
+  }
+  if (!game && to.name !== 'home') {
     return { name: 'home'}
   }
 })
