@@ -67,6 +67,10 @@
         
             .v-card { 
                 width: 100%;
+                .v-toolbar .v-btn {
+                    min-width: 40px;
+                    padding: 0;
+                }
                 .long-item {
                     -webkit-line-clamp: unset;
                 }
@@ -74,12 +78,13 @@
                     font-size: 1.1rem;
                 }
                 .v-list-item-title {
-                    opacity: 0.65;
+                    opacity: 0.60;
                     margin-bottom: 8px;
+                    font-size: 1.05rem;
                 }
                 .v-list-item-subtitle {
                     opacity: 0.9;
-                    font-size: 0.9rem;
+                    font-size: 1rem;
                     div { margin-bottom: 4px;}
                 }
                 .v-list-item.small {

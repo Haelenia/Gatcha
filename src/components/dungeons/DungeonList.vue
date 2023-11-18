@@ -3,16 +3,7 @@
         <h1>{{`Liste des donjons (${filteredList.length})`}}</h1>
         <v-btn :to="{ name: 'dungeon-create' }"> + Nouveau</v-btn>
     </div>
-    <div class="filters-bloc">
-        <div class="filters-bloc__input">
-            <v-text-field label="Piéce d'artefact (plume, couronne...)" v-model="filter.type" class="label"></v-text-field>
-            <v-text-field label="stat" v-model="filter.stat" class="label"></v-text-field>
-        </div>
-        <div class="filters-bloc__action">
-            <v-btn @click="clearFilter">Reset</v-btn>
-            
-        </div>
-    </div>
+
     <div class="characters-list">
         <v-card class="mx-auto" v-for="dj in filteredList" :key="dj.id" >
             <v-toolbar :color="getColor(dj?.region)">
@@ -33,15 +24,12 @@
                     </v-list-item-subtitle>
                 </v-list-item>
             </v-list>
-
-
-    
         </v-card>
     </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useTestStore } from '../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query,  deleteDoc, doc } from "firebase/firestore";
@@ -56,25 +44,8 @@ let q = query(djRef, where("game", "==", store.getSelectedGame))
 
 let djList = useCollection(q, { ssrKey: 'justToStopWarning' })
 
-let filter = ref({type:'', stat: ''})
-
 const filteredList = computed(() => {
-    const { type, stat } = filter.value
-
     let list = djList.value
-    
-    if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
-        const { stat } = filter.value 
-        list = djList.value.filter(character => {
-            let test =  character.roles?.filter(r => r.statToFocus && r.statToFocus.includes(stat)) || []
-            return test.length > 0
-        })
-    } else if (type && stat) {
-        list = djList.value.filter(character => {
-            let test =  character.roles?.filter(r => r[type] && r[type].includes(stat)) || []
-            return test.length > 0
-        })
-    }
     return list && list.sort(function (a, b) {
         if (a.name < b.name) {
             return -1;
@@ -85,10 +56,6 @@ const filteredList = computed(() => {
         return 0;
     }) || []
 })
-
-function clearFilter() {
-    filter.value = { type: '', stat: '' }
-}
 
 async function deleteDj(dj) {
     await deleteDoc(doc(db, 'dungeons', dj.id))

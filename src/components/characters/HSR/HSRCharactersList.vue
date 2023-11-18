@@ -90,7 +90,7 @@
   </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, reactive } from "vue";
 import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query, deleteDoc, doc } from "firebase/firestore";
@@ -109,7 +109,7 @@ let djRef = collection(db, 'dungeons')
 let qu = query(djRef, where("game", "==", store.getSelectedGame))
 let djList = useCollection(qu, { ssrKey: 'justToStopWarning' })
 
-let filter = ref({type:'', stat: '', dj: ''})
+let filter = reactive({type:'', stat: '', dj: ''})
 
 let surligne = ref([])
 
@@ -127,7 +127,7 @@ function sortByName(list) {
 
 
 const filteredList = computed(() => {
-    const { type, stat, dj } = filter.value
+    const { type, stat, dj } = filter
 
     let list = charactersList.value
 
@@ -173,7 +173,9 @@ const filteredList = computed(() => {
 })
 
 function clearFilter() {
-    filter.value = { type: '', stat: '', dj: '' }
+    filter.type = ''
+    filter.stat = ''
+    filter.dj = ''
     surligne.value = []
 }
 
@@ -218,7 +220,7 @@ function itemProps (item) {
     }
 }
 
-watch(() => filter, (newFilter, oldFilter) =>{
+watch(() => ({...filter}), (newFilter, oldFilter) =>{
     if (newFilter.dj?.name != oldFilter.dj?.name) {
         surligne.value = []
     }

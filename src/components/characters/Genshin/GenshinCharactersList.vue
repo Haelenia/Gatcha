@@ -95,7 +95,7 @@ let charactersRef = collection(db, 'characters')
 let q = query(charactersRef, where("game", "==", store.getSelectedGame))
 
 let charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })
-let filter = ref({type:'', stat: '', dj: ''})
+let filter = reactive({type:'', stat: '', dj: ''})
 let surligne = ref([])
 
 let djRef = collection(db, 'dungeons')
@@ -115,12 +115,10 @@ function sortByName(list) {
 }
 
 const filteredList = computed(() => {
-    const { type, stat, dj } = filter.value
-
+    const { type, stat } = filter
     let list = charactersList.value
-
-    if (dj) {
-        const sets = dj.set
+    if (filter.dj) {
+        const sets = filter.dj.set
         list = charactersList.value.filter(character => {
             let roles =  character.roles?.filter(r => {
                 let test2 =  r.set && r.set.filter(s => {
@@ -135,31 +133,28 @@ const filteredList = computed(() => {
             }) || []
             return roles.length > 0
         })
-    } else if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
-        const { stat } = filter.value 
+    } else if ((filter.stat && (!filter.type || filter.type === 'plume' || filter.type === 'fleur'))) {
         list = charactersList.value.filter(character => {
-            let test =  character.roles?.filter(r => r.statToFocus && r.statToFocus.includes(stat)) || []
+            let test =  character.roles?.filter(r => {
+                return r.statToFocus && r.statToFocus.map(el => el.toLowerCase()).includes(stat.toLowerCase())
+            }) || []
             return test.length > 0
         })
-    } else if (type && stat) {
+    } else if (filter.type && filter.stat) {
         list = charactersList.value.filter(character => {
-            let test =  character.roles?.filter(r => r[type] && r[type].includes(stat)) || []
+            let test =  character.roles?.filter(r =>  {
+                return r[type] && r[type].map(el => el.toLowerCase()).includes(stat.toLowerCase())
+            }) || []
             return test.length > 0
         })
     }
-    return list && list.sort(function (a, b) {
-        if (a.name < b.name) {
-            return -1;
-        }
-        if (a.name > b.name) {
-            return 1;
-        }
-        return 0;
-    }) || []
+    return list && sortByName(list) || []
 })
 
 function clearFilter() {
-    filter.value = { type: '', stat: '', dj: '' }
+    filter.type = ''
+    filter.stat = ''
+    filter.dj = ''
     surligne.value = []
 }
 
@@ -205,11 +200,13 @@ function itemProps (item) {
     }
 }
 
-watch(filter, (newFilter, oldFilter) => {
-    if (newFilter.dj?.name != oldFilter.dj?.name) {
+watch(() => (filter.dj), (newFilter, oldFilter) => {
+    console.log('watch', newFilter, oldFilter)
+    if (newFilter.id != oldFilter.id) {
+        console.log('clean')
         surligne.value = []
     }
-}, { deep: true })
+})
 
 </script>
 

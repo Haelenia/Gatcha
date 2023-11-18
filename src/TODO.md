@@ -1,8 +1,6 @@
-* Editer un perso
-* Supprimer un perso
+
 * différencier 4* et 5*
 * Rajouter une zone de note par perso
-* gérer les donjons % sets
 * se faire un compte
 * mettre les person qu'on a
 * gérer si affinité max ou pas
