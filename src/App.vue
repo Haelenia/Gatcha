@@ -6,6 +6,10 @@
             <RouterLink v-if="store.getSelectedGame" :to="{ name: 'character-create'}">Ajouter un personnage</RouterLink>
             <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeons'}">Listes des donjons</RouterLink>
             <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeon-create'}">Ajouter un donjon</RouterLink>
+            <RouterLink v-if="store.getSelectedGame"
+                :to="{ name: 'sets'}">{{ `Listes des sets ${store.getSelectedGame === 'Genshin' ? 'd`\'artefacts' : 'de reliques'}`}}</RouterLink>
+            <RouterLink v-if="store.getSelectedGame"
+                :to="{ name: 'set-create'}">{{ `Ajouter un set ${store.getSelectedGame === 'Genshin' ? 'd`\'artefacts' : 'de reliques'}`}}</RouterLink>
             <span>{{ store.selectedGame }}</span>
             <div class="action">
                 <v-btn @click="goToList('Genshin')">Genshin</v-btn>

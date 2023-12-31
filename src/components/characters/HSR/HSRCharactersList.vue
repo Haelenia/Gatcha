@@ -7,12 +7,23 @@
     <div class="filters-bloc">
         <div class="filters-bloc__input">
             <v-text-field label="Pièce de set (torse, bottes...)" v-model="filter.type" class="label"></v-text-field>
-            <v-text-field label="Stat" v-model="filter.stat" class="label"></v-text-field>
+            
+            <v-select
+                label="Stat"
+                :items="getStats.sort()"
+                v-model="filter.stat"
+                ></v-select>
             <v-select
                 label="Donjon"
                 :items="sortByName(djList)"
                 :item-props="itemProps"
                 v-model="filter.dj"
+                ></v-select>
+            <v-select
+                label="Relique"
+                :items="sortByName(setList)"
+                :item-props="itemProps"
+                v-model="filter.set"
                 ></v-select>
         </div>
         <div class="filters-bloc__action">
@@ -39,7 +50,10 @@
                 <v-list-item>
                     <v-list-item-title>Substat à privilégier</v-list-item-title>
                     <v-list-item-subtitle >
-                        <span v-for="(el, index2) in role.statToFocus" :key="index2" class="m-right16">{{ el }}</span>
+                        <span v-for="(el, index2) in role.statToFocus" :key="index2"
+                        class="m-right16"
+                        :class="{ 'toto' : surligne.includes(el)}"
+                        >{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
         
@@ -104,14 +118,21 @@ let charactersRef = collection(db, 'characters')
 let q = query(charactersRef, where("game", "==", store.getSelectedGame))
 let charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })
 
-
+// Dungeons list
 let djRef = collection(db, 'dungeons')
 let qu = query(djRef, where("game", "==", store.getSelectedGame))
 let djList = useCollection(qu, { ssrKey: 'justToStopWarning' })
 
-let filter = reactive({type:'', stat: '', dj: ''})
+// Sets of relique list
+let setRef = collection(db, 'sets')
+let q2 = query(setRef, where("game", "==", store.getSelectedGame))
+let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
+
+let filter = reactive({type:'', stat: '', dj: '', set: ''})
 
 let surligne = ref([])
+
+let getStats = ['TC', 'DC', 'PV','PV%','Vitesse','Rupture','Foudre','Feu','Vent','Physique','Glace', 'Quantique', 'Imaginaire', 'TRE', 'DEF%', 'DEF', 'CAE', 'Soin', 'ATQ', 'ATQ%' ]
 
 function sortByName(list) {
     return list.sort(function (a, b) {
@@ -127,10 +148,10 @@ function sortByName(list) {
 
 
 const filteredList = computed(() => {
-    const { type, stat, dj } = filter
+    const { type, stat, dj, set } = filter
 
     let list = charactersList.value
-
+    // Sort by dungeon
     if (dj) {
         const sets = dj.set
         list = charactersList.value.filter(character => {
@@ -150,11 +171,37 @@ const filteredList = computed(() => {
             }) || []
             return roles.length > 0
         })
+    // Sort by set of relique
+    } else if (set) {
+        let setName = set.name
+        list = charactersList.value.filter(character => {
+            let roles =  character.roles?.filter(r => {
+                let test2 =  r.set && r.set.filter(s => {
+                    if (setName.toLowerCase().includes(s.armor.toLowerCase())) {
+                        surligne.value.push(s.armor)
+                    }
+                    if (setName.toLowerCase().includes(s.jewel.toLowerCase())) {
+                        surligne.value.push(s.jewel)
+                    }
+                    return setName.toLowerCase().includes(s.armor.toLowerCase()) || setName.toLowerCase().includes(s.jewel.toLowerCase())
+                })
+                return test2.length > 0
+            }) || []
+            return roles.length > 0
+        })
+    // Sort by main STAT
     } else if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
         list = charactersList.value.filter(character => {
-            let test =  character.roles?.filter(r => r.statToFocus && r.statToFocus.includes(stat)) || []
+            let test =  character.roles?.filter(r => {
+                let hasStat = r.statToFocus && r.statToFocus.includes(stat)
+                if (hasStat) {
+                    surligne.value.push(stat)
+                }
+                return hasStat
+            }) || []
             return test.length > 0
         })
+    // Sort by stat on a specific piece of equipment
     } else if (type && stat) {
         list = charactersList.value.filter(character => {
             let test =  character.roles?.filter(r => r[type] && r[type].includes(stat)) || []
@@ -176,6 +223,7 @@ function clearFilter() {
     filter.type = ''
     filter.stat = ''
     filter.dj = ''
+    filter.set = ''
     surligne.value = []
 }
 
@@ -222,6 +270,12 @@ function itemProps (item) {
 
 watch(() => ({...filter}), (newFilter, oldFilter) =>{
     if (newFilter.dj?.name != oldFilter.dj?.name) {
+        surligne.value = []
+    }
+    if (newFilter.set?.name != oldFilter.set?.name) {
+        surligne.value = []
+    }
+    if (newFilter.stat != oldFilter.stat) {
         surligne.value = []
     }
 })

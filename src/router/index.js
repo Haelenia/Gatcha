@@ -42,9 +42,19 @@ const router = createRouter({
     },
     {
       path: '/sets',
-      name: 'about',
-      component: () => import('../views/SetList.vue')
-    }
+      name: 'sets',
+      component: () => import('../components/set/SetList.vue')
+    },
+    {
+      path: '/set',
+      name: 'set-create',
+      component: () => import('../components/set/EditSet.vue')
+    },
+    {
+      path: '/set/:id',
+      name: 'set-edit',
+      component: () => import('../components/set/EditSet.vue')
+    },
   ]
 })
 
