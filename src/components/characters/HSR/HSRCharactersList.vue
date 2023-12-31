@@ -4,6 +4,7 @@
         <v-btn :to="{ name: 'character-create'}"> + Nouveau</v-btn>
     </div>
     
+    <!-- Filters zone -->
     <div class="filters-bloc">
         <div class="filters-bloc__input">
             <v-text-field label="Pièce de set (torse, bottes...)" v-model="filter.type" class="label"></v-text-field>
@@ -32,10 +33,17 @@
         </div>
     </div>
     
+    <!-- Content Zone -->
     <div class="characters-list">
         <v-card class="mx-auto" v-for="character in filteredList" :key="character.id" >
             <v-toolbar :color="getColor(character?.type?.toLowerCase())">
-                <v-toolbar-title>{{ character.name }}</v-toolbar-title>
+                <v-toolbar-title>
+                    <span>{{ character.name }}</span>
+                    <template v-if="character.star">
+                        <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" :class="character.star == 5 ? 'text-yellow-darken-2' : 'text-deep-purple-lighten-1' "></v-icon>
+                        <v-icon v-if="character.star == 5" icon="mdi-star" :class="'text-yellow-darken-2'"></v-icon>
+                    </template>
+                </v-toolbar-title>
                 <v-btn @click="updateCharacter(character)">
                     <v-icon icon="mdi-pencil"></v-icon>
                 </v-btn>
@@ -109,6 +117,8 @@ import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query, deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "vue-router";
+import { sortByName } from '../../../tools/tools';
+import { HSR_ATTRIBUTES } from '../../../tools/constants'
 
 const db = useFirestore()
 const store = useTestStore()
@@ -132,19 +142,9 @@ let filter = reactive({type:'', stat: '', dj: '', set: ''})
 
 let surligne = ref([])
 
-let getStats = ['TC', 'DC', 'PV','PV%','Vitesse','Rupture','Foudre','Feu','Vent','Physique','Glace', 'Quantique', 'Imaginaire', 'TRE', 'DEF%', 'DEF', 'CAE', 'Soin', 'ATQ', 'ATQ%' ]
+let getStats = HSR_ATTRIBUTES
 
-function sortByName(list) {
-    return list.sort(function (a, b) {
-        if (a.name < b.name) {
-            return -1;
-        }
-        if (a.name > b.name) {
-            return 1;
-        }
-        return 0;
-    }) 
-}
+
 
 
 const filteredList = computed(() => {

@@ -1,13 +1,13 @@
 <template>
     <header class="main-header">
         <nav>
-            <RouterLink v-if="store.getSelectedGame" to="/">Home</RouterLink>
-            <RouterLink v-if="store.getSelectedGame" to="/characters">Liste des personnages</RouterLink>
+            <RouterLink v-if="store.getSelectedGame" to="/"><v-icon icon="mdi-home"></v-icon></RouterLink>
+            <RouterLink v-if="store.getSelectedGame" to="/characters">Personnages</RouterLink>
             <RouterLink v-if="store.getSelectedGame" :to="{ name: 'character-create'}">Ajouter un personnage</RouterLink>
-            <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeons'}">Listes des donjons</RouterLink>
+            <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeons'}">Donjons</RouterLink>
             <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeon-create'}">Ajouter un donjon</RouterLink>
             <RouterLink v-if="store.getSelectedGame"
-                :to="{ name: 'sets'}">{{ `Listes des sets ${store.getSelectedGame === 'Genshin' ? 'd`\'artefacts' : 'de reliques'}`}}</RouterLink>
+                :to="{ name: 'sets'}">{{ `Sets ${store.getSelectedGame === 'Genshin' ? 'd`\'artefacts' : 'de reliques'}`}}</RouterLink>
             <RouterLink v-if="store.getSelectedGame"
                 :to="{ name: 'set-create'}">{{ `Ajouter un set ${store.getSelectedGame === 'Genshin' ? 'd`\'artefacts' : 'de reliques'}`}}</RouterLink>
             <span>{{ store.selectedGame }}</span>
