@@ -9,8 +9,14 @@
 
     <div class="identity hsr-form">
         <v-text-field label="Nom" v-model="currentCharacter.name" class="label"></v-text-field>
-        <v-text-field label="Rôle" v-model="currentCharacter.role" class="label"></v-text-field>
-        <v-text-field label="Type" v-model="currentCharacter.type" class="label"></v-text-field>
+        <v-select label="Voix"
+                :items="getRoles.sort()"
+                v-model="currentCharacter.role"
+        ></v-select>
+        <v-select label="Element"
+                :items="getElement.sort()"
+                v-model="currentCharacter.type"
+        ></v-select>
         <v-radio-group v-model="currentCharacter.star" inline>
             <v-radio :value="5">
                 <template v-slot:label>
@@ -23,6 +29,10 @@
                 </template>
             </v-radio>
         </v-radio-group>
+
+        <!-- For admin only, to see if profile as been updated -->
+        <v-checkbox label="maj OK" v-model="currentCharacter.isUpdated"></v-checkbox>
+
     </div>
 
 
@@ -212,7 +222,7 @@ import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query } from "firebase/firestore";
 import { sortByName } from '../../../tools/tools';
-import { HSR_ATTRIBUTES } from '../../../tools/constants'
+import { HSR_ATTRIBUTES, HSR_ELEMENT, HSR_ROLE } from '../../../tools/constants'
 
 defineEmits(['cancel', 'save'])
 const props = defineProps(['id', 'isEditMode', 'source'])
@@ -233,6 +243,7 @@ const role = {
 }
 
 const currentCharacter = ref({
+    isUpdated: false,
     name: '',
     role: '',
     type: '',
@@ -248,6 +259,8 @@ let q2 = query(setRef, where("game", "==", store.getSelectedGame))
 let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
 
 let getStats = HSR_ATTRIBUTES
+let getRoles = HSR_ROLE
+let getElement = HSR_ELEMENT
 
 function addRole() {
     currentCharacter.value.roles.push(JSON.parse(JSON.stringify(role)))
@@ -271,6 +284,7 @@ function removeElement(type, roleIndex, index) {
 
 function clearForm() {
     currentCharacter.value = {
+        isUpdated: false,
         name: '',
         role: '',
         type: '',

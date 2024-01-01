@@ -51,6 +51,7 @@
                         <v-icon v-if="character.star == 5" icon="mdi-star" :class="'text-yellow-darken-2'"></v-icon>
                     </template>
                 </v-toolbar-title>
+                <v-icon v-if="!character.isUpdated" icon="mdi-alert-circle"></v-icon>
                 <v-btn @click="updateCharacter(character)">
                     <v-icon icon="mdi-pencil"></v-icon>
                 </v-btn>
