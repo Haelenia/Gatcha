@@ -7,34 +7,41 @@
     <!-- Filters zone -->
     <div class="filters-bloc">
         <div class="filters-bloc__input">
-            <v-text-field label="Pièce de set (torse, bottes...)" v-model="filter.type" class="label"></v-text-field>
-            
-            <v-select
-                label="Stat"
-                :items="getStats.sort()"
-                v-model="filter.stat"
-                ></v-select>
-            <v-select
-                label="Donjon"
-                :items="sortByName(djList)"
-                :item-props="itemProps"
-                v-model="filter.dj"
-                ></v-select>
             <v-select
                 label="Relique"
                 :items="sortByName(setList)"
                 :item-props="itemProps"
                 v-model="filter.set"
                 ></v-select>
+            <v-select
+                label="Equipement"
+                :items="getEquipment.sort()"
+                item-title="label"
+                item-value="key"
+                v-model="filter.type"
+                ></v-select>
+            <v-select
+                label="Stat"
+                :items="getStats.sort()"
+                v-model="filter.stat"
+                ></v-select>
+            
+            <v-select
+                label="Donjon"
+                :items="sortByName(djList)"
+                :item-props="itemProps"
+                v-model="filter.dj"
+                ></v-select>
         </div>
         <div class="filters-bloc__action">
             <v-btn @click="clearFilter">Reset</v-btn>
+            <v-btn @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
             
         </div>
     </div>
     
     <!-- Content Zone -->
-    <div class="characters-list">
+    <div class="characters-list" :class="{ 'mini': isReduced }">
         <v-card class="mx-auto" v-for="character in filteredList" :key="character.id" >
             <v-toolbar :color="getColor(character?.type?.toLowerCase())">
                 <v-toolbar-title>
@@ -55,6 +62,44 @@
             <v-list lines="two" v-for="(role, index) in character.roles" :key="index">
                 <v-list-subheader>{{ character.role }}</v-list-subheader>
         
+                
+                <!-- Recommanded Sets of relic -->
+                <v-list-item>
+                    <v-list-item-title>Set d'artefact</v-list-item-title>
+                    <v-list-item-subtitle class="long-item">
+                        <div v-for="(el, index2) in role.set" :key="index2" class="m-right16">
+                            <span :class="{ 'toto' : surligne.includes(el.relic?.name)}">{{ el.relic?.name }}</span>
+                            <span> / </span>
+                            <span :class="{ 'toto' : surligne.includes(el.ornment?.name)}">{{ el.ornment?.name }}</span>
+                        </div>
+                    </v-list-item-subtitle>
+                </v-list-item>
+
+                <!-- Main stat for each equipment -->
+                <v-list-item>
+                    <v-list-item-title>Main stat</v-list-item-title>
+                    <v-list-item-subtitle>
+                        <span class="title m-right16 ">Torse</span>
+                        <span v-for="(el, index2) in role.torse" :key="index2" class="m-right16">{{ el }}</span>
+                    </v-list-item-subtitle>
+
+                    <v-list-item-subtitle>
+                        <span class="title m-right16 ">Bottes</span>
+                        <span v-for="(el, index2) in role.botte" :key="index2" class="m-right16" :class="{ 'toto' : surligne.includes(el)}">{{ el }}</span>
+                    </v-list-item-subtitle>
+
+                    <v-list-item-subtitle>
+                        <span class="title m-right16 ">Sphère planaire</span>
+                        <span v-for="(el, index2) in role.orbe" :key="index2" class="m-right16">{{ el }}</span>
+                    </v-list-item-subtitle>
+
+                    <v-list-item-subtitle>
+                        <span class="title m-right16 ">Corde de liaison</span>
+                        <span v-for="(el, index2) in role.chaine" :key="index2" class="m-right16">{{ el }}</span>
+                    </v-list-item-subtitle>
+                </v-list-item>
+
+                <!-- Substat to focus -->
                 <v-list-item>
                     <v-list-item-title>Substat à privilégier</v-list-item-title>
                     <v-list-item-subtitle >
@@ -62,45 +107,6 @@
                         class="m-right16"
                         :class="{ 'toto' : surligne.includes(el)}"
                         >{{ el }}</span>
-                    </v-list-item-subtitle>
-                </v-list-item>
-        
-                <v-list-item>
-                    <v-list-item-title>Set d'artefact</v-list-item-title>
-                    <v-list-item-subtitle class="long-item">
-                        <div v-for="(el, index2) in role.set" :key="index2" class="m-right16">
-                            <span :class="{ 'toto' : surligne.includes(el.armor)}">{{ el.armor }}</span>
-                            <span> / </span>
-                            <span :class="{ 'toto' : surligne.includes(el.jewel)}">{{ el.jewel }}</span>
-                        </div>
-                    </v-list-item-subtitle>
-                </v-list-item>
-
-                <v-list-item>
-                    <v-list-item-title>Torse</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.torse" :key="index2" class="m-right16">{{ el }}</span>
-                    </v-list-item-subtitle>
-                </v-list-item>
-
-                <v-list-item>
-                    <v-list-item-title>Bottes</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.botte" :key="index2" class="m-right16">{{ el }}</span>
-                    </v-list-item-subtitle>
-                </v-list-item>
-
-                <v-list-item>
-                    <v-list-item-title>Sphère planaire</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.orbe" :key="index2" class="m-right16">{{ el }}</span>
-                    </v-list-item-subtitle>
-                </v-list-item>
-
-                <v-list-item>
-                    <v-list-item-title>Corde de liaison</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.chaine" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
@@ -118,7 +124,7 @@ import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query, deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "vue-router";
 import { sortByName } from '../../../tools/tools';
-import { HSR_ATTRIBUTES } from '../../../tools/constants'
+import { HSR_ATTRIBUTES, HSR_EQUIPMENT } from '../../../tools/constants'
 
 const db = useFirestore()
 const store = useTestStore()
@@ -138,13 +144,13 @@ let setRef = collection(db, 'sets')
 let q2 = query(setRef, where("game", "==", store.getSelectedGame))
 let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
 
-let filter = reactive({type:'', stat: '', dj: '', set: ''})
+let filter = reactive({ type: '', stat: '', dj: '', set: '' })
 
 let surligne = ref([])
 
 let getStats = HSR_ATTRIBUTES
-
-
+let getEquipment = HSR_EQUIPMENT
+let isReduced = ref(false)
 
 
 const filteredList = computed(() => {
@@ -171,19 +177,54 @@ const filteredList = computed(() => {
             }) || []
             return roles.length > 0
         })
+
+    // Set + equipment
+    // Set + stat
+    // Set + stat + equipment
+    // Stat + equipment
+        
+
     // Sort by set of relique
     } else if (set) {
-        let setName = set.name
         list = charactersList.value.filter(character => {
-            let roles =  character.roles?.filter(r => {
-                let test2 =  r.set && r.set.filter(s => {
-                    if (setName.toLowerCase().includes(s.armor.toLowerCase())) {
-                        surligne.value.push(s.armor)
+            let roles =  character.roles?.filter(role => {
+                let test2 =  role?.set?.filter(s => {
+                    const selectedSetId = set.id
+                    if (s?.ornment?.id === selectedSetId || s?.relic?.id === selectedSetId) {
+                        if (s?.relic?.id === selectedSetId) {
+                                surligne.value.push(s.armor)
+                        }
+                        if (s?.ornment?.id === selectedSetId) {
+                            surligne.value.push(s.jewel)
+                        }
+                        
+                        if (stat && type) {
+                            let isOK = false
+                            if (role[type] && role[type].includes(stat)) {
+                                surligne.value.push(stat)
+                                isOK = true
+                            }
+                            if (!role[type] && role.statToFocus.includes(stat)) {
+                                surligne.value.push(stat)
+                                isOK = true
+                            }
+                            return isOK
+
+
+
+                        } else if (stat) {
+
+
+                        } else {
+                            
+                            return true
+                        }
+                    
+                    
+                    
+                    
                     }
-                    if (setName.toLowerCase().includes(s.jewel.toLowerCase())) {
-                        surligne.value.push(s.jewel)
-                    }
-                    return setName.toLowerCase().includes(s.armor.toLowerCase()) || setName.toLowerCase().includes(s.jewel.toLowerCase())
+
                 })
                 return test2.length > 0
             }) || []
@@ -225,6 +266,10 @@ function clearFilter() {
     filter.dj = ''
     filter.set = ''
     surligne.value = []
+}
+
+function reduceCard() {
+    isReduced.value = !isReduced.value
 }
 
 function getColor(element) {

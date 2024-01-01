@@ -60,6 +60,12 @@
         }
 
         .characters-list {
+            &.mini {
+                .v-list-item { display: none;}
+            }
+
+
+
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             column-gap: 16px;
@@ -105,6 +111,17 @@
                     min-height: 50px;
                 }
             }
+        }
+
+        .edit-character-view {
+            .roles-list {
+                &.hsr-form {
+                    .v-card {
+                        //padding: 20px;
+                    }
+                }
+            }
+
         }
 
         .roles-list {

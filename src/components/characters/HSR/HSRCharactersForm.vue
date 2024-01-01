@@ -1,13 +1,13 @@
 <template>
-    <div class="header">
+    <div class="header hsr-form">
         <h1>{{props.isEditMode ? currentCharacter.name : 'Nouveau personnage'}}</h1>
         <div class="actions">
-            <v-btn @click="$emit('cancel')">Annuler</v-btn>
-            <v-btn @click="$emit('save1', currentCharacter)">Enregistrer</v-btn>
+            <v-btn @click="resetElement">Annuler</v-btn>
+            <v-btn @click="$emit('save', currentCharacter)">Enregistrer</v-btn>
         </div>
     </div>
 
-    <div class="identity">
+    <div class="identity hsr-form">
         <v-text-field label="Nom" v-model="currentCharacter.name" class="label"></v-text-field>
         <v-text-field label="Rôle" v-model="currentCharacter.role" class="label"></v-text-field>
         <v-text-field label="Type" v-model="currentCharacter.type" class="label"></v-text-field>
@@ -25,123 +25,211 @@
         </v-radio-group>
     </div>
 
-    <div>
-        <div class="roles-list">
-            <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
-                <!-- Relique Sets -->
-                <div class="set-zone">
-                    <h2>Sets de reliques recommandés</h2>
+
+    <div class="roles-list hsr-form">
+        <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
+            <!-- Relique Sets -->
+            <v-card class="set-zone">
+                <v-card-title>Couple de sets recommandés</v-card-title>
+                <v-card-text>
                     <div v-for="(s, index2) in role.set" :key="index2" class="individual-bloc">
-                        <v-text-field label="Relique des cavernes" v-model="role.set[index2].armor" placeholder="mousquetaire"></v-text-field>
-                        <v-text-field label="Ornement planaire" v-model="role.set[index2].jewel"
+                        <v-text-field v-if="role.set[index2].armor && !role.set[index2].relic" label="Relique des cavernes" v-model="role.set[index2].armor" placeholder="mousquetaire"></v-text-field>
+                        <v-text-field v-if="role.set[index2].jewel && !role.set[index2].ornment" label="Ornement planaire" v-model="role.set[index2].jewel"
                             placeholder="salsotto inerte"></v-text-field>
-                        <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, index2)">
+                        
+                            <v-select
+                                label="Relique des cavernes"
+                                :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
+                                :item-props="itemProps"
+                                v-model="role.set[index2].relic"
+                            ></v-select>
+                            <v-select
+                                label="Ornement planaire"
+                                :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
+                                :item-props="itemProps"
+                                v-model="role.set[index2].ornment"
+                            ></v-select>
+                        
+                        
+                        
+                            <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, index2)">
                             <v-icon icon="mdi-trash-can-outline"></v-icon>
                         </v-btn>
                     </div>
+                </v-card-text>
+                <v-card-actions>
                     <v-btn @click="addElement('set', index)">+ Ajouter un set</v-btn>
-                </div>
+                </v-card-actions>
+                
+            </v-card>
 
-                <div class="m-top32">
-                    <h2> Stat par equipement </h2>
-                    <div class="group">
-                        <!-- Stat for Chest -->
-                        <div class="card short-text">
-                            <div class="group-bloc">
-                                <div v-for="(sa, index2) in role.torse" :key="index2" class="individual-bloc">
-                                    <v-text-field label="torse" v-model="role.torse[index2]" placeholder="PV%"></v-text-field>
+            <v-card class="m-top32">
+                <v-card-title> Stat par equipement </v-card-title>
+                <div class="group">
+                    <!-- Stat for Chest -->
+                    
+                    <div class="card short-text">
+                        <v-card-subtitle>Torse</v-card-subtitle>
+                        <div class="group-bloc">
+                            <div v-for="(sa, index2) in role.torse" :key="index2" class="individual-bloc">
+                                <template v-if="!getStats.includes(role.torse[index2])">
+                                    <v-text-field  label="torse" v-model="role.torse[index2]" placeholder="PV%"></v-text-field>
                                     <v-btn v-if="role.torse.length > 1" @click="removeElement('torse', index, index2)">
                                         <v-icon icon="mdi-trash-can-outline"></v-icon>
                                     </v-btn>
-                                </div>
+                                </template>
+                                
                             </div>
-                            <v-btn @click="addElement('torse', index)">+ Ajouter une stat</v-btn>
                         </div>
-
-                        <!-- Stat for Boots-->
-                        <div class="card short-text">
-                            <div class="group-bloc">
-                                <div v-for="(c, index2) in role.botte" :key="index2" class="individual-bloc">
-                                    <v-text-field label="Botte" v-model="role.botte[index2]" placeholder="PV%"></v-text-field>
-                                    <v-btn v-if="role.botte.length > 1" @click="removeElement('botte', index, index2)">
-                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                    </v-btn>
-                                </div>
-                            </div>
-                            <v-btn @click="addElement('botte', index)">+ Ajouter une stat</v-btn>
-                        </div>
-
-                        <!-- Stat for Sphere -->
-                        <div class="card short-text">
-                            <div class="group-bloc">
-                                <div v-for="(p, index2) in role.orbe" :key="index2" class="individual-bloc">
-                                    <v-text-field label="Sphère planaire" v-model="role.orbe[index2]" placeholder="PV%"></v-text-field>
-                                    <v-btn v-if="role.orbe.length > 1" @click="removeElement('orbe', index, index2)">
-                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                    </v-btn>
-                                </div>
-                            </div>
-                            <v-btn @click="addElement('orbe', index)">+ Ajouter une stat</v-btn>
-                        </div>
-
-                        <!-- Stat for Cord -->
-                        <div class="card short-text">
-                            <div class="group-bloc">
-                                <div v-for="(ch, index2) in role.chaine" :key="index2" class="individual-bloc">
-                                    <v-text-field label="Corde de liaison" v-model="role.chaine[index2]" placeholder="PV%"></v-text-field>
-                                    <v-btn v-if="role.chaine.length > 1" @click="removeElement('chaine', index, index2)">
-                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                    </v-btn>
-                                </div>
-                            </div>
-                            <v-btn @click="addElement('chaine', index)">+ Ajouter une stat</v-btn>
-                        </div>
+                        <!-- <v-btn @click="addElement('torse', index)">+ Ajouter une stat</v-btn> -->
+                        <v-card-text>
+                            <v-select :items="getStats.sort()"
+                                    multiple
+                                    chips
+                                    density="compact"
+                                    v-model="role.torse"
+                        ></v-select>
+                        </v-card-text>
+                        
                     </div>
 
+                    <!-- Stat for Boots-->
+                    <div class="card short-text">
+                        <v-card-subtitle>Bottes</v-card-subtitle>
+                        <div class="group-bloc">
+                            <div v-for="(c, index2) in role.botte" :key="index2" class="individual-bloc">
+                                <v-text-field v-if="!getStats.includes(role.botte[index2])" label="Botte" v-model="role.botte[index2]" placeholder="PV%"></v-text-field>
+                                <v-btn v-if="role.botte.length > 1 && !getStats.includes(role.botte[index2])" @click="removeElement('botte', index, index2)">
+                                    <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                </v-btn>
+                            </div>
+                        </div>
+                        <!-- <v-btn @click="addElement('botte', index)">+ Ajouter une stat</v-btn> -->
+                        <v-card-text>
+                            <v-select :items="getStats.sort()"
+                                    multiple
+                                    chips
+                                    density="compact"
+                                    v-model="role.botte"
+                            ></v-select>
+                        </v-card-text>
+                        
+                    </div>
+
+                    <!-- Stat for Sphere -->
+                    <div class="card short-text">
+                        <v-card-subtitle>Sphère planaire</v-card-subtitle>
+                        <div class="group-bloc">
+                            <div v-for="(p, index2) in role.orbe" :key="index2" class="individual-bloc">
+                                <v-text-field v-if="!getStats.includes(role.orbe[index2])" label="Sphère planaire" v-model="role.orbe[index2]" placeholder="PV%"></v-text-field>
+                                <v-btn v-if="role.orbe.length > 1 && !getStats.includes(role.orbe[index2])" @click="removeElement('orbe', index, index2)">
+                                    <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                </v-btn>
+                            </div>
+                        </div>
+                        <!-- <v-btn @click="addElement('orbe', index)">+ Ajouter une stat</v-btn> -->
+                        <v-card-text>
+                            <v-select :items="getStats.sort()"
+                                        multiple
+                                        chips
+                                        density="compact"
+                                        v-model="role.orbe"
+                            ></v-select>
+                        </v-card-text>
+                    </div>
+
+                    <!-- Stat for Cord -->
+                    <div class="card short-text">
+                        <v-card-subtitle>Corde de liaison</v-card-subtitle>
+                        <div class="group-bloc">
+                            <div v-for="(ch, index2) in role.chaine" :key="index2" class="individual-bloc">
+                                <v-text-field v-if="!getStats.includes(role.chaine[index2])" label="Corde de liaison" v-model="role.chaine[index2]" placeholder="PV%"></v-text-field>
+                                <v-btn v-if="role.chaine.length > 1 && !getStats.includes(role.chaine[index2])" @click="removeElement('chaine', index, index2)">
+                                    <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                </v-btn>
+                            </div>
+                        </div>
+                        <!-- <v-btn @click="addElement('chaine', index)">+ Ajouter une stat</v-btn> -->
+                        <v-card-text>
+                            <v-select :items="getStats.sort()"
+                                    multiple
+                                    chips
+                                    density="compact"
+                                    v-model="role.chaine"
+                            ></v-select>
+                        </v-card-text>
+                        
+                    </div>
                 </div>
+            </v-card>
+            
+
+            <!-- Substat to focus -->
+            <v-card class="card short-text m-top32">
+                <v-card-title>Substat à focus</v-card-title>
+                <v-card-text>
+                    <v-select :items="getStats.sort()"
+                            multiple
+                            chips
+                            density="compact"
+                            v-model="role.statToFocus"
+                    ></v-select>
+                </v-card-text>
+                <div class="group-bloc">
+                    <div v-for="(st, index2) in role.statToFocus" :key="index2" class="individual-bloc">
+                        <v-text-field v-if="!getStats.includes(role.statToFocus[index2])" label="Stat a privilégier" v-model="role.statToFocus[index2]" placeholder="PV%"></v-text-field>
+                        <v-btn v-if="role.statToFocus.length > 1 && !getStats.includes(role.statToFocus[index2])"
+                            @click="removeElement('statToFocus', index, index2)">
+                            <v-icon icon="mdi-trash-can-outline"></v-icon>
+                        </v-btn>
+                    </div>
+                </div>
+                <!-- <v-btn @click="addElement('statToFocus', index)">+ Ajouter une stat</v-btn> -->
+            </v-card>
+
+            <v-card class=" m-top32">
+                <v-card-title>Notes</v-card-title>
+                <v-card-text>
+                    <v-textarea v-model="role.note"></v-textarea>
+                </v-card-text>
                 
-
-                <!-- Substat to focus -->
-                <div class="card short-text m-top32">
-                    <h2>Substat à focus</h2>
-                    <div class="group-bloc">
-                        <div v-for="(st, index2) in role.statToFocus" :key="index2" class="individual-bloc">
-                            <v-text-field label="Stat a privilégier" v-model="role.statToFocus[index2]" placeholder="PV%"></v-text-field>
-                            <v-btn v-if="role.statToFocus.length > 1"
-                                @click="removeElement('statToFocus', index, index2)">
-                                <v-icon icon="mdi-trash-can-outline"></v-icon>
-                            </v-btn>
-                        </div>
-                    </div>
-                    <v-btn @click="addElement('statToFocus', index)">+ Ajouter une stat</v-btn>
-
-                </div>
+            </v-card>
 
 
-                <v-btn v-if="currentCharacter.roles.length > 1" @click="removeRole(index)">
-                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                </v-btn>
-            </div>
-
+            <v-btn v-if="currentCharacter.roles.length > 1" @click="removeRole(index)">
+                <v-icon icon="mdi-trash-can-outline"></v-icon>
+            </v-btn>
         </div>
-        <v-btn @click="addRole">+ Ajouter un rôle</v-btn>
+
     </div>
+    <v-btn @click="addRole">+ Ajouter un rôle</v-btn>
 </template>
 
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from "vue";
+import { useTestStore } from '../../../stores/test'
+import { useFirestore, useCollection } from "vuefire";
+import { collection, where, query } from "firebase/firestore";
+import { sortByName } from '../../../tools/tools';
+import { HSR_ATTRIBUTES } from '../../../tools/constants'
 
-defineEmits(['cancel', 'save1'])
+defineEmits(['cancel', 'save'])
 const props = defineProps(['id', 'isEditMode', 'source'])
 
+
+const db = useFirestore()
+const store = useTestStore()
+
+const initCharacter = ref()
 const role = {
-    set: [{armor: '', jewel: ''}],
+    set: [{armor: '', jewel: '', relic: {}, ornment: {}}],
     statToFocus: [''],
     torse: [''],
     botte: [''],
     orbe: [''],
     chaine: [''],
+    note: ''
 }
 
 const currentCharacter = ref({
@@ -153,6 +241,13 @@ const currentCharacter = ref({
         JSON.parse(JSON.stringify(role))
     ]
 })
+
+// Sets of relique list
+let setRef = collection(db, 'sets')
+let q2 = query(setRef, where("game", "==", store.getSelectedGame))
+let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
+
+let getStats = HSR_ATTRIBUTES
 
 function addRole() {
     currentCharacter.value.roles.push(JSON.parse(JSON.stringify(role)))
@@ -174,11 +269,45 @@ function removeElement(type, roleIndex, index) {
     currentCharacter.value.roles[roleIndex][type].splice(index, 1)
 }
 
+function clearForm() {
+    currentCharacter.value = {
+        name: '',
+        role: '',
+        type: '',
+        star: 4,
+        roles: [
+            JSON.parse(JSON.stringify(role))
+        ]
+    }
+}
+
+function resetElement() {
+    if (props.isEditMode) {
+        currentCharacter.value = initCharacter.value
+    } else {
+        clearForm()
+    }
+}
+
+function itemProps (item) {
+    return {
+        title: item.name,
+        value: {
+            id: item.id,
+            name: item.name,
+            dj: item.dj
+        }
+    }
+}
+
 watch(() => props.source, (characterSource) => {
     currentCharacter.value = {
       ...characterSource,
     }
+    initCharacter.value = JSON.parse(JSON.stringify(currentCharacter.value))
 })
+
+
 
 </script>
 

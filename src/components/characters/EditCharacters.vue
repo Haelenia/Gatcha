@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="edit-character-view">
         <GenshinCharacterForm v-if="store.getSelectedGame === 'Genshin'"
                             :is-edit-mode="isEditMode"
                             :source="characterSource"
@@ -7,8 +7,8 @@
         />
         <HSRCharactersForm v-if="store.getSelectedGame === 'HSR'"
                             :is-edit-mode="isEditMode"
-                            :source="characterSource"
-                            @save1="saveElement"
+                            :source="characterSource"          
+                            @save="saveElement"
         />
     </div>
 </template>

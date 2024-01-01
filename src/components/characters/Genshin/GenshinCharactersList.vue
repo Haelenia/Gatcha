@@ -201,9 +201,7 @@ function itemProps (item) {
 }
 
 watch(() => (filter.dj), (newFilter, oldFilter) => {
-    console.log('watch', newFilter, oldFilter)
     if (newFilter.id != oldFilter.id) {
-        console.log('clean')
         surligne.value = []
     }
 })
