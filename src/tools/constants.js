@@ -1,3 +1,7 @@
+/***************************************************** 
+ *    HSR
+ ****************************************************/
+
 // TRE : taux de rechargement d'énergie, CAE: chance d'appliquer les effets, RAE: Résistance aux effets
 export const HSR_ATTRIBUTES = ['TC', 'DC', 'PV','PV%','Vitesse','Rupture','Foudre','Feu','Vent','Physique','Glace', 'Quantique', 'Imaginaire', 'TRE', 'DEF%', 'DEF', 'CAE', 'Soin', 'ATQ', 'ATQ%', 'RAE' ]
 
@@ -14,7 +18,12 @@ export const HSR_ROLE = ['Abondance', 'Erudition', 'Chasse', 'Nihilité', 'Harmo
 
 export const HSR_ELEMENT = ['Foudre', 'Feu', 'Vent', 'Physique', 'Glace', 'Quantique', 'Imaginaire']
 
-export const GENSHIN_ATTRIBUTES = ['TC', 'DC', 'Hydro', 'Pyro', 'Geo', 'Cryo','Electro','Anemo','PV','PV%','DEF','DEF%','RE', 'ME']
+
+/***************************************************** 
+ *    Genshin
+ ****************************************************/
+
+export const GENSHIN_ATTRIBUTES = ['TC', 'DC', 'Hydro', 'Pyro', 'Geo', 'Cryo','Electro','Anemo','PV','PV%','DEF','DEF%','RE', 'ME', 'Dendro', 'ATQ', 'ATQ%']
 
 export const GENSHIN_EQUIPMENT = [
     { key: 'head', label: 'Fleur' },
@@ -24,11 +33,21 @@ export const GENSHIN_EQUIPMENT = [
     { key: 'orbe', label: 'Diadème' },
 ]
 
-export const GENSHIN_WEAPON = ['Epée a 2 mains', 'Lance', 'Arc', 'Epée a 1 main', 'Catalyseur']
+export const GENSHIN_WEAPON = [
+    { key: '2hSword', label: 'Epée a 2 mains' },
+    { key: 'spear', label: 'Lance' },
+    { key: 'bow', label: 'Arc'},
+    { key: '1hSword', label: 'Epée a 1 main'},
+    { key: 'catalyst', label: 'Catalyseur'}
+]
 
 export const GENSHIN_ELEMENT = ['Hydro', 'Pyro', 'Geo', 'Cryo','Electro','Anemo', 'Dendro']
 
-export const GENSHIN_DJ_TYPE= ['Artefact', 'Matérieux d\'élévation d\'aptitude', 'Matérieux d\'élévation d\'arme']
+export const GENSHIN_DJ_TYPE= [
+    { key: 'artefact', label: 'Artefact' },
+    { key: 'aptitude', label: 'Matérieux d\'élévation d\'aptitude' },
+    { key: 'weapon', label: 'Matérieux d\'élévation d\'arme'}
+]
 
 // Compétence // Ultime // Talent // Ataque normale
 

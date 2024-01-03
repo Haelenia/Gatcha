@@ -68,6 +68,7 @@
                 </v-card-actions>
             </v-card>
 
+            <!-- Equipment Main Stat -->
             <v-card class="m-top32">
                 <v-card-title> Stat par equipement </v-card-title>
                 <div class="group">
@@ -189,15 +190,14 @@
                         </v-btn>
                     </div>
                 </div>
-                <!-- <v-btn @click="addElement('statToFocus', index)">+ Ajouter une stat</v-btn> -->
             </v-card>
 
+            <!-- Note -->
             <v-card class=" m-top32">
                 <v-card-title>Notes</v-card-title>
                 <v-card-text>
                     <v-textarea v-model="role.note"></v-textarea>
                 </v-card-text>
-                
             </v-card>
 
 

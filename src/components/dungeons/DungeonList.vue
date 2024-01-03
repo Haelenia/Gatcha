@@ -5,7 +5,7 @@
     </div>
 
     <div class="characters-list">
-        <v-card class="mx-auto" v-for="dj in filteredList" :key="dj.id" >
+        <v-card class="mx-auto" v-for="dj in filteredList" :key="dj.id">
             <v-toolbar :color="getColor(dj?.region)">
                 <v-toolbar-title>{{ dj.name }}</v-toolbar-title>
                 <v-btn @click="updateDj(dj)">
@@ -17,6 +17,9 @@
             </v-toolbar>
     
             <v-list lines="five">
+                <v-list-item >
+                    <v-list-item-title>{{ dj.typeLabel }}</v-list-item-title>
+                </v-list-item>
                 <v-list-item >
                     <v-list-item-title>Sets disponibles</v-list-item-title>
                     <v-list-item-subtitle>
@@ -34,6 +37,8 @@ import { useTestStore } from '../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query,  deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "vue-router";
+import { sortByName } from "../../tools/tools";
+import { GENSHIN_DJ_TYPE } from "../../tools/constants";
 
 const db = useFirestore()
 const store = useTestStore()
@@ -45,16 +50,14 @@ let q = query(djRef, where("game", "==", store.getSelectedGame))
 let djList = useCollection(q, { ssrKey: 'justToStopWarning' })
 
 const filteredList = computed(() => {
-    let list = djList.value
-    return list && list.sort(function (a, b) {
-        if (a.name < b.name) {
-            return -1;
+    let list = djList?.value?.map(el => {
+        return {
+            ...el,
+            id: el.id,
+            typeLabel: GENSHIN_DJ_TYPE.find(type => type.key === el.type)?.label || '-'
         }
-        if (a.name > b.name) {
-            return 1;
-        }
-        return 0;
     }) || []
+    return sortByName(list) || []
 })
 
 async function deleteDj(dj) {
