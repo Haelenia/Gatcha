@@ -10,6 +10,11 @@
         <div>
             <v-text-field label="Nom" v-model="currentDj.name" class="label"></v-text-field>
             <v-text-field label="Région" v-model="currentDj.region" class="label"></v-text-field>
+            <v-select v-if="store.getSelectedGame === 'Genshin'" 
+                label="Type de donjon"
+                :items="getDjType.sort()"
+                v-model="currentDj.type"
+        ></v-select>
         </div>
         <div>
             <div v-for="(s, index) in currentDj.set" :key="index" class="set-list">
@@ -30,6 +35,7 @@ import { ref, watch, onUnmounted } from 'vue'
 import { useFirestore, useDocument } from "vuefire";
 import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { useRoute, useRouter } from 'vue-router'
+import { GENSHIN_DJ_TYPE } from '../../tools/constants';
 
 const router = useRouter()
 const route = useRoute()
@@ -42,6 +48,9 @@ const initDj = ref()
 
 let docRef = null
 let djSource = null
+
+
+let getDjType = GENSHIN_DJ_TYPE
 
 if (route.params?.id) {
     isEditMode.value = true

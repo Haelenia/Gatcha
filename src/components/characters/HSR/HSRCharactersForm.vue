@@ -32,9 +32,7 @@
 
         <!-- For admin only, to see if profile as been updated -->
         <v-checkbox label="maj OK" v-model="currentCharacter.isUpdated"></v-checkbox>
-
     </div>
-
 
     <div class="roles-list hsr-form">
         <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
@@ -59,9 +57,7 @@
                                 :item-props="itemProps"
                                 v-model="role.set[index2].ornment"
                             ></v-select>
-                        
-                        
-                        
+
                             <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, index2)">
                             <v-icon icon="mdi-trash-can-outline"></v-icon>
                         </v-btn>
@@ -70,7 +66,6 @@
                 <v-card-actions>
                     <v-btn @click="addElement('set', index)">+ Ajouter un set</v-btn>
                 </v-card-actions>
-                
             </v-card>
 
             <v-card class="m-top32">

@@ -17,7 +17,7 @@
             <v-select
                 v-model="currentSet.dj"
                 label="Donjon"
-                :items="djList"
+                :items="sortByName(djList)"
                 item-title="name"
                 item-value="id"
             ></v-select>
@@ -32,6 +32,7 @@ import { ref, watch, onUnmounted, computed } from 'vue'
 import { useFirestore, useDocument, useCollection } from "vuefire";
 import { collection, addDoc, doc, updateDoc, query, where } from "firebase/firestore";
 import { useRoute, useRouter } from 'vue-router'
+import { sortByName } from '../../tools/tools';
 
 const router = useRouter()
 const route = useRoute()
