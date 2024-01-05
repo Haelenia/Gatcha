@@ -32,6 +32,8 @@
                 :item-props="itemProps"
                 v-model="filter.dj"
                 ></v-select>
+
+            <v-checkbox label="owned" v-model="filter.owned"></v-checkbox>
         </div>
         <div class="filters-bloc__action">
             <v-btn @click="clearFilter">Reset</v-btn>
@@ -68,11 +70,18 @@
                 <v-list-item>
                     <v-list-item-title>Set d'artefact</v-list-item-title>
                     <v-list-item-subtitle class="long-item">
-                        <div v-for="(el, index2) in role.set" :key="index2" class="m-right16">
-                            <span :class="{ 'toto' : surligne.includes(el.relic?.name)}">{{ el.relic?.name }}</span>
-                            <span> / </span>
-                            <span :class="{ 'toto' : surligne.includes(el.ornment?.name)}">{{ el.ornment?.name }}</span>
-                        </div>
+                        <div>Relique des cavernes :</div>
+                        <template v-for="(set, setIndex) in getRelics(role.set)" :key="setIndex">
+                            {{ `${setIndex !== 0 ? ' /' : ''}` }}
+                            <span v-for="(el, relIndex) in set.relic" :key="relIndex" :class="{ 'toto' : surligne.includes(el.name)}">
+                                {{ `${set.nbPieces == 4 ? ' 4p ' : ' 2p '}${el.name}` }}
+                            </span>
+                        </template>
+
+                        <div>Ornement planaire : </div>
+                        <span v-for="(el, setIndex) in getOrnments(role.set)" :key="setIndex" :class="{ 'toto' : surligne.includes(el.ornment?.name)}">
+                            {{ `${setIndex !== 0 ? ' / ' : ''}${el.ornment?.name}` }}
+                        </span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
@@ -145,23 +154,26 @@ let setRef = collection(db, 'sets')
 let q2 = query(setRef, where("game", "==", store.getSelectedGame))
 let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
 
-let filter = reactive({ type: '', stat: '', dj: '', set: '' })
+let filter = reactive({ type: '', stat: '', dj: '', set: '', owned: true })
 
 let surligne = ref([])
 
 let getStats = HSR_ATTRIBUTES
 let getEquipment = HSR_EQUIPMENT
-let isReduced = ref(false)
+let isReduced = ref(true)
 
 
 const filteredList = computed(() => {
-    const { type, stat, dj, set } = filter
+    const { type, stat, dj, set, owned } = filter
 
     let list = charactersList.value
+    if (owned) {
+        list = list.filter(el => el.isOwned === true)
+    }
     // Sort by dungeon
     if (dj) {
         const sets = dj.set
-        list = charactersList.value.filter(character => {
+        list = list.filter(character => {
             let roles =  character.roles?.filter(r => {
                 let test2 =  r.set && r.set.filter(s => {
                     return sets.some(el => {
@@ -187,7 +199,7 @@ const filteredList = computed(() => {
 
     // Sort by set of relique
     } else if (set) {
-        list = charactersList.value.filter(character => {
+        list = list.filter(character => {
             let roles =  character.roles?.filter(role => {
                 let test2 =  role?.set?.filter(s => {
                     const selectedSetId = set.id
@@ -233,7 +245,7 @@ const filteredList = computed(() => {
         })
     // Sort by main STAT
     } else if ((stat && (!type || type === 'plume' || type === 'fleur'))) {
-        list = charactersList.value.filter(character => {
+        list = list.filter(character => {
             let test =  character.roles?.filter(r => {
                 let hasStat = r.statToFocus && r.statToFocus.includes(stat)
                 if (hasStat) {
@@ -245,20 +257,12 @@ const filteredList = computed(() => {
         })
     // Sort by stat on a specific piece of equipment
     } else if (type && stat) {
-        list = charactersList.value.filter(character => {
+        list = list.filter(character => {
             let test =  character.roles?.filter(r => r[type] && r[type].includes(stat)) || []
             return test.length > 0
         })
     }
-    return list && list.sort(function (a, b) {
-        if (a.name < b.name) {
-            return -1;
-        }
-        if (a.name > b.name) {
-            return 1;
-        }
-        return 0;
-    }) || []
+    return list && sortByName(list) || []
 })
 
 function clearFilter() {
@@ -298,6 +302,8 @@ function getColor(element) {
 }
 
 async function deleteCharacter(pnj) {
+    // TODO ajouter une popup de confirmation...
+    return
     await deleteDoc(doc(db, 'characters', pnj.id))
     charactersRef = collection(db, 'characters')
     q = query(charactersRef, where("game", "==", store.getSelectedGame))
@@ -314,6 +320,16 @@ function itemProps (item) {
     }
 }
 
+function getRelics(set) {
+    return set?.filter(el => el.type === 'relic') || []
+}
+
+function getOrnments(set) {
+    return set?.filter(el => el.type === 'ornment') || []
+}
+
+
+
 watch(() => ({...filter}), (newFilter, oldFilter) =>{
     if (newFilter.dj?.name != oldFilter.dj?.name) {
         surligne.value = []
@@ -324,6 +340,7 @@ watch(() => ({...filter}), (newFilter, oldFilter) =>{
     if (newFilter.stat != oldFilter.stat) {
         surligne.value = []
     }
+    
 })
 
 /* without vueFire

@@ -32,40 +32,95 @@
 
         <!-- For admin only, to see if profile as been updated -->
         <v-checkbox label="maj OK" v-model="currentCharacter.isUpdated"></v-checkbox>
+        <v-checkbox label="possédé" v-model="currentCharacter.isOwned"></v-checkbox>
     </div>
 
     <div class="roles-list hsr-form">
         <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
-            <!-- Relique Sets -->
-            <v-card class="set-zone">
-                <v-card-title>Couple de sets recommandés</v-card-title>
-                <v-card-text>
-                    <div v-for="(s, index2) in role.set" :key="index2" class="individual-bloc">
-                        <v-text-field v-if="role.set[index2].armor && !role.set[index2].relic" label="Relique des cavernes" v-model="role.set[index2].armor" placeholder="mousquetaire"></v-text-field>
-                        <v-text-field v-if="role.set[index2].jewel && !role.set[index2].ornment" label="Ornement planaire" v-model="role.set[index2].jewel"
-                            placeholder="salsotto inerte"></v-text-field>
-                        
-                            <v-select
-                                label="Relique des cavernes"
-                                :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
-                                :item-props="itemProps"
-                                v-model="role.set[index2].relic"
-                            ></v-select>
-                            <v-select
-                                label="Ornement planaire"
-                                :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
-                                :item-props="itemProps"
-                                v-model="role.set[index2].ornment"
-                            ></v-select>
+            
 
-                            <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, index2)">
-                            <v-icon icon="mdi-trash-can-outline"></v-icon>
-                        </v-btn>
+            <!-- Equipment Sets -->
+            <v-card>
+                <v-card-title>Set de reliques et d'ornements planaires recommandés</v-card-title>
+                <div class="sets-content">
+                    <div class="set-content">
+                        <v-card-subtitle>Reliques des cavernes</v-card-subtitle>
+                        <v-card-text>
+                            <template  v-for="(set, indexRelic) in role.set" :key="indexRelic">
+                                <div v-if="set.type === 'relic'" class="set-line">
+                                    <v-text-field v-if="set.armor && !set.relic" label="Relique des cavernes" v-model="set.armor" placeholder="mousquetaire"></v-text-field>
+                                    <v-radio-group v-model="set.nbPieces" inline>
+                                        <v-radio :value="4">
+                                            <template v-slot:label>
+                                                <span>4 pièces</span>
+                                            </template>
+                                        </v-radio>
+                                        <v-radio :value="2">
+                                            <template v-slot:label>
+                                                <span>2 pièces</span>
+                                            </template>
+                                        </v-radio>
+                                    </v-radio-group>
+                                    <v-select
+                                        label="Relique des cavernes"
+                                        :items="relicSetList"
+                                        :item-props="itemProps"
+                                        v-model="set.relic[0]"
+                                    ></v-select>
+                                    <v-select v-if="set.nbPieces === 2"
+                                        label="Relique des cavernes"
+                                        :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
+                                        :item-props="itemProps"
+                                        v-model="set.relic[1]"
+                                    ></v-select>
+                                    <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow></v-textarea>
+                                    <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, indexRelic, set)">
+                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                    </v-btn>
+                                </div>
+                            </template>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn @click="addElement('set', index, 'relic')">+ Ajouter une relique</v-btn>
+                        </v-card-actions>
                     </div>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn @click="addElement('set', index)">+ Ajouter un set</v-btn>
-                </v-card-actions>
+                    
+                    
+
+                    <div class="set-content">
+                        <v-card-subtitle>Ornement planaire</v-card-subtitle>
+                        <v-card-text>
+                            <template  v-for="(set, indexRelic) in role.set" :key="indexRelic">
+                                <div v-if="set.type === 'ornment'" class="set-line">
+                                    <v-text-field v-if="set.jewel && !role.set[index2].ornment" label="Ornement planaire" v-model="set.jewel"></v-text-field>
+                                    
+                                    <v-select :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
+                                        :item-props="itemProps"
+                                        v-model="set.ornment"
+                                    ></v-select>
+
+                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow></v-textarea>
+
+                                    <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, indexRelic, set)">
+                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                    </v-btn>
+                                </div>
+                            </template>
+
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn @click="addElement('set', index, 'ornment')">+ Ajouter un ornement planaire</v-btn>
+                        </v-card-actions>
+
+                    </div>
+
+                </div>
+
+                
+
+
+
+
             </v-card>
 
             <!-- Equipment Main Stat -->
@@ -212,7 +267,7 @@
 
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query } from "firebase/firestore";
@@ -227,21 +282,25 @@ const db = useFirestore()
 const store = useTestStore()
 
 const initCharacter = ref()
+
+const relicSet = { relic: [],  comment: null, type: 'relic', nbPieces: 4 }
+const ornmentSet = { ornment: null, comment: null, type: 'ornment',  }
 const role = {
-    set: [{armor: '', jewel: '', relic: {}, ornment: {}}],
-    statToFocus: [''],
-    torse: [''],
-    botte: [''],
-    orbe: [''],
-    chaine: [''],
-    note: ''
+    set: [JSON.parse(JSON.stringify(relicSet)), JSON.parse(JSON.stringify(ornmentSet))],
+    statToFocus: null,
+    torse: null,
+    botte: null,
+    orbe: [],
+    chaine: [],
+    note: null
 }
 
 const currentCharacter = ref({
     isUpdated: false,
+    isOwned: false,
     name: '',
-    role: '',
-    type: '',
+    role: null,
+    type: null,
     star: 4,
     roles: [
         JSON.parse(JSON.stringify(role))
@@ -257,6 +316,12 @@ let getStats = HSR_ATTRIBUTES
 let getRoles = HSR_ROLE
 let getElement = HSR_ELEMENT
 
+
+const relicSetList = computed(() => {
+    return sortByName(setList.value.filter(e => e.type === 'Relique des cavernes'))
+})
+
+
 function addRole() {
     currentCharacter.value.roles.push(JSON.parse(JSON.stringify(role)))
 }
@@ -265,15 +330,21 @@ function removeRole(index) {
     currentCharacter.value.roles.splice(index, 1)
 }
 
-function addElement(type, roleIndex) {
+function addElement(type, roleIndex, setType) {
     if (type === 'set') {
-        currentCharacter.value.roles[roleIndex][type].push({armor: '', jewel: ''})
+        if (!setType) {
+            currentCharacter.value.roles[roleIndex][type].push({armor: '', jewel: ''})
+        } else {
+            const set = setType === 'relic' ? relicSet : ornmentSet
+            currentCharacter.value.roles[roleIndex][type].push(JSON.parse(JSON.stringify(set)))
+        }
     } else {
         currentCharacter.value.roles[roleIndex][type].push('')
     }
 }
 
-function removeElement(type, roleIndex, index) {
+function removeElement(type, roleIndex, index, set) {
+    console.log('index, set', index, set)
     currentCharacter.value.roles[roleIndex][type].splice(index, 1)
 }
 

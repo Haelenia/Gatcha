@@ -47,7 +47,7 @@
                 
                 display: flex;
                 gap: 32px;
-                .v-input {
+                .v-input:not(.v-checkbox) {
                     width: 300px;
                 }
             }
@@ -151,6 +151,31 @@
                     }
         
                 }
+
+                .sets-content {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: space-between;
+
+                    .set-content {
+                        min-width: 600px;
+                        .set-line {
+                            display: flex;
+                            gap: 32px;
+                            align-items: flex-start;
+                            .v-radio-group {
+                                max-width: 200px;
+                            }
+                            .v-textarea {
+                                //max-width: 200px;
+                            }
+                        }
+                    }
+                    
+
+                }
+
+                
             }
         
             .group {
