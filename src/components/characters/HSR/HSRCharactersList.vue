@@ -34,6 +34,9 @@
                 ></v-select>
 
             <v-checkbox label="owned" v-model="filter.owned"></v-checkbox>
+            <v-checkbox label="todo" v-model="filter.updated"></v-checkbox>
+            <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
+            <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
         </div>
         <div class="filters-bloc__action">
             <v-btn @click="clearFilter">Reset</v-btn>
@@ -154,7 +157,7 @@ let setRef = collection(db, 'sets')
 let q2 = query(setRef, where("game", "==", store.getSelectedGame))
 let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
 
-let filter = reactive({ type: '', stat: '', dj: '', set: '', owned: true })
+let filter = reactive({ type: null, stat: null, dj: null, set: null, owned: true, fourstars: false, fivestars: false, updated: false  })
 
 let surligne = ref([])
 
@@ -164,11 +167,20 @@ let isReduced = ref(true)
 
 
 const filteredList = computed(() => {
-    const { type, stat, dj, set, owned } = filter
+    const { type, stat, dj, set, owned, fourstars, fivestars, updated } = filter
 
     let list = charactersList.value
     if (owned) {
         list = list.filter(el => el.isOwned === true)
+    }
+    if (fourstars) {
+        list = list.filter(el => el.star == 4)
+    }
+    if (fivestars) {
+        list = list.filter(el => el.star == 5)
+    }
+    if (updated) {
+        list = list.filter(el => !el.isUpdated)
     }
     // Sort by dungeon
     if (dj) {
