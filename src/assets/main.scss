@@ -88,13 +88,15 @@
                     font-size: 1.1rem;
                 }
                 .v-list-item-title {
-                    opacity: 0.60;
+                    opacity: 0.85;
                     margin-bottom: 8px;
                     font-size: 1.05rem;
+                    font-weight: 500;
                 }
                 .v-list-item-subtitle {
-                    opacity: 0.9;
+                    opacity: 0.7;
                     font-size: 1rem;
+                    line-height: 1.2rem;
                     div { margin-bottom: 4px;}
                 }
                 .v-list-item.small {
@@ -221,7 +223,9 @@
     .m-top32 {
         margin-top: 32px;
     }
-    
+    .underline {
+        text-decoration: underline;
+    }
     
 
 

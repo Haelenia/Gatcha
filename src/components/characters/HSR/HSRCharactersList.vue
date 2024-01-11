@@ -10,7 +10,7 @@
             <v-select
                 label="Relique"
                 :items="sortByName(setList)"
-                :item-props="itemProps"
+                :item-props="itemProps1"
                 v-model="filter.set"
                 ></v-select>
             <v-select
@@ -29,12 +29,12 @@
             <v-select
                 label="Donjon"
                 :items="sortByName(djList)"
-                :item-props="itemProps"
+                :item-props="itemProps2"
                 v-model="filter.dj"
                 ></v-select>
 
             <v-checkbox label="owned" v-model="filter.owned"></v-checkbox>
-            <v-checkbox label="todo" v-model="filter.updated"></v-checkbox>
+            <v-checkbox label="todo" v-model="filter.todo"></v-checkbox>
             <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
             <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
         </div>
@@ -73,18 +73,19 @@
                 <v-list-item>
                     <v-list-item-title>Set d'artefact</v-list-item-title>
                     <v-list-item-subtitle class="long-item">
-                        <div>Relique des cavernes :</div>
-                        <template v-for="(set, setIndex) in getRelics(role.set)" :key="setIndex">
-                            {{ `${setIndex !== 0 ? ' /' : ''}` }}
-                            <span v-for="(el, relIndex) in set.relic" :key="relIndex" :class="{ 'toto' : surligne.includes(el.name)}">
-                                {{ `${set.nbPieces == 4 ? ' 4p ' : ' 2p '}${el.name}` }}
-                            </span>
-                        </template>
-
-                        <div>Ornement planaire : </div>
-                        <span v-for="(el, setIndex) in getOrnments(role.set)" :key="setIndex" :class="{ 'toto' : surligne.includes(el.ornment?.name)}">
-                            {{ `${setIndex !== 0 ? ' / ' : ''}${el.ornment?.name}` }}
-                        </span>
+                        <div class="underline">Relique des cavernes :</div>
+                        <ul>
+                            <li  v-for="(set, setIndex) in getRelics(role.set)" :key="setIndex">
+                                <span v-if="set.nbPieces == 4">{{ `4p ${set.relic[0].name}` }}</span>
+                                <span v-if="set.nbPieces == 2">{{ `2p ${set.relic[0].name} / 2p ${set.relic[1].name}` }}</span>
+                            </li>
+                        </ul>
+                        <div class="underline m-top16">Ornement planaire : </div>
+                        <ul>
+                            <li v-for="(el, setIndex) in getOrnments(role.set)" :key="setIndex" :class="{ 'toto' : surligne.includes(el.ornment?.name)}">
+                                {{ el.ornment?.name }}
+                            </li>
+                        </ul>
                     </v-list-item-subtitle>
                 </v-list-item>
 
@@ -92,22 +93,22 @@
                 <v-list-item>
                     <v-list-item-title>Main stat</v-list-item-title>
                     <v-list-item-subtitle>
-                        <span class="title m-right16 ">Torse</span>
+                        <span class="title m-right16 underline">Torse</span>
                         <span v-for="(el, index2) in role.torse" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
 
                     <v-list-item-subtitle>
-                        <span class="title m-right16 ">Bottes</span>
+                        <span class="title m-right16 underline">Bottes</span>
                         <span v-for="(el, index2) in role.botte" :key="index2" class="m-right16" :class="{ 'toto' : surligne.includes(el)}">{{ el }}</span>
                     </v-list-item-subtitle>
 
                     <v-list-item-subtitle>
-                        <span class="title m-right16 ">Sphère planaire</span>
+                        <span class="title m-right16 underline">Sphère planaire</span>
                         <span v-for="(el, index2) in role.orbe" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
 
                     <v-list-item-subtitle>
-                        <span class="title m-right16 ">Corde de liaison</span>
+                        <span class="title m-right16 underline">Corde de liaison</span>
                         <span v-for="(el, index2) in role.chaine" :key="index2" class="m-right16">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
@@ -136,7 +137,7 @@ import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query, deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "vue-router";
-import { sortByName } from '../../../tools/tools';
+import { sortByName, copy } from '../../../tools/tools';
 import { HSR_ATTRIBUTES, HSR_EQUIPMENT } from '../../../tools/constants'
 
 const db = useFirestore()
@@ -157,7 +158,7 @@ let setRef = collection(db, 'sets')
 let q2 = query(setRef, where("game", "==", store.getSelectedGame))
 let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
 
-let filter = reactive({ type: null, stat: null, dj: null, set: null, owned: true, fourstars: false, fivestars: false, updated: false  })
+let filter = reactive({ type: null, stat: null, dj: null, set: null, owned: false, fourstars: false, fivestars: false, todo: true  })
 
 let surligne = ref([])
 
@@ -167,7 +168,7 @@ let isReduced = ref(true)
 
 
 const filteredList = computed(() => {
-    const { type, stat, dj, set, owned, fourstars, fivestars, updated } = filter
+    const { type, stat, dj, set, owned, fourstars, fivestars, todo } = filter
 
     let list = charactersList.value
     if (owned) {
@@ -179,25 +180,30 @@ const filteredList = computed(() => {
     if (fivestars) {
         list = list.filter(el => el.star == 5)
     }
-    if (updated) {
+    if (todo) {
         list = list.filter(el => !el.isUpdated)
     }
     // Sort by dungeon
     if (dj) {
+    console.log('dj', copy(dj))
         const sets = dj.set
+        const chosenDjId = dj.id
+        console.log('sets', sets)
         list = list.filter(character => {
             let roles =  character.roles?.filter(r => {
                 let test2 =  r.set && r.set.filter(s => {
-                    return sets.some(el => {
-                        if (el.toLowerCase().includes(s.armor.toLowerCase())) {
-                            surligne.value.push(s.armor)
-                        }
-                        if (el.toLowerCase().includes(s.jewel.toLowerCase())) {
-                            surligne.value.push(s.jewel)
-                        }
-                        return el.toLowerCase().includes(s.armor.toLowerCase()) || el.toLowerCase().includes(s.jewel.toLowerCase())
-                    }) 
+                    console.log('s', copy(s), chosenDjId)
+                    if (s.relic?.length && s.relic.some(el => el.dj == chosenDjId)) {
+                        surligne.value.push(s.relic)
+                        return true
+                    }
+                    if (s.ornment && s.ornment.dj == chosenDjId) {
+                        console.log('ICI')
+                        surligne.value.push(s.ornment.name)
+                        return true
+                    }
                 })
+                console.log('test2', test2)
                 return test2.length > 0
             }) || []
             return roles.length > 0
@@ -326,9 +332,20 @@ function updateCharacter(pnj) {
     router.push({ name: 'character-edit', params: {id: pnj.id }})
 }
 
-function itemProps (item) {
+function itemProps1 (item) {
     return {
-        title: item.name
+        title: item.name,
+    }
+}
+
+function itemProps2 (item) {
+    return {
+        title: item.name,
+        value: {
+            id: item.id,
+            name: item.name,
+            set: item.set
+        }
     }
 }
 

@@ -21,3 +21,7 @@ export const sortByKey = (list, key='label') => {
         return 0;
     }) 
 }
+
+export const copy = data => {
+    return data ? JSON.parse(JSON.stringify(data)) : data
+}
