@@ -31,13 +31,13 @@
         </v-radio-group>
 
         <!-- For admin only, to see if profile as been updated -->
-        <v-checkbox label="maj OK" v-model="currentCharacter.isUpdated"></v-checkbox>
+        <v-checkbox label="video check" v-model="currentCharacter.isUpdated"></v-checkbox>
+        <v-checkbox label="complet" v-model="currentCharacter.completed"></v-checkbox>
         <v-checkbox label="possédé" v-model="currentCharacter.isOwned"></v-checkbox>
     </div>
 
     <div class="roles-list hsr-form">
         <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
-            
 
             <!-- Equipment Sets -->
             <v-card>
@@ -83,9 +83,7 @@
                         <v-card-actions>
                             <v-btn @click="addElement('set', index, 'relic')">+ Ajouter une relique</v-btn>
                         </v-card-actions>
-                    </div>
-                    
-                    
+                    </div>  
 
                     <div class="set-content">
                         <v-card-subtitle>Ornement planaire</v-card-subtitle>
@@ -111,16 +109,8 @@
                         <v-card-actions>
                             <v-btn @click="addElement('set', index, 'ornment')">+ Ajouter un ornement planaire</v-btn>
                         </v-card-actions>
-
                     </div>
-
                 </div>
-
-                
-
-
-
-
             </v-card>
 
             <!-- Equipment Main Stat -->
@@ -128,7 +118,6 @@
                 <v-card-title> Stat par equipement </v-card-title>
                 <div class="group">
                     <!-- Stat for Chest -->
-                    
                     <div class="card short-text">
                         <v-card-subtitle>Torse</v-card-subtitle>
                         <div class="group-bloc">
@@ -151,7 +140,6 @@
                                     v-model="role.torse"
                         ></v-select>
                         </v-card-text>
-                        
                     </div>
 
                     <!-- Stat for Boots-->
@@ -296,6 +284,7 @@ const role = {
 }
 
 const currentCharacter = ref({
+    completed: false,
     isUpdated: false,
     isOwned: false,
     name: '',
@@ -350,6 +339,7 @@ function removeElement(type, roleIndex, index, set) {
 
 function clearForm() {
     currentCharacter.value = {
+        completed: false,
         isUpdated: false,
         name: '',
         role: '',

@@ -168,16 +168,25 @@
                             .v-radio-group {
                                 max-width: 200px;
                             }
-                            .v-textarea {
-                                //max-width: 200px;
+                            .v-textarea--no-resize {
+                                min-width: 250px;
+                            }
+                            .v-input:not(.v-radio-group):not(.v-textarea--no-resize) {
+                                min-width: 350px;
                             }
                         }
                     }
                     
 
                 }
+            }
 
-                
+            .genshin-stat-zone {
+                display: flex;
+                gap: 32px;
+                .v-card {
+                    flex-grow: 2;
+                }
             }
         
             .group {

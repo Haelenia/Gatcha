@@ -46,7 +46,7 @@ const db = useFirestore();
 const store = useTestStore()
 
 let isEditMode = ref(false)
-const currentDj = ref({ name: '', region: '', set: [''] })
+const currentDj = ref({ name: '', region: '', set: [] })
 const initDj = ref()
 
 let docRef = null
