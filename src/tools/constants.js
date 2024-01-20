@@ -49,6 +49,11 @@ export const GENSHIN_DJ_TYPE= [
     { key: 'weapon', label: 'Matérieux d\'élévation d\'arme'}
 ]
 
+export const MATERIALS = [
+    { key: '', label: 'Méka horlogoïdes', type: 'classic'},
+    { key: '', label: 'Méka horlogoïdes', type: 'boss'}
+]
+
 // Compétence // Ultime // Talent // Ataque normale
 
 // Compétence // Ultime // Attaque normale

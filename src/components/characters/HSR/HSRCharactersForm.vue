@@ -61,18 +61,21 @@
                                             </template>
                                         </v-radio>
                                     </v-radio-group>
-                                    <v-select
-                                        label="Relique des cavernes"
-                                        :items="relicSetList"
-                                        :item-props="itemProps"
-                                        v-model="set.relic[0]"
-                                    ></v-select>
-                                    <v-select v-if="set.nbPieces === 2"
-                                        label="Relique des cavernes"
-                                        :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
-                                        :item-props="itemProps"
-                                        v-model="set.relic[1]"
-                                    ></v-select>
+                                    <div>
+                                        <v-select
+                                            label="Relique des cavernes"
+                                            :items="relicSetList"
+                                            :item-props="itemProps"
+                                            v-model="set.relic[0]"
+                                        ></v-select>
+                                        <v-select v-if="set.nbPieces === 2"
+                                            label="Relique des cavernes"
+                                            :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
+                                            :item-props="itemProps"
+                                            v-model="set.relic[1]"
+                                        ></v-select>
+                                    </div>
+                                    
                                     <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow></v-textarea>
                                     <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, indexRelic, set)">
                                         <v-icon icon="mdi-trash-can-outline"></v-icon>
@@ -235,13 +238,29 @@
                 </div>
             </v-card>
 
-            <!-- Note -->
-            <v-card class=" m-top32">
-                <v-card-title>Notes</v-card-title>
-                <v-card-text>
-                    <v-textarea v-model="role.note"></v-textarea>
-                </v-card-text>
-            </v-card>
+            <div class="multiple-card-zone m-top32">
+                <!-- Weapons -->
+                <v-card>
+                    <v-card-title>Armes</v-card-title>
+                    <v-card-text>
+                        <v-textarea v-model="role.weapons"  auto-grow></v-textarea>
+                    </v-card-text>
+                </v-card>
+                <!-- Team -->
+                <v-card>
+                    <v-card-title>Team</v-card-title>
+                    <v-card-text>
+                        <v-textarea v-model="role.team"  auto-grow></v-textarea>
+                    </v-card-text>
+                </v-card>
+                <!-- Notes -->
+                <v-card>
+                    <v-card-title>Notes</v-card-title>
+                    <v-card-text>
+                        <v-textarea v-model="role.note" auto-grow></v-textarea>
+                    </v-card-text>
+                </v-card>
+            </div>
 
 
             <v-btn v-if="currentCharacter.roles.length > 1" @click="removeRole(index)">
@@ -280,7 +299,9 @@ const role = {
     botte: null,
     orbe: [],
     chaine: [],
-    note: null
+    note: null,
+    team:null,
+    weapon: null
 }
 
 const currentCharacter = ref({
@@ -390,14 +411,7 @@ watch(() => props.source, (characterSource) => {
 <style scoped lang="scss">
 
 
-.identity {
-    display: flex;
-    gap: 32px;
 
-    .v-input {
-        max-width: 400px;
-    }
-}
 
 
 .label {

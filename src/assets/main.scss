@@ -4,6 +4,7 @@
     padding-top: 0;
     min-height: 100vh;
     color: white;
+    
 
     header.main-header {
         margin-left: -2rem;;
@@ -32,6 +33,25 @@
 
             .v-btn {
                 margin-left: 16px;
+            }
+
+            .identity {
+                display: flex;
+                gap: 32px;
+                align-items: center;
+            
+                .v-input {
+                    max-width: 400px;
+                }
+            }
+        }
+        .identity {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        
+            .v-input {
+                max-width: 400px;
             }
         }
     
@@ -158,9 +178,11 @@
                     display: flex;
                     flex-wrap: wrap;
                     justify-content: space-between;
+                    gap: 32px;
 
                     .set-content {
                         min-width: 600px;
+                        //max-width: 900px;
                         .set-line {
                             display: flex;
                             gap: 32px;
@@ -169,10 +191,10 @@
                                 max-width: 200px;
                             }
                             .v-textarea--no-resize {
-                                min-width: 250px;
+                                min-width: 230px;
                             }
                             .v-input:not(.v-radio-group):not(.v-textarea--no-resize) {
-                                min-width: 350px;
+                                min-width: 320px;
                             }
                         }
                     }
@@ -181,7 +203,7 @@
                 }
             }
 
-            .genshin-stat-zone {
+            .multiple-card-zone {
                 display: flex;
                 gap: 32px;
                 .v-card {

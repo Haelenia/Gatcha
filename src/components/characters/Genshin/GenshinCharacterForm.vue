@@ -44,7 +44,7 @@
             <v-text-field label="Nom du rôle" v-model="role.name" placeholder="nom du rôle"></v-text-field>
 
             <!-- Equipment Sets -->
-            <div class="sets-content">
+            <div class="sets-content multiple-card-zone">
                 <v-card class="set-content">
                     <v-card-title>Sets à privilégier</v-card-title>
                     <v-card-text>
@@ -62,16 +62,19 @@
                                         </template>
                                     </v-radio>
                                 </v-radio-group>
-                                <v-select v-if="set.data"
-                                    :items="setList.sort()"
-                                    :item-props="itemProps"
-                                    v-model="set.data[0]"
-                                ></v-select>
-                                <v-select v-if="set.nbPieces === 2 && set.data"
-                                    :items="setList.sort()"
-                                    :item-props="itemProps"
-                                    v-model="set.data[1]"
-                                ></v-select>
+                                <div>
+                                    <v-select v-if="set.data"
+                                        :items="setList.sort()"
+                                        :item-props="itemProps"
+                                        v-model="set.data[0]"
+                                    ></v-select>
+                                    <v-select v-if="set.nbPieces === 2 && set.data"
+                                        :items="setList.sort()"
+                                        :item-props="itemProps"
+                                        v-model="set.data[1]"
+                                    ></v-select>
+                                </div>
+                                
                                 <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow></v-textarea>
                                 <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, indexSet, set)">
                                     <v-icon icon="mdi-trash-can-outline"></v-icon>
@@ -83,11 +86,17 @@
                         <v-btn @click="addElement('set', index)">+ Ajouter une relique</v-btn>
                     </v-card-actions>
                 </v-card>
+                <!-- Weapons -->
+                <v-card>
+                    <v-card-title>Armes</v-card-title>
+                    <v-card-text>
+                        <v-textarea v-model="role.weapons"  auto-grow></v-textarea>
+                    </v-card-text>
+                </v-card>
             </div>
             <!-- TODO A supprimer -->
             <v-card v-if="role.set.length" class="set-zone" >
                 <v-card-title>Sets à privilégier</v-card-title>
-                <!-- TODO ajouter la notion de 4piece ou 2 piece pour les set d'arté -->
                 <v-card-text>
                     <v-select 
                                 multiple
@@ -122,14 +131,13 @@
                 </v-card-actions>
             </v-card>
 
-            <div class="genshin-stat-zone">
+            <div class="multiple-card-zone">
                 <!-- Equipment Main Stat -->
                 <v-card class="m-top32">
                     <v-card-title> Stat par equipement </v-card-title>
                     <div class="group">
                         <!-- Stat for Hourglass -->
                         <div class="card short-text">
-                            <v-card-subtitle>Sablier</v-card-subtitle>
                             <div class="group-bloc">
                                 <div v-for="(sa, index2) in role.sablier" :key="index2" class="individual-bloc">
                                     <template v-if="!getStats.includes(role.sablier[index2])">
@@ -143,10 +151,11 @@
                             </div>
                             
                             <v-card-text>
-                                <v-select :items="getStats"
+                                <v-select label="Sablier"
+                                        :items="getStats"
                                         multiple
                                         chips
-                                        density="compact"
+                                        clearable
                                         v-model="role.sablier"
                             ></v-select>
                             </v-card-text>
@@ -154,7 +163,6 @@
 
                         <!-- Stat for Cup -->
                         <div class="card short-text">
-                            <v-card-subtitle>Coupe</v-card-subtitle>
                             <div class="group-bloc">
                                 <div v-for="(c, index2) in role.coupe" :key="index2" class="individual-bloc">
                                     <template v-if="!getStats.includes(role.coupe[index2])">
@@ -167,10 +175,11 @@
                             </div>
                             
                             <v-card-text>
-                                <v-select :items="getStats"
+                                <v-select label="Coupe" 
+                                        :items="getStats"
                                         multiple
                                         chips
-                                        density="compact"
+                                        clearable
                                         v-model="role.coupe"
                                 ></v-select>
                             </v-card-text>
@@ -179,7 +188,6 @@
 
                         <!-- Stat for Crown -->
                         <div class="card short-text">
-                            <v-card-subtitle>Diadème</v-card-subtitle>
                             <div class="group-bloc">
                                 <div v-for="(p, index2) in role.couronne" :key="index2" class="individual-bloc">
                                     <template v-if="!getStats.includes(role.couronne[index2])">
@@ -192,10 +200,12 @@
                             </div>
                             
                             <v-card-text>
-                                <v-select :items="getStats"
+                                <v-select 
+                                    label="Diadème"
+                                    :items="getStats"
                                             multiple
                                             chips
-                                            density="compact"
+                                            clearable
                                             v-model="role.couronne"
                                 ></v-select>
                             </v-card-text>
@@ -206,33 +216,42 @@
                 <!-- Substat to focus -->
                 <v-card class="card short-text m-top32">
                     <v-card-title>Substat à focus</v-card-title>
-                    <v-card-text>
-                        <v-select :items="getStats"
+                    <v-card-text class="m-top16">
+                        <div class="group-bloc">
+                            <div v-for="(st, index2) in role.statToFocus" :key="index2" class="individual-bloc">
+                                <v-text-field v-if="!getStats.includes(role.statToFocus[index2])" label="Stat a privilégier" v-model="role.statToFocus[index2]" placeholder="PV%"></v-text-field>
+                                <v-btn v-if="role.statToFocus.length > 1 && !getStats.includes(role.statToFocus[index2])"
+                                    @click="removeElement('statToFocus', index, index2)">
+                                    <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                </v-btn>
+                            </div>
+                        </div>
+                        <v-select label="Par ordre de priorité"
+                                :items="getStats"
                                 multiple
                                 chips
-                                density="compact"
+                                clearable
                                 v-model="role.statToFocus"
                         ></v-select>
                     </v-card-text>
-                    <div class="group-bloc">
-                        <div v-for="(st, index2) in role.statToFocus" :key="index2" class="individual-bloc">
-                            <v-text-field v-if="!getStats.includes(role.statToFocus[index2])" label="Stat a privilégier" v-model="role.statToFocus[index2]" placeholder="PV%"></v-text-field>
-                            <v-btn v-if="role.statToFocus.length > 1 && !getStats.includes(role.statToFocus[index2])"
-                                @click="removeElement('statToFocus', index, index2)">
-                                <v-icon icon="mdi-trash-can-outline"></v-icon>
-                            </v-btn>
-                        </div>
-                    </div>
+                    
                 </v-card>
 
             </div>
             
-            <div class="genshin-stat-zone m-top32">
+            <div class="multiple-card-zone m-top32">
                 <!-- Aptitude -->
                 <v-card>
                     <v-card-title>Aptitudes</v-card-title>
                     <v-card-text>
                         <v-text-field label="ordre de priorité" v-model="role.aptitude.priority"></v-text-field>
+                        <v-select
+                                label="Matériaux"
+                                multiple
+                                chips
+                                :items="['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']"
+                                v-model="role.aptitude.materials"
+                    ></v-select>
                         <v-select
                                 label="Jours de farm"
                                 multiple
@@ -286,7 +305,7 @@ const role = {
     coupe: [],
     couronne: [],
     weapon: [],
-    aptitude: { priority: null, days: null }
+    aptitude: { priority: null, days: null, materials: null }
 }
 
 const currentCharacter = ref({
@@ -406,14 +425,7 @@ watch(() => props.source, (characterSource) => {
 <style scoped lang="scss">
 
 
-.identity {
-    display: flex;
-    gap: 32px;
 
-    .v-input {
-        max-width: 400px;
-    }
-}
 
 .label {
     width: 50%;
