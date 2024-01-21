@@ -368,7 +368,6 @@ watch(() => props.source, (characterSource) => {
                 ...r,
                 set: formattedSet
             })
-            console.log('role', role, r)
         })
         currentCharacter.value = {
             ...copy(currentCharacter.value),
@@ -380,7 +379,6 @@ watch(() => props.source, (characterSource) => {
             ...copy(currentCharacter.value)
         }
     }
-    console.log('currentCharacter', copy(currentCharacter.value))
     initCharacter.value = JSON.parse(JSON.stringify(currentCharacter.value))
 })
 

@@ -17,7 +17,6 @@
     }
 
     main {
-
         .header {
             padding: 16px;
             display: flex;
@@ -86,6 +85,12 @@
         .characters-list {
             &.mini {
                 .v-list-item { display: none;}
+            }
+
+            .match-filter {
+                background-color: rgb(147, 63, 202);
+                font-weight: bold;
+                padding: 0 8px;
             }
 
 
@@ -245,6 +250,10 @@
             }
         }
     
+    }
+
+    footer {
+        margin-top: 16px;
     }
 
     .m-right16 {

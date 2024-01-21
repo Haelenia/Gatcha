@@ -54,7 +54,6 @@ async function createUser() {
         // Signed up 
         const user = userCredential.user;
         store.setCurrentUser(user)
-        console.log(user)
     })
     .catch((error) => {
         console.log('error on user creation')
@@ -75,7 +74,6 @@ async function signInToFirebase() {
       const user = userCredential.user
       store.setCurrentUser(user)
       router.push({ name: 'home'})
-      console.log('sign in', user)
       // ...
     })
     .catch((error) => {

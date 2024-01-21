@@ -31,6 +31,10 @@
             </template>
         </Suspense>
     </v-main>
+
+    <v-footer>
+        Made with love & hairballs by HaeLovesCats
+    </v-footer>
   </v-app>
 </template>
 

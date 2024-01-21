@@ -7,14 +7,14 @@
     <!-- Filters zone -->
     <div class="filters-bloc">
         <v-select
-            label="Relique"
+            label="Reliques et ornements"
             :items="sortByName(setList)"
             :item-props="itemProps1"
             v-model="filter.set"
             clearable
             ></v-select>
         <v-select
-            label="Equipement"
+            label="Type d'équipement"
             :items="getEquipment.sort()"
             item-title="label"
             item-value="key"
@@ -78,13 +78,16 @@
                         <div class="underline">Relique des cavernes :</div>
                         <ul>
                             <li v-for="(set, setIndex) in getRelics(role.set)" :key="setIndex">
-                                <span v-if="set.nbPieces == 4 && set.relic && set.relic[0]" :class="{ 'toto' : surligne.includes(set.relic[0].name)}">{{ `4p ${set.relic[0].name}` }}</span>
-                                <span v-if="set.nbPieces == 2 && set.relic && set.relic[0]" :class="{ 'toto' : surligne.includes(set.relic[0].name) || surligne.includes(set.relic[1].name)}">{{ `2p ${set.relic[0].name} / 2p ${set.relic[1].name}` }}</span>
+                                <span v-if="set.nbPieces == 4 && set.relic && set.relic[0]" :class="{ 'match-filter' : surligne.includes(set.relic[0].name)}">{{ `4p ${set.relic[0].name}` }}</span>
+                                <span v-if="set.nbPieces == 2 && set.relic && set.relic[0]">
+                                    <span :class="{ 'match-filter' : surligne.includes(set.relic[0].name)}">{{ `2p ${set.relic[0].name} / ` }}</span>
+                                    <span :class="{ 'match-filter' : surligne.includes(set.relic[1].name)}">{{ `2p ${set.relic[1].name}` }}</span>
+                                </span>
                             </li>
                         </ul>
                         <div class="underline m-top16">Ornement planaire : </div>
                         <ul>
-                            <li v-for="(el, setIndex) in getOrnments(role.set)" :key="setIndex" :class="{ 'toto' : surligne.includes(el.ornment?.name)}">
+                            <li v-for="(el, setIndex) in getOrnments(role.set)" :key="setIndex" :class="{ 'match-filter' : surligne.includes(el.ornment?.name)}">
                                 {{ el.ornment?.name }}
                             </li>
                         </ul>
@@ -96,22 +99,22 @@
                     <v-list-item-title>Main stat</v-list-item-title>
                     <v-list-item-subtitle>
                         <span class="title m-right16 underline">Torse</span>
-                        <span v-for="(el, index2) in role.torse" :key="index2" class="m-right16" :class="{ 'toto' : surligne.includes(el)}">{{ el }}</span>
+                        <span v-for="(el, index2) in role.torse" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
                     </v-list-item-subtitle>
 
                     <v-list-item-subtitle>
                         <span class="title m-right16 underline">Bottes</span>
-                        <span v-for="(el, index2) in role.botte" :key="index2" class="m-right16" :class="{ 'toto' : surligne.includes(el)}">{{ el }}</span>
+                        <span v-for="(el, index2) in role.botte" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
                     </v-list-item-subtitle>
 
                     <v-list-item-subtitle>
                         <span class="title m-right16 underline">Sphère planaire</span>
-                        <span v-for="(el, index2) in role.orbe" :key="index2" class="m-right16" :class="{ 'toto' : surligne.includes(el)}">{{ el }}</span>
+                        <span v-for="(el, index2) in role.orbe" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
                     </v-list-item-subtitle>
 
                     <v-list-item-subtitle>
                         <span class="title m-right16 underline">Corde de liaison</span>
-                        <span v-for="(el, index2) in role.chaine" :key="index2" class="m-right16" :class="{ 'toto' : surligne.includes(el)}">{{ el }}</span>
+                        <span v-for="(el, index2) in role.chaine" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
@@ -121,7 +124,7 @@
                     <v-list-item-subtitle >
                         <span v-for="(el, index2) in role.statToFocus" :key="index2"
                         class="m-right16"
-                        :class="{ 'toto' : surligne.includes(el)}"
+                        :class="{ 'match-filter' : surligne.includes(el)}"
                         >{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
@@ -134,17 +137,15 @@
   </template>
 
 <script setup>
-import { ref, computed, watch, reactive } from "vue";
+import { ref, computed, watch, reactive } from "vue"
 import { useTestStore } from '../../../stores/test'
-import { useFirestore, useCollection, useCurrentUser } from "vuefire";
-import { collection, where, query, deleteDoc, doc } from "firebase/firestore";
-import { useRouter } from "vue-router";
-import { sortByName, copy } from '../../../tools/tools';
+import { useFirestore, useCollection, useCurrentUser } from "vuefire"
+import { collection, where, query, deleteDoc, doc } from "firebase/firestore"
+import { sortByName, copy } from '../../../tools/tools'
 import { HSR_ATTRIBUTES, HSR_EQUIPMENT } from '../../../tools/constants'
 
 const db = useFirestore()
 const store = useTestStore()
-const router = useRouter()
 const connectedUser = useCurrentUser()
 
 let charactersRef = collection(db, 'characters')
@@ -199,8 +200,11 @@ const filteredList = computed(() => {
         list = list.filter(character => {
             let roles =  character.roles?.filter(r => {
                 let test2 =  r.set && r.set.filter(s => {
-                    if (s.relic?.length && s.relic.some(el => el.dj == chosenDjId)) {
-                        surligne.value.push(s.relic)
+                    let matchedRelic = s.relic?.length && s.relic.filter(el => el.dj == chosenDjId) || []
+                    if (matchedRelic.length) {
+                        matchedRelic.forEach(rel => {
+                            surligne.value.push(rel.name)
+                        })
                         return true
                     }
                     if (s.ornment && s.ornment.dj == chosenDjId) {
@@ -220,12 +224,14 @@ const filteredList = computed(() => {
             let roles =  character.roles?.filter(role => {
                 let test2 =  role?.set?.filter(s => {
                     const isOrnment = s?.ornment?.id === selectedSetId
-                    const isRelic = s.relic?.length && s?.relic?.some(el => el.id === selectedSetId) || false
+                    let matchedRelic = s.relic?.length && s.relic.filter(el => el.id === selectedSetId) || []
                     if (isOrnment) {
                         surligne.value.push(s.ornment.name)
                         return true
-                    } else if (isRelic) {
-                        surligne.value.push(isRelic.name)
+                    } else if (matchedRelic.length) {
+                        matchedRelic.forEach(rel => {
+                            surligne.value.push(rel.name)
+                        })
                         return true
                     }
                 })
@@ -238,15 +244,12 @@ const filteredList = computed(() => {
     if (stat && type) {
         list = list.filter(character => {
             let roles =  character.roles?.filter(role => {
-                console.log('role', copy(role))
                 let isOK = false
                 if (role[type] && role[type].includes(stat)) {
-                    console.log('1')
                     surligne.value.push(stat)
                     isOK = true
                 }
                 if (!role[type] && role.statToFocus.includes(stat)) {
-                    console.log('2')
                     surligne.value.push(stat)
                     isOK = true
                 }
@@ -278,10 +281,6 @@ const filteredList = computed(() => {
 })
 
 function clearFilter() {
-    //filter.type = ''
-    //filter.stat = ''
-    //filter.dj = ''
-    //filter.set = ''
     surligne.value = []
     Object.keys(filter).forEach(key => {
          filter[key] = copy(defaultFilter)[key]
@@ -383,11 +382,6 @@ onMounted(async () => {
 <style lang="scss">
 #app main .characters-list {
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    
-    .toto {
-        background-color: rgb(147, 63, 202);
-        font-weight: bold;
-        padding: 16px;
-    }
+
 }
 </style>

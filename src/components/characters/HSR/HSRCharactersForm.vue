@@ -321,7 +321,6 @@ function addElement(type, roleIndex, setType) {
 }
 
 function removeElement(type, roleIndex, index, set) {
-    console.log('index, set', index, set)
     currentCharacter.value.roles[roleIndex][type].splice(index, 1)
 }
 
