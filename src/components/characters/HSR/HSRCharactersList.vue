@@ -171,7 +171,7 @@ let getEquipment = HSR_EQUIPMENT
 let isReduced = ref(false)
 
 const isLoggedIn = computed(() => {
-    return connectedUser?.email
+    return connectedUser?.value?.email
 })
 
 const filteredList = computed(() => {

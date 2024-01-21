@@ -292,7 +292,7 @@ let getRoles = HSR_ROLE
 let getElement = HSR_ELEMENT
 
 const isLoggedIn = computed(() => {
-    return connectedUser?.email
+    return connectedUser?.value?.email
 })
 
 const relicSetList = computed(() => {

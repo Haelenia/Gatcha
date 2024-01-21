@@ -51,7 +51,7 @@ let q = query(djRef, where("game", "==", store.getSelectedGame))
 let djList = useCollection(q, { ssrKey: 'justToStopWarning' })
 
 const isLoggedIn = computed(() => {
-    return connectedUser?.email
+    return connectedUser?.value?.email
 })
 
 const filteredList = computed(() => {

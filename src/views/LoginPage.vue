@@ -31,6 +31,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useFirebaseAuth } from 'vuefire'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { useAuthStore } from '../stores/auth'
@@ -42,6 +43,7 @@ const userInput = ref({
 })
 
 let store = useAuthStore()
+const router = useRouter()
 
 const auth = useFirebaseAuth()
 
@@ -72,13 +74,14 @@ async function signInToFirebase() {
       // Signed in
       const user = userCredential.user
       store.setCurrentUser(user)
+      router.push({ name: 'home'})
       console.log('sign in', user)
       // ...
     })
     .catch((error) => {
         console.log('error on login', error)
-      const errorCode = error.code
-      const errorMessage = error.message
+        const errorCode = error.code
+        const errorMessage = error.message
     })
 }
 

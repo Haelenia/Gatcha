@@ -15,7 +15,7 @@
                 :to="{ name: 'set-create'}">{{ `Ajouter un set ${store.getSelectedGame === 'Genshin' ? 'd\'artefacts' : 'de reliques'}`}}</v-btn>
             
 
-            <v-btn  v-if="isLoggedIn" @click="goToList('Genshin')">Genshin</v-btn>
+            <v-btn v-if="isLoggedIn" @click="goToList('Genshin')">Genshin</v-btn>
             <v-btn v-if="isLoggedIn"  @click="goToList('HSR')">HSR</v-btn>
 
             <v-btn v-if="isLoggedIn" @click="signOutOfFirebase">Sign Out</v-btn>
@@ -61,7 +61,7 @@ function goToList(game) {
 }
 
 const isLoggedIn = computed(() => {
-    return user?.email
+    return user?.value?.email || false
 })
 
 async function signOutOfFirebase() {
