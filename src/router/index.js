@@ -55,6 +55,11 @@ const router = createRouter({
       name: 'set-edit',
       component: () => import('../components/set/EditSet.vue')
     },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/LoginPage.vue'),
+    },
   ]
 })
 

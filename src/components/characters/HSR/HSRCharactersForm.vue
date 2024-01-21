@@ -1,23 +1,27 @@
 <template>
     <div class="header hsr-form">
         <h1>{{props.isEditMode ? currentCharacter.name : 'Nouveau personnage'}}</h1>
-        <div class="actions">
+        <div v-if="isLoggedIn" class="actions">
             <v-btn @click="resetElement">Annuler</v-btn>
             <v-btn @click="$emit('save', currentCharacter)">Enregistrer</v-btn>
         </div>
     </div>
 
     <div class="identity hsr-form">
-        <v-text-field label="Nom" v-model="currentCharacter.name" class="label"></v-text-field>
+        <v-text-field label="Nom" v-model="currentCharacter.name" class="label" :disabled="!isLoggedIn"></v-text-field>
         <v-select label="Voix"
+                clearable
                 :items="getRoles.sort()"
                 v-model="currentCharacter.role"
+                :disabled="!isLoggedIn"
         ></v-select>
         <v-select label="Element"
+                clearable
                 :items="getElement.sort()"
                 v-model="currentCharacter.type"
+                :disabled="!isLoggedIn"
         ></v-select>
-        <v-radio-group v-model="currentCharacter.star" inline>
+        <v-radio-group v-model="currentCharacter.star" inline :disabled="!isLoggedIn">
             <v-radio :value="5">
                 <template v-slot:label>
                     <v-icon icon="mdi-star" class="text-yellow-darken-2"></v-icon>
@@ -31,9 +35,9 @@
         </v-radio-group>
 
         <!-- For admin only, to see if profile as been updated -->
-        <v-checkbox label="video check" v-model="currentCharacter.isUpdated"></v-checkbox>
-        <v-checkbox label="complet" v-model="currentCharacter.completed"></v-checkbox>
-        <v-checkbox label="possédé" v-model="currentCharacter.isOwned"></v-checkbox>
+        <v-checkbox label="video check" v-model="currentCharacter.isUpdated" :disabled="!isLoggedIn"></v-checkbox>
+        <v-checkbox label="complet" v-model="currentCharacter.completed" :disabled="!isLoggedIn"></v-checkbox>
+        <v-checkbox label="possédé" v-model="currentCharacter.isOwned" :disabled="!isLoggedIn"></v-checkbox>
     </div>
 
     <div class="roles-list hsr-form">
@@ -48,8 +52,7 @@
                         <v-card-text>
                             <template  v-for="(set, indexRelic) in role.set" :key="indexRelic">
                                 <div v-if="set.type === 'relic'" class="set-line">
-                                    <v-text-field v-if="set.armor && !set.relic" label="Relique des cavernes" v-model="set.armor" placeholder="mousquetaire"></v-text-field>
-                                    <v-radio-group v-model="set.nbPieces" inline>
+                                    <v-radio-group v-model="set.nbPieces" inline :disabled="!isLoggedIn">
                                         <v-radio :value="4">
                                             <template v-slot:label>
                                                 <span>4 pièces</span>
@@ -63,27 +66,27 @@
                                     </v-radio-group>
                                     <div>
                                         <v-select
-                                            label="Relique des cavernes"
                                             :items="relicSetList"
                                             :item-props="itemProps"
                                             v-model="set.relic[0]"
+                                            :disabled="!isLoggedIn"
                                         ></v-select>
                                         <v-select v-if="set.nbPieces === 2"
-                                            label="Relique des cavernes"
                                             :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
                                             :item-props="itemProps"
                                             v-model="set.relic[1]"
+                                            :disabled="!isLoggedIn"
                                         ></v-select>
                                     </div>
                                     
-                                    <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow></v-textarea>
-                                    <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, indexRelic, set)">
+                                    <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow :disabled="!isLoggedIn"></v-textarea>
+                                    <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
                                         <v-icon icon="mdi-trash-can-outline"></v-icon>
                                     </v-btn>
                                 </div>
                             </template>
                         </v-card-text>
-                        <v-card-actions>
+                        <v-card-actions v-if="isLoggedIn">
                             <v-btn @click="addElement('set', index, 'relic')">+ Ajouter une relique</v-btn>
                         </v-card-actions>
                     </div>  
@@ -91,25 +94,24 @@
                     <div class="set-content">
                         <v-card-subtitle>Ornement planaire</v-card-subtitle>
                         <v-card-text>
-                            <template  v-for="(set, indexRelic) in role.set" :key="indexRelic">
-                                <div v-if="set.type === 'ornment'" class="set-line">
-                                    <v-text-field v-if="set.jewel && !role.set[index2].ornment" label="Ornement planaire" v-model="set.jewel"></v-text-field>
-                                    
-                                    <v-select :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
+                            <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
+                                <div v-if="set.type === 'ornment'" class="set-line">                                    
+                                    <v-select
+                                        :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
                                         :item-props="itemProps"
                                         v-model="set.ornment"
+                                        :disabled="!isLoggedIn"
                                     ></v-select>
+                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow :disabled="!isLoggedIn"></v-textarea>
 
-                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow></v-textarea>
-
-                                    <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, indexRelic, set)">
+                                    <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
                                         <v-icon icon="mdi-trash-can-outline"></v-icon>
                                     </v-btn>
                                 </div>
                             </template>
 
                         </v-card-text>
-                        <v-card-actions>
+                        <v-card-actions v-if="isLoggedIn">
                             <v-btn @click="addElement('set', index, 'ornment')">+ Ajouter un ornement planaire</v-btn>
                         </v-card-actions>
                     </div>
@@ -123,24 +125,14 @@
                     <!-- Stat for Chest -->
                     <div class="card short-text">
                         <v-card-subtitle>Torse</v-card-subtitle>
-                        <div class="group-bloc">
-                            <div v-for="(sa, index2) in role.torse" :key="index2" class="individual-bloc">
-                                <template v-if="!getStats.includes(role.torse[index2])">
-                                    <v-text-field  label="torse" v-model="role.torse[index2]" placeholder="PV%"></v-text-field>
-                                    <v-btn v-if="role.torse.length > 1" @click="removeElement('torse', index, index2)">
-                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                    </v-btn>
-                                </template>
-                                
-                            </div>
-                        </div>
-                        <!-- <v-btn @click="addElement('torse', index)">+ Ajouter une stat</v-btn> -->
                         <v-card-text>
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
+                                    clearable
                                     density="compact"
                                     v-model="role.torse"
+                                    :disabled="!isLoggedIn"
                         ></v-select>
                         </v-card-text>
                     </div>
@@ -148,21 +140,14 @@
                     <!-- Stat for Boots-->
                     <div class="card short-text">
                         <v-card-subtitle>Bottes</v-card-subtitle>
-                        <div class="group-bloc">
-                            <div v-for="(c, index2) in role.botte" :key="index2" class="individual-bloc">
-                                <v-text-field v-if="!getStats.includes(role.botte[index2])" label="Botte" v-model="role.botte[index2]" placeholder="PV%"></v-text-field>
-                                <v-btn v-if="role.botte.length > 1 && !getStats.includes(role.botte[index2])" @click="removeElement('botte', index, index2)">
-                                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                </v-btn>
-                            </div>
-                        </div>
-                        <!-- <v-btn @click="addElement('botte', index)">+ Ajouter une stat</v-btn> -->
                         <v-card-text>
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
+                                    clearable
                                     density="compact"
                                     v-model="role.botte"
+                                    :disabled="!isLoggedIn"
                             ></v-select>
                         </v-card-text>
                         
@@ -171,21 +156,14 @@
                     <!-- Stat for Sphere -->
                     <div class="card short-text">
                         <v-card-subtitle>Sphère planaire</v-card-subtitle>
-                        <div class="group-bloc">
-                            <div v-for="(p, index2) in role.orbe" :key="index2" class="individual-bloc">
-                                <v-text-field v-if="!getStats.includes(role.orbe[index2])" label="Sphère planaire" v-model="role.orbe[index2]" placeholder="PV%"></v-text-field>
-                                <v-btn v-if="role.orbe.length > 1 && !getStats.includes(role.orbe[index2])" @click="removeElement('orbe', index, index2)">
-                                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                </v-btn>
-                            </div>
-                        </div>
-                        <!-- <v-btn @click="addElement('orbe', index)">+ Ajouter une stat</v-btn> -->
                         <v-card-text>
                             <v-select :items="getStats.sort()"
                                         multiple
                                         chips
+                                        clearable
                                         density="compact"
                                         v-model="role.orbe"
+                                        :disabled="!isLoggedIn"
                             ></v-select>
                         </v-card-text>
                     </div>
@@ -193,21 +171,14 @@
                     <!-- Stat for Cord -->
                     <div class="card short-text">
                         <v-card-subtitle>Corde de liaison</v-card-subtitle>
-                        <div class="group-bloc">
-                            <div v-for="(ch, index2) in role.chaine" :key="index2" class="individual-bloc">
-                                <v-text-field v-if="!getStats.includes(role.chaine[index2])" label="Corde de liaison" v-model="role.chaine[index2]" placeholder="PV%"></v-text-field>
-                                <v-btn v-if="role.chaine.length > 1 && !getStats.includes(role.chaine[index2])" @click="removeElement('chaine', index, index2)">
-                                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                </v-btn>
-                            </div>
-                        </div>
-                        <!-- <v-btn @click="addElement('chaine', index)">+ Ajouter une stat</v-btn> -->
                         <v-card-text>
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
+                                    clearable
                                     density="compact"
                                     v-model="role.chaine"
+                                    :disabled="!isLoggedIn"
                             ></v-select>
                         </v-card-text>
                         
@@ -224,18 +195,11 @@
                             multiple
                             chips
                             density="compact"
+                            clearable
                             v-model="role.statToFocus"
+                            :disabled="!isLoggedIn"
                     ></v-select>
                 </v-card-text>
-                <div class="group-bloc">
-                    <div v-for="(st, index2) in role.statToFocus" :key="index2" class="individual-bloc">
-                        <v-text-field v-if="!getStats.includes(role.statToFocus[index2])" label="Stat a privilégier" v-model="role.statToFocus[index2]" placeholder="PV%"></v-text-field>
-                        <v-btn v-if="role.statToFocus.length > 1 && !getStats.includes(role.statToFocus[index2])"
-                            @click="removeElement('statToFocus', index, index2)">
-                            <v-icon icon="mdi-trash-can-outline"></v-icon>
-                        </v-btn>
-                    </div>
-                </div>
             </v-card>
 
             <div class="multiple-card-zone m-top32">
@@ -243,42 +207,42 @@
                 <v-card>
                     <v-card-title>Armes</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.weapons"  auto-grow></v-textarea>
+                        <v-textarea v-model="role.weapons" auto-grow :disabled="!isLoggedIn"></v-textarea>
                     </v-card-text>
                 </v-card>
                 <!-- Team -->
                 <v-card>
                     <v-card-title>Team</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.team"  auto-grow></v-textarea>
+                        <v-textarea v-model="role.team" auto-grow :disabled="!isLoggedIn"></v-textarea>
                     </v-card-text>
                 </v-card>
                 <!-- Notes -->
                 <v-card>
                     <v-card-title>Notes</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.note" auto-grow></v-textarea>
+                        <v-textarea v-model="role.note" auto-grow :disabled="!isLoggedIn"></v-textarea>
                     </v-card-text>
                 </v-card>
             </div>
 
 
-            <v-btn v-if="currentCharacter.roles.length > 1" @click="removeRole(index)">
+            <v-btn v-if="currentCharacter.roles.length > 1 && isLoggedIn" @click="removeRole(index)">
                 <v-icon icon="mdi-trash-can-outline"></v-icon>
             </v-btn>
         </div>
 
     </div>
-    <v-btn @click="addRole">+ Ajouter un rôle</v-btn>
+    <v-btn v-if="isLoggedIn" @click="addRole">+ Ajouter un rôle</v-btn>
 </template>
 
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed } from "vue"
 import { useTestStore } from '../../../stores/test'
-import { useFirestore, useCollection } from "vuefire";
-import { collection, where, query } from "firebase/firestore";
-import { sortByName } from '../../../tools/tools';
+import { useFirestore, useCollection, useCurrentUser } from "vuefire"
+import { collection, where, query } from "firebase/firestore"
+import { sortByName } from '../../../tools/tools'
 import { HSR_ATTRIBUTES, HSR_ELEMENT, HSR_ROLE } from '../../../tools/constants'
 
 defineEmits(['cancel', 'save'])
@@ -287,6 +251,7 @@ const props = defineProps(['id', 'isEditMode', 'source'])
 
 const db = useFirestore()
 const store = useTestStore()
+const connectedUser = useCurrentUser()
 
 const initCharacter = ref()
 
@@ -326,11 +291,13 @@ let getStats = HSR_ATTRIBUTES
 let getRoles = HSR_ROLE
 let getElement = HSR_ELEMENT
 
+const isLoggedIn = computed(() => {
+    return connectedUser?.email
+})
 
 const relicSetList = computed(() => {
     return sortByName(setList.value.filter(e => e.type === 'Relique des cavernes'))
 })
-
 
 function addRole() {
     currentCharacter.value.roles.push(JSON.parse(JSON.stringify(role)))

@@ -1,58 +1,57 @@
 <template>
     <div class="header">
         <h1>{{`Liste des personnages (${filteredList.length})`}}</h1>
-        <v-btn :to="{ name: 'character-create'}"> + Nouveau</v-btn>
+        <v-btn v-if="isLoggedIn" :to="{ name: 'character-create'}"> + Nouveau</v-btn>
     </div>
     
     <!-- Filters zone -->
     <div class="filters-bloc">
-        <div class="filters-bloc__input">
-            <v-select
-                label="Relique"
-                :items="sortByName(setList)"
-                :item-props="itemProps1"
-                v-model="filter.set"
-                clearable
-                ></v-select>
-            <v-select
-                label="Equipement"
-                :items="getEquipment.sort()"
-                item-title="label"
-                item-value="key"
-                v-model="filter.type"
-                clearable
-                ></v-select>
-            <v-select
-                label="Stat"
-                :items="getStats.sort()"
-                v-model="filter.stat"
-                clearable
-                ></v-select>
-            
-            <v-select
-                label="Donjon"
-                :items="sortByName(djList)"
-                :item-props="itemProps2"
-                v-model="filter.dj"
-                clearable
-                ></v-select>
+        <v-select
+            label="Relique"
+            :items="sortByName(setList)"
+            :item-props="itemProps1"
+            v-model="filter.set"
+            clearable
+            ></v-select>
+        <v-select
+            label="Equipement"
+            :items="getEquipment.sort()"
+            item-title="label"
+            item-value="key"
+            v-model="filter.type"
+            clearable
+            ></v-select>
+        <v-select
+            label="Stat"
+            :items="getStats.sort()"
+            v-model="filter.stat"
+            clearable
+            ></v-select>
+        
+        <v-select
+            label="Donjon"
+            :items="sortByName(djList)"
+            :item-props="itemProps2"
+            v-model="filter.dj"
+            clearable
+            ></v-select>
 
-            <v-checkbox label="owned" v-model="filter.owned"></v-checkbox>
-            <v-checkbox label="video a check" v-model="filter.todo"></v-checkbox>
-            <v-checkbox label="incomplet" v-model="filter.completed"></v-checkbox>
-            <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
-            <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
-        </div>
-        <div class="filters-bloc__action">
-            <v-btn @click="clearFilter">Reset</v-btn>
-            <v-btn @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
-            
-        </div>
+        <v-checkbox v-if="isLoggedIn" label="owned" v-model="filter.owned"></v-checkbox>
+        <v-checkbox v-if="isLoggedIn" label="video a check" v-model="filter.todo"></v-checkbox>
+        <v-checkbox v-if="isLoggedIn" label="incomplet" v-model="filter.completed"></v-checkbox>
+        <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
+        <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
+        
+        <v-spacer></v-spacer>
+
+        <v-btn variant="text" @click="clearFilter">Reset</v-btn>
+        <v-btn variant="text" @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
     </div>
     
     <!-- Content Zone -->
     <div class="characters-list" :class="{ 'mini': isReduced }">
         <v-card class="mx-auto" v-for="character in filteredList" :key="character.id" >
+            <!-- Title zone -->
             <v-toolbar :color="getColor(character?.type?.toLowerCase())">
                 <v-toolbar-title>
                     <span>{{ character.name }}</span>
@@ -61,17 +60,16 @@
                         <v-icon v-if="character.star == 5" icon="mdi-star" :class="'text-yellow-darken-2'"></v-icon>
                     </template>
                 </v-toolbar-title>
-                <v-icon v-if="!character.isUpdated" icon="mdi-video-box"></v-icon>
-                <v-icon v-if="!character.completed" icon="mdi-alert-circle"></v-icon>
-                <router-link :to="{ name: 'character-edit', params: {id: character.id }}"><v-icon icon="mdi-pencil"></v-icon></router-link>
-                <v-btn @click="deleteCharacter(character)">
-                    <v-icon icon="mdi-trash-can-outline"></v-icon>
+                <v-icon v-if="!character.isUpdated && isLoggedIn" icon="mdi-video-box"></v-icon>
+                <v-icon v-if="!character.completed && isLoggedIn" icon="mdi-alert-circle"></v-icon>
+                <router-link :to="{ name: 'character-edit', params: {id: character.id }}" class="mr-4 text-white"><v-icon icon="mdi-eye"></v-icon></router-link>
+                <v-btn v-if="isLoggedIn" @click="deleteCharacter(character)">
+                    <v-icon icon="mdi-trash-can-outline" class="text-white"></v-icon>
                  </v-btn>
             </v-toolbar>
         
             <v-list lines="two" v-for="(role, index) in character.roles" :key="index">
                 <v-list-subheader>{{ character.role }}</v-list-subheader>
-        
                 
                 <!-- Recommanded Sets of relic -->
                 <v-list-item>
@@ -138,7 +136,7 @@
 <script setup>
 import { ref, computed, watch, reactive } from "vue";
 import { useTestStore } from '../../../stores/test'
-import { useFirestore, useCollection } from "vuefire";
+import { useFirestore, useCollection, useCurrentUser } from "vuefire";
 import { collection, where, query, deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "vue-router";
 import { sortByName, copy } from '../../../tools/tools';
@@ -147,6 +145,7 @@ import { HSR_ATTRIBUTES, HSR_EQUIPMENT } from '../../../tools/constants'
 const db = useFirestore()
 const store = useTestStore()
 const router = useRouter()
+const connectedUser = useCurrentUser()
 
 let charactersRef = collection(db, 'characters')
 let q = query(charactersRef, where("game", "==", store.getSelectedGame))
@@ -171,6 +170,9 @@ let getStats = HSR_ATTRIBUTES
 let getEquipment = HSR_EQUIPMENT
 let isReduced = ref(false)
 
+const isLoggedIn = computed(() => {
+    return connectedUser?.email
+})
 
 const filteredList = computed(() => {
     const { type, stat, dj, set, owned, fourstars, fivestars, todo, completed } = filter

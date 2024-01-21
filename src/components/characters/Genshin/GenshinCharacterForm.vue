@@ -94,42 +94,6 @@
                     </v-card-text>
                 </v-card>
             </div>
-            <!-- TODO A supprimer -->
-            <v-card v-if="role.set.length" class="set-zone" >
-                <v-card-title>Sets à privilégier</v-card-title>
-                <v-card-text>
-                    <v-select 
-                                multiple
-                                chips
-                                density="compact"
-                                :items="sortByName(setList)"
-                                :item-props="itemProps"
-                                v-model="role.set"
-                    ></v-select>
-                    <template v-for="(s, index2) in role.set">
-                        <div v-if="typeof s === 'string' && s !== ''" :key="index2" class="individual-bloc">
-                            <v-text-field v-if="typeof role.set[index2] === 'string'"
-                                label="Sets à privilégier" v-model="role.set[index2]"
-                                placeholder="ombre de la verte chasseuse"></v-text-field>
-
-                            <v-select
-                                label="Set"
-                                :items="sortByName(setList)"
-                                :item-props="itemProps"
-                                v-model="role.set[index2]"
-                            ></v-select>
-
-                            <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, index2)">
-                                <v-icon icon="mdi-trash-can-outline"></v-icon>
-                            </v-btn>
-                        </div>
-                    </template>    
-                    
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn @click="addElement('set', index)">+ Ajouter un set</v-btn>
-                </v-card-actions>
-            </v-card>
 
             <div class="multiple-card-zone">
                 <!-- Equipment Main Stat -->
@@ -245,13 +209,13 @@
                     <v-card-title>Aptitudes</v-card-title>
                     <v-card-text>
                         <v-text-field label="ordre de priorité" v-model="role.aptitude.priority"></v-text-field>
-                        <v-select
+                        <!-- <v-select
                                 label="Matériaux"
                                 multiple
                                 chips
                                 :items="['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']"
                                 v-model="role.aptitude.materials"
-                    ></v-select>
+                    ></v-select> -->
                         <v-select
                                 label="Jours de farm"
                                 multiple

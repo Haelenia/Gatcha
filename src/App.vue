@@ -1,38 +1,56 @@
 <template>
-    <header class="main-header">
-        <nav>
-            <RouterLink v-if="store.getSelectedGame" to="/"><v-icon icon="mdi-home"></v-icon></RouterLink>
-            <RouterLink v-if="store.getSelectedGame" to="/characters">Personnages</RouterLink>
-            <RouterLink v-if="store.getSelectedGame" :to="{ name: 'character-create'}">Ajouter un personnage</RouterLink>
-            <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeons'}">Donjons</RouterLink>
-            <RouterLink v-if="store.getSelectedGame" :to="{ name: 'dungeon-create'}">Ajouter un donjon</RouterLink>
-            <RouterLink v-if="store.getSelectedGame"
-                :to="{ name: 'sets'}">{{ `Sets ${store.getSelectedGame === 'Genshin' ? 'd`\'artefacts' : 'de reliques'}`}}</RouterLink>
-            <RouterLink v-if="store.getSelectedGame"
-                :to="{ name: 'set-create'}">{{ `Ajouter un set ${store.getSelectedGame === 'Genshin' ? 'd`\'artefacts' : 'de reliques'}`}}</RouterLink>
-            <span>{{ store.selectedGame }}</span>
-            <div class="action">
-                <v-btn @click="goToList('Genshin')">Genshin</v-btn>
-                <v-btn @click="goToList('HSR')">HSR</v-btn>
-            </div>
+    <v-app>
+        <v-app-bar color="teal" class="-main-header">
+        <v-app-bar-title>{{ store.selectedGame }}</v-app-bar-title>
+        <v-spacer></v-spacer>
+        <nav class="pr-4">
+            <v-btn v-if="store.getSelectedGame" to="/"><v-icon icon="mdi-home"></v-icon></v-btn>
+            <v-btn v-if="store.getSelectedGame" to="/characters">Personnages</v-btn>
+            <v-btn v-if="store.getSelectedGame && isLoggedIn" :to="{ name: 'character-create'}">Ajouter un personnage</v-btn>
+            <v-btn v-if="store.getSelectedGame" :to="{ name: 'dungeons'}">Donjons</v-btn>
+            <v-btn v-if="store.getSelectedGame && isLoggedIn" :to="{ name: 'dungeon-create'}">Ajouter un donjon</v-btn>
+            <v-btn v-if="store.getSelectedGame"
+                :to="{ name: 'sets'}">{{ `Sets ${store.getSelectedGame === 'Genshin' ? 'd\'artefacts' : 'de reliques'}`}}</v-btn>
+            <v-btn v-if="store.getSelectedGame && isLoggedIn"
+                :to="{ name: 'set-create'}">{{ `Ajouter un set ${store.getSelectedGame === 'Genshin' ? 'd\'artefacts' : 'de reliques'}`}}</v-btn>
             
+
+            <v-btn @click="goToList('Genshin')">Genshin</v-btn>
+            <v-btn @click="goToList('HSR')">HSR</v-btn>
+
+            <v-btn v-if="isLoggedIn" @click="signOutOfFirebase">Sign Out</v-btn>
+            <v-btn v-else to="/login">Sign in</v-btn>
         </nav>
-    </header>
+    </v-app-bar>
 
-    /<main>
-        <RouterView />
-    </main>
-
-    
+    <v-main>
+        <Suspense>
+            <RouterView :key="route.fullPath" />
+            <template v-slot:fallback>
+            <p>Content not found. Contact your developer for more info.</p>
+            </template>
+        </Suspense>
+    </v-main>
+  </v-app>
 </template>
 
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { RouterView } from 'vue-router'
+import { useRouter, useRoute  } from 'vue-router'
 import { useTestStore } from './stores/test'
+import { useAuthStore } from './stores/auth'
+import { useCurrentUser, useFirebaseAuth } from 'vuefire'
+import { signOut } from '@firebase/auth'
+
 
 const router = useRouter()
+const route = useRoute()
 const store = useTestStore()
+const authStore = useAuthStore()
+const auth = useFirebaseAuth()
+const user = useCurrentUser()
+const currentUser = authStore.getCurrentUser
 
 store.selectGame()
 
@@ -40,6 +58,20 @@ function goToList(game) {
     store.selectGame(game)
     window.localStorage.setItem('game', game)
     router.push({ name: 'characters' })
+}
+
+const isLoggedIn = computed(() => {
+    return user?.email
+})
+
+async function signOutOfFirebase() {
+  signOut(auth)
+    .then(() => {
+      console.log('Logged out!')
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 }
 
 
@@ -57,40 +89,6 @@ header {
     margin: 0 auto 2rem;
 }
 
-nav {
-    width: 100%;
-    font-size: 12px;
-    text-align: center;
-    span {
-        margin-left: 32px;   
-    }
-    .action {
-        display: inline-block;
-        float: right;
-        .v-btn {
-            margin-right: 32px;
-        }
-    }
-}
-
-nav a.router-link-exact-active {
-    color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-    background-color: transparent;
-}
-
-nav a {
-    display: inline-block;
-    padding: 0 1rem;
-    border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-    border: 0;
-}
-
 @media (min-width: 1024px) {
     header {
         display: flex;
@@ -106,15 +104,6 @@ nav a:first-of-type {
         display: flex;
         place-items: flex-start;
         flex-wrap: wrap;
-    }
-
-    nav {
-        text-align: left;
-        margin-left: -1rem;
-        font-size: 1rem;
-
-        padding: 1rem 0;
-        margin-top: 1rem;
     }
 }
 </style>
