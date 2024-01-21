@@ -1,17 +1,17 @@
 <template>
     <div class="header">
         <h1>{{`Liste des Sets (${filteredList.length})`}}</h1>
-        <v-btn :to="{ name: 'set-create' }"> + Nouveau</v-btn>
+        <v-btn v-if="isLoggedIn" :to="{ name: 'set-create' }"> + Nouveau</v-btn>
     </div>
 
     <div class="characters-list">
         <v-card class="mx-auto" v-for="set in filteredList" :key="set.id" >
             <v-toolbar :color="getColor(set.region)">
                 <v-toolbar-title>{{ set.name }}</v-toolbar-title>
-                <v-btn @click="updateSet(set)">
+                <v-btn v-if="isLoggedIn" @click="updateSet(set)">
                     <v-icon icon="mdi-pencil"></v-icon>
                 </v-btn>
-                <v-btn @click="deleteSet(set)">
+                <v-btn v-if="isLoggedIn" @click="deleteSet(set)">
                     <v-icon icon="mdi-trash-can-outline"></v-icon>
                  </v-btn>
             </v-toolbar>
@@ -29,7 +29,7 @@
 <script setup>
 import { computed } from "vue";
 import { useTestStore } from '../../stores/test'
-import { useFirestore, useCollection } from "vuefire";
+import { useFirestore, useCollection, useCurrentUser } from "vuefire";
 import { collection, where, query,  deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "vue-router";
 import { sortByName } from "../../tools/tools";
@@ -37,6 +37,8 @@ import { sortByName } from "../../tools/tools";
 const db = useFirestore()
 const store = useTestStore()
 const router = useRouter()
+const connectedUser = useCurrentUser()
+
 
 let setRef = collection(db, 'sets')
 let q = query(setRef, where("game", "==", store.getSelectedGame))
@@ -46,6 +48,9 @@ let djRef = collection(db, 'dungeons')
 let djquery = query(djRef, where("game", "==", store.getSelectedGame))
 let djList = useCollection(djquery, { ssrKey: 'justToStopWarning' })
 
+const isLoggedIn = computed(() => {
+    return connectedUser?.email
+})
 
 const filteredList = computed(() => {
     let list = setList.value.map(el => {

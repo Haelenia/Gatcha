@@ -35,9 +35,9 @@
         </v-radio-group>
 
         <!-- For admin only, to see if profile as been updated -->
-        <v-checkbox label="video check" v-model="currentCharacter.isUpdated" :disabled="!isLoggedIn"></v-checkbox>
-        <v-checkbox label="complet" v-model="currentCharacter.completed" :disabled="!isLoggedIn"></v-checkbox>
-        <v-checkbox label="possédé" v-model="currentCharacter.isOwned" :disabled="!isLoggedIn"></v-checkbox>
+        <v-checkbox v-if="isLoggedIn" label="video check" v-model="currentCharacter.isUpdated" :disabled="!isLoggedIn"></v-checkbox>
+        <v-checkbox v-if="isLoggedIn" label="complet" v-model="currentCharacter.completed" :disabled="!isLoggedIn"></v-checkbox>
+        <v-checkbox v-if="isLoggedIn" label="possédé" v-model="currentCharacter.isOwned" :disabled="!isLoggedIn"></v-checkbox>
     </div>
 
     <div class="roles-list hsr-form">

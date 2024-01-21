@@ -1,17 +1,17 @@
 <template>
     <div class="header">
         <h1>{{`Liste des donjons (${filteredList.length})`}}</h1>
-        <v-btn :to="{ name: 'dungeon-create' }"> + Nouveau</v-btn>
+        <v-btn v-if="isLoggedIn" :to="{ name: 'dungeon-create' }"> + Nouveau</v-btn>
     </div>
 
     <div class="characters-list">
         <v-card class="mx-auto" v-for="dj in filteredList" :key="dj.id">
             <v-toolbar :color="getColor(dj?.region)">
                 <v-toolbar-title>{{ dj.name }}</v-toolbar-title>
-                <v-btn @click="updateDj(dj)">
+                <v-btn v-if="isLoggedIn" @click="updateDj(dj)">
                     <v-icon icon="mdi-pencil"></v-icon>
                 </v-btn>
-                <v-btn @click="deleteDj(dj)">
+                <v-btn v-if="isLoggedIn" @click="deleteDj(dj)">
                     <v-icon icon="mdi-trash-can-outline"></v-icon>
                  </v-btn>
             </v-toolbar>
@@ -34,7 +34,7 @@
 <script setup>
 import { computed } from "vue";
 import { useTestStore } from '../../stores/test'
-import { useFirestore, useCollection } from "vuefire";
+import { useFirestore, useCollection, useCurrentUser } from "vuefire";
 import { collection, where, query,  deleteDoc, doc } from "firebase/firestore";
 import { useRouter } from "vue-router";
 import { sortByName } from "../../tools/tools";
@@ -43,11 +43,16 @@ import { GENSHIN_DJ_TYPE } from "../../tools/constants";
 const db = useFirestore()
 const store = useTestStore()
 const router = useRouter()
+const connectedUser = useCurrentUser()
 
 let djRef = collection(db, 'dungeons')
 let q = query(djRef, where("game", "==", store.getSelectedGame))
 
 let djList = useCollection(q, { ssrKey: 'justToStopWarning' })
+
+const isLoggedIn = computed(() => {
+    return connectedUser?.email
+})
 
 const filteredList = computed(() => {
     let list = djList?.value?.map(el => {

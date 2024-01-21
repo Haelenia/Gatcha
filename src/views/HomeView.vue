@@ -8,11 +8,25 @@
 
 
 <script setup>
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useCurrentUser } from 'vuefire'
 import { useTestStore } from '../stores/test'
 
 const router = useRouter()
 const store = useTestStore()
+const user = useCurrentUser()
+
+onMounted(() => {
+    if (!user || !user.email) {
+        store.selectGame('HSR')
+        window.localStorage.setItem('game', 'HSR')
+        router.push({ name: 'characters' })
+    }
+    
+})
+
+
 
 store.selectGame()
 
