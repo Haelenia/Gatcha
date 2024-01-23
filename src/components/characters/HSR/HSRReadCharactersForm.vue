@@ -1,48 +1,17 @@
 <template>
     <div class="header hsr-form">
-        <h1>{{props.isEditMode ? currentCharacter.name : 'Nouveau personnage'}}</h1>
-        <div v-if="isLoggedIn" class="actions">
-            <v-btn @click="resetElement">Annuler</v-btn>
-            <v-btn @click="$emit('save', currentCharacter)">Enregistrer</v-btn>
-        </div>
+        <h1>{{currentCharacter?.name}}</h1>
+        <span>
+            <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" size="x-small" :class="currentCharacter?.star === 5 ? 'text-yellow-darken-2' : 'text-deep-purple-lighten-1'"></v-icon>
+            <v-icon v-if="currentCharacter?.star == 5" icon="mdi-star" size="x-small" :class="'text-yellow-darken-2'"></v-icon>
+        </span>
+        <span> {{ currentCharacter?.role }}</span>
+        <span> {{ currentCharacter?.type }}</span> 
     </div>
 
-    <div class="identity hsr-form">
-        <v-text-field label="Nom" v-model="currentCharacter.name" class="label" :disabled="!isLoggedIn"></v-text-field>
-        <v-select label="Voix"
-                clearable
-                :items="getRoles.sort()"
-                v-model="currentCharacter.role"
-                :disabled="!isLoggedIn"
-        ></v-select>
-        <v-select label="Element"
-                clearable
-                :items="getElement.sort()"
-                v-model="currentCharacter.type"
-                :disabled="!isLoggedIn"
-        ></v-select>
-        <v-radio-group v-model="currentCharacter.star" inline :disabled="!isLoggedIn">
-            <v-radio :value="5">
-                <template v-slot:label>
-                    <v-icon icon="mdi-star" class="text-yellow-darken-2"></v-icon>
-                </template>
-            </v-radio>
-            <v-radio :value="4">
-                <template v-slot:label>
-                    <v-icon icon="mdi-star" class="text-deep-purple-lighten-1"></v-icon>
-                </template>
-            </v-radio>
-        </v-radio-group>
 
-        <!-- For admin only, to see if profile as been updated -->
-        <v-checkbox v-if="isLoggedIn" label="video check" v-model="currentCharacter.isUpdated" :disabled="!isLoggedIn"></v-checkbox>
-        <v-checkbox v-if="isLoggedIn" label="complet" v-model="currentCharacter.completed" :disabled="!isLoggedIn"></v-checkbox>
-        <v-checkbox v-if="isLoggedIn" label="possédé" v-model="currentCharacter.isOwned" :disabled="!isLoggedIn"></v-checkbox>
-    </div>
-
-    <div class="roles-list hsr-form">
-        <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
-
+    <div class="roles-list hsr-form read-only">
+        <div v-for="(role, index) in currentCharacter.roles" :key="index" >
             <!-- Equipment Sets -->
             <v-card>
                 <v-card-title>Set de reliques et d'ornements planaires recommandés</v-card-title>
@@ -52,68 +21,26 @@
                         <v-card-text>
                             <template  v-for="(set, indexRelic) in role.set" :key="indexRelic">
                                 <div v-if="set.type === 'relic'" class="set-line">
-                                    <v-radio-group v-model="set.nbPieces" inline :disabled="!isLoggedIn">
-                                        <v-radio :value="4">
-                                            <template v-slot:label>
-                                                <span>4 pièces</span>
-                                            </template>
-                                        </v-radio>
-                                        <v-radio :value="2">
-                                            <template v-slot:label>
-                                                <span>2 pièces</span>
-                                            </template>
-                                        </v-radio>
-                                    </v-radio-group>
-                                    <div>
-                                        <v-select
-                                            :items="relicSetList"
-                                            :item-props="itemProps"
-                                            v-model="set.relic[0]"
-                                            :disabled="!isLoggedIn"
-                                        ></v-select>
-                                        <v-select v-if="set.nbPieces === 2"
-                                            :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
-                                            :item-props="itemProps"
-                                            v-model="set.relic[1]"
-                                            :disabled="!isLoggedIn"
-                                        ></v-select>
-                                    </div>
-                                    
-                                    <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow :disabled="!isLoggedIn"></v-textarea>
-                                    <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
-                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                    </v-btn>
+                                    <span>{{ `${set.nbPieces} pièces` }}</span>
+                                    <span v-if="set.nbPieces === 4">{{ set.relic[0]?.name }}</span>
+                                    <span v-if="set.nbPieces === 2">{{ ` ${set.relic[0]?.name} / ${set.relic[1]?.name}`}}</span>
+                                    <p><i>{{ set.comment }}</i></p>
                                 </div>
                             </template>
                         </v-card-text>
-                        <v-card-actions v-if="isLoggedIn">
-                            <v-btn @click="addElement('set', index, 'relic')">+ Ajouter une relique</v-btn>
-                        </v-card-actions>
                     </div>  
 
                     <div class="set-content">
                         <v-card-subtitle>Ornement planaire</v-card-subtitle>
                         <v-card-text>
                             <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
-                                <div v-if="set.type === 'ornment'" class="set-line">                                    
-                                    <v-select
-                                        :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
-                                        :item-props="itemProps"
-                                        v-model="set.ornment"
-                                        :disabled="!isLoggedIn"
-                                    ></v-select>
-                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow :disabled="!isLoggedIn"></v-textarea>
-
-                                    <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
-                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                    </v-btn>
+                                <div v-if="set?.type === 'ornment'" class="set-line">
+                                    <span>{{ set.ornment?.name}}</span>
+                                    <p><i>{{ set.comment }}</i></p>
                                 </div>
                             </template>
 
                         </v-card-text>
-                        <v-card-actions v-if="isLoggedIn">
-                            <v-btn @click="addElement('set', index, 'ornment')">+ Ajouter un ornement planaire</v-btn>
-                        </v-card-actions>
                     </div>
                 </div>
             </v-card>
@@ -320,7 +247,7 @@ function addElement(type, roleIndex, setType) {
     }
 }
 
-function removeElement(type, roleIndex, index, set) {
+function removeElement(type, roleIndex, index) {
     currentCharacter.value.roles[roleIndex][type].splice(index, 1)
 }
 

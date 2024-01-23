@@ -215,6 +215,14 @@
                 }
             }
 
+            &.read-only {
+                .set-line {
+                    display: flex;
+                    gap: 32px;
+                    align-items: center;
+                }
+            }
+
             .multiple-card-zone {
                 display: flex;
                 gap: 32px;
@@ -251,6 +259,7 @@
                 }
         
             }
+        
         }
     
     }

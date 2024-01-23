@@ -6,7 +6,7 @@
     
     <!-- Filters zone -->
     <div class="filters-zone">
-        <span class="notice">Utiliser les filtres si dessous pour savoir quel personnage pourrait avoir besoin de la relique ou de l'ornement planaire que vous avez, ou pour savoir si un donjon est rentable à farmer.</span>
+        <span class="notice">Utilisez les filtres ci-dessous pour savoir quel personnage pourrait avoir besoin de la relique ou de l'ornement planaire que vous avez, ou pour savoir si un donjon est rentable à farmer.</span>
         <div class="filters-bloc mt-2">
             <v-select
                 label="Reliques et ornements"

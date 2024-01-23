@@ -1,11 +1,21 @@
 <template>
     <div class="edit-character-view">
-        <GenshinCharacterForm v-if="store.getSelectedGame === 'Genshin'"
+        <GenshinCharacterForm v-if="store.getSelectedGame === 'Genshin' && isLoggedIn"
                             :is-edit-mode="isEditMode"
                             :source="characterSource"
                             @save="saveElement"
         />
-        <HSRCharactersForm v-if="store.getSelectedGame === 'HSR'"
+        <GenshinCharacterForm v-if="store.getSelectedGame === 'Genshin' && !isLoggedIn"
+                            :is-edit-mode="isEditMode"
+                            :source="characterSource"
+                            @save="saveElement"
+        />
+        <HSREditCharactersForm v-if="store.getSelectedGame === 'HSR' && isLoggedIn"
+                            :is-edit-mode="isEditMode"
+                            :source="characterSource"          
+                            @save="saveElement"
+        />
+        <HSRReadCharactersForm v-if="store.getSelectedGame === 'HSR' && !isLoggedIn"
                             :is-edit-mode="isEditMode"
                             :source="characterSource"          
                             @save="saveElement"
@@ -15,19 +25,22 @@
   
   
 <script setup>
-import HSRCharactersForm from './HSR/HSRCharactersForm.vue';
+import HSREditCharactersForm from './HSR/HSREditCharactersForm.vue';
+import HSRReadCharactersForm from './HSR/HSRReadCharactersForm.vue';
 import GenshinCharacterForm from './Genshin/GenshinCharacterForm.vue';
 import { useTestStore } from '../../stores/test';
 import { ref, onMounted } from 'vue'
 import { useFirestore, useDocument } from "vuefire";
 import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { useRoute, useRouter } from 'vue-router'
+import { useTools } from '../../composables/tools';
 
 const router = useRouter()
 const route = useRoute()
-const db = useFirestore();
+const db = useFirestore()
+const store = useTestStore()
+const { isLoggedIn } = useTools()
 
-const store = useTestStore() 
 let isEditMode = ref(false)
 
 let docRef = null
