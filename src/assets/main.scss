@@ -47,37 +47,40 @@
                 max-width: 400px;
             }
         }
-    
-        .filters-bloc {
-            background-color: #1F1F23;
-            padding: 16px 16px 0 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: none;
-            gap: 32px;
-            .v-input:not(.v-checkbox) {
-                width: 300px;
-            }
-            .v-selection-control .v-label {
-                word-break: unset;
-            }
-            
-            .filters-bloc__input {
+        
+        .filters-zone {
+                background-color: #1F1F23;
+                padding: 16px 16px 0 16px;
+                margin-bottom: 16px;
+            .filters-bloc {
+                
                 display: flex;
                 align-items: center;
+                justify-content: space-between;
+                flex-wrap: none;
                 gap: 32px;
                 .v-input:not(.v-checkbox) {
                     width: 300px;
                 }
-            }
-            
-            .filters-bloc__action {
-                display: flex;
-                align-items: center;
-                .v-btn {
-                    margin-left: 16px;
+                .v-selection-control .v-label {
+                    word-break: unset;
+                }
+                
+                .filters-bloc__input {
+                    display: flex;
+                    align-items: center;
+                    gap: 32px;
+                    .v-input:not(.v-checkbox) {
+                        width: 300px;
+                    }
+                }
+                
+                .filters-bloc__action {
+                    display: flex;
+                    align-items: center;
+                    .v-btn {
+                        margin-left: 16px;
+                    }
                 }
             }
         }
@@ -108,7 +111,7 @@
                 }
                 .v-toolbar-title {
                     span { margin-right: 8px; }
-                    i { font-size: 10px; }
+                   
                 }
                 .long-item {
                     -webkit-line-clamp: unset;

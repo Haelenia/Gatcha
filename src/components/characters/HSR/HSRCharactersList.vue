@@ -5,47 +5,50 @@
     </div>
     
     <!-- Filters zone -->
-    <div class="filters-bloc">
-        <v-select
-            label="Reliques et ornements"
-            :items="sortByName(setList)"
-            :item-props="itemProps1"
-            v-model="filter.set"
-            clearable
-            ></v-select>
-        <v-select
-            label="Type d'équipement"
-            :items="getEquipment.sort()"
-            item-title="label"
-            item-value="key"
-            v-model="filter.type"
-            clearable
-            ></v-select>
-        <v-select
-            label="Stat"
-            :items="getStats.sort()"
-            v-model="filter.stat"
-            clearable
-            ></v-select>
-        
-        <v-select
-            label="Donjon"
-            :items="sortByName(djList)"
-            :item-props="itemProps2"
-            v-model="filter.dj"
-            clearable
-            ></v-select>
+    <div class="filters-zone">
+        <span class="notice">Utiliser les filtres si dessous pour savoir quel personnage pourrait avoir besoin de la relique ou de l'ornement planaire que vous avez, ou pour savoir si un donjon est rentable à farmer.</span>
+        <div class="filters-bloc mt-2">
+            <v-select
+                label="Reliques et ornements"
+                :items="sortByName(setList)"
+                :item-props="itemProps1"
+                v-model="filter.set"
+                clearable
+                ></v-select>
+            <v-select
+                label="Type d'équipement"
+                :items="getEquipment.sort()"
+                item-title="label"
+                item-value="key"
+                v-model="filter.type"
+                clearable
+                ></v-select>
+            <v-select
+                label="Stat"
+                :items="getStats.sort()"
+                v-model="filter.stat"
+                clearable
+                ></v-select>
+            
+            <v-select
+                label="Donjon"
+                :items="sortByName(djList)"
+                :item-props="itemProps2"
+                v-model="filter.dj"
+                clearable
+                ></v-select>
 
-        <v-checkbox v-if="isLoggedIn" label="owned" v-model="filter.owned"></v-checkbox>
-        <v-checkbox v-if="isLoggedIn" label="video a check" v-model="filter.todo"></v-checkbox>
-        <v-checkbox v-if="isLoggedIn" label="incomplet" v-model="filter.completed"></v-checkbox>
-        <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
-        <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
-        
-        <v-spacer></v-spacer>
+            <v-checkbox v-if="isLoggedIn" label="owned" v-model="filter.owned"></v-checkbox>
+            <v-checkbox v-if="isLoggedIn" label="video a check" v-model="filter.todo"></v-checkbox>
+            <v-checkbox v-if="isLoggedIn" label="incomplet" v-model="filter.completed"></v-checkbox>
+            <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
+            <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
+            
+            <v-spacer></v-spacer>
 
-        <v-btn variant="text" @click="clearFilter">Reset</v-btn>
-        <v-btn variant="text" @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
+            <v-btn class="mb-5" variant="text" @click="clearFilter">Reset</v-btn>
+            <v-btn class="mb-5" variant="text" @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
+        </div>
     </div>
     
     <!-- Content Zone -->
@@ -56,13 +59,13 @@
                 <v-toolbar-title>
                     <span>{{ character.name }}</span>
                     <template v-if="character.star">
-                        <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" :class="character.star == 5 ? 'text-yellow-darken-2' : 'text-deep-purple-lighten-1' "></v-icon>
-                        <v-icon v-if="character.star == 5" icon="mdi-star" :class="'text-yellow-darken-2'"></v-icon>
+                        <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" size="x-small" :class="getStarColor(character.star, character?.type)"></v-icon>
+                        <v-icon v-if="character.star == 5" icon="mdi-star" size="x-small" :class="getStarColor(5, character?.type)"></v-icon>
                     </template>
                 </v-toolbar-title>
                 <v-icon v-if="!character.isUpdated && isLoggedIn" icon="mdi-video-box"></v-icon>
                 <v-icon v-if="!character.completed && isLoggedIn" icon="mdi-alert-circle"></v-icon>
-                <router-link :to="{ name: 'character-edit', params: {id: character.id }}" class="mr-4 text-white"><v-icon icon="mdi-eye"></v-icon></router-link>
+                <router-link :to="{ name: 'character-edit', params: {id: character.id }}" class="mr-4" :class="getEyeColor(character?.type)"><v-icon icon="mdi-eye"></v-icon></router-link>
                 <v-btn v-if="isLoggedIn" @click="deleteCharacter(character)">
                     <v-icon icon="mdi-trash-can-outline" class="text-white"></v-icon>
                  </v-btn>
@@ -311,8 +314,26 @@ function getColor(element) {
         return 'red'
     }
     if (element === 'vent') {
-        return 'teal-accent-3'
+        return 'teal'
     }
+}
+
+function getStarColor(nbStars, element) {
+    if (nbStars ===  5) {
+        if ([ 'Imaginaire'].includes(element)) return 'text-yellow-darken-4';
+        if ([ 'Glace'].includes(element)) return 'text-amber-darken-4';
+        return 'text-yellow-darken-2'
+    } else if (nbStars === 4) {
+        if (['Foudre'].includes(element)) return 'text-deep-purple-lighten-3';
+        if (['Physique', 'Quantique'].includes(element)) return 'text-deep-purple-lighten-2';
+        if (['Feu', 'Vent', 'Glace, '].includes(element)) return 'text-deep-purple-darken-1';
+        return 'text-deep-purple-lighten-1'
+    }
+}
+
+function getEyeColor(element) {
+    if ([ 'Glace', 'Imaginaire'].includes(element)) return 'text-grey-darken-4';
+    return 'text-white'
 }
 
 async function deleteCharacter(pnj) {

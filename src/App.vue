@@ -33,7 +33,7 @@
     </v-main>
 
     <v-footer>
-        Made with love & hairballs by HaeLovesCats
+        Made with love & hairballs by <a href = "mailto: haelovescats@gmail.com" class="ml-1">HaeLovesCats</a>
     </v-footer>
   </v-app>
 </template>
