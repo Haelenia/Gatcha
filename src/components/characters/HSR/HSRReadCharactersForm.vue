@@ -9,7 +9,7 @@
         <span> {{ currentCharacter?.type }}</span> 
     </div>
 
-
+²
     <div class="roles-list hsr-form read-only">
         <div v-for="(role, index) in currentCharacter.roles" :key="index" >
             <!-- Equipment Sets -->

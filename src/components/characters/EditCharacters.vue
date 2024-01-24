@@ -15,7 +15,7 @@
                             :source="characterSource"          
                             @save="saveElement"
         />
-        <HSRReadCharactersForm v-if="store.getSelectedGame === 'HSR' && !isLoggedIn"
+        <HSREditCharactersForm v-if="store.getSelectedGame === 'HSR' && !isLoggedIn"
                             :is-edit-mode="isEditMode"
                             :source="characterSource"          
                             @save="saveElement"

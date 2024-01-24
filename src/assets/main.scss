@@ -24,6 +24,11 @@
             justify-content: space-between;
             flex-wrap: none;
 
+            &.read-only {
+                justify-content: unset;
+                gap: 16px;
+            }
+
             .v-btn {
                 margin-left: 16px;
             }
@@ -147,17 +152,6 @@
             }
         }
 
-        .edit-character-view {
-            .roles-list {
-                &.hsr-form {
-                    .v-card {
-                        //padding: 20px;
-                    }
-                }
-            }
-
-        }
-
         .roles-list {
             column-gap: 16px;
             row-gap: 16px;
@@ -183,7 +177,6 @@
                         width: 40px;
                         min-width: 40px;
                     }
-        
                 }
 
                 .sets-content {

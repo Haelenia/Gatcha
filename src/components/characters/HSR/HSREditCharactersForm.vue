@@ -1,13 +1,21 @@
 <template>
-    <div class="header hsr-form">
+    <div class="header hsr-form" :class="{ 'read-only': !isLoggedIn }">
         <h1>{{props.isEditMode ? currentCharacter.name : 'Nouveau personnage'}}</h1>
         <div v-if="isLoggedIn" class="actions">
             <v-btn @click="resetElement">Annuler</v-btn>
             <v-btn @click="$emit('save', currentCharacter)">Enregistrer</v-btn>
         </div>
+        <template v-else>
+            <span>
+                <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" size="small" :class="currentCharacter?.star === 5 ? 'text-yellow-darken-2' : 'text-deep-purple-lighten-1'"></v-icon>
+                <v-icon v-if="currentCharacter?.star == 5" icon="mdi-star" size="small" :class="'text-yellow-darken-2'"></v-icon>
+            </span>
+            <span class="text-h6 mr-4 ml-4 mt-1"> {{ currentCharacter?.role }}</span>
+            <span class="text-h6 mt-1"> {{ currentCharacter?.type }}</span>
+        </template>
     </div>
 
-    <div class="identity hsr-form">
+    <div v-if="isLoggedIn" class="identity hsr-form">
         <v-text-field label="Nom" v-model="currentCharacter.name" class="label" :disabled="!isLoggedIn"></v-text-field>
         <v-select label="Voix"
                 clearable
@@ -42,7 +50,6 @@
 
     <div class="roles-list hsr-form">
         <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
-
             <!-- Equipment Sets -->
             <v-card>
                 <v-card-title>Set de reliques et d'ornements planaires recommandés</v-card-title>
@@ -50,7 +57,7 @@
                     <div class="set-content">
                         <v-card-subtitle>Reliques des cavernes</v-card-subtitle>
                         <v-card-text>
-                            <template  v-for="(set, indexRelic) in role.set" :key="indexRelic">
+                            <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
                                 <div v-if="set.type === 'relic'" class="set-line">
                                     <v-radio-group v-model="set.nbPieces" inline :disabled="!isLoggedIn">
                                         <v-radio :value="4">
@@ -64,6 +71,9 @@
                                             </template>
                                         </v-radio>
                                     </v-radio-group>
+                                    <!-- <div v-if="!isLoggedIn" class="">
+                                        <span>{{ `${set.nbPieces} pièces` }}</span>
+                                    </div> -->
                                     <div>
                                         <v-select
                                             :items="relicSetList"
