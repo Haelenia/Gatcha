@@ -17,7 +17,8 @@ export const useTestStore = defineStore('test', {
         currentSet: null,
         dungeons: null,
         initDungeon: null,
-        currentDungeon: null
+        currentDungeon: null,
+        pageTitle: 'Miaou'
 
       }
     },

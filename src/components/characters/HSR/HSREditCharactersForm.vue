@@ -48,24 +48,24 @@
         <v-checkbox v-if="isLoggedIn" label="possédé" v-model="currentCharacter.isOwned" :disabled="!isLoggedIn"></v-checkbox>
     </div>
 
-    <div class="roles-list hsr-form">
+    <div class="roles-list hsr-form" :class="{ 'read-only': !isLoggedIn }">
         <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
             <!-- Equipment Sets -->
             <v-card>
                 <v-card-title>Set de reliques et d'ornements planaires recommandés</v-card-title>
                 <div class="sets-content">
                     <div class="set-content">
-                        <v-card-subtitle>Reliques des cavernes</v-card-subtitle>
+                        <v-card-subtitle class="text-subtitle-1">Reliques des cavernes</v-card-subtitle>
                         <v-card-text>
                             <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
                                 <div v-if="set.type === 'relic'" class="set-line">
                                     <v-radio-group v-model="set.nbPieces" inline :disabled="!isLoggedIn">
-                                        <v-radio :value="4">
+                                        <v-radio :value="4" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 4">
                                             <template v-slot:label>
                                                 <span>4 pièces</span>
                                             </template>
                                         </v-radio>
-                                        <v-radio :value="2">
+                                        <v-radio :value="2" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 2">
                                             <template v-slot:label>
                                                 <span>2 pièces</span>
                                             </template>
@@ -102,7 +102,7 @@
                     </div>  
 
                     <div class="set-content">
-                        <v-card-subtitle>Ornement planaire</v-card-subtitle>
+                        <v-card-subtitle class="text-subtitle-1">Ornement planaire</v-card-subtitle>
                         <v-card-text>
                             <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
                                 <div v-if="set.type === 'ornment'" class="set-line">                                    
@@ -248,7 +248,7 @@
 
 
 <script setup>
-import { ref, watch, computed } from "vue"
+import { ref, watch, computed, watchEffect } from "vue"
 import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection, useCurrentUser } from "vuefire"
 import { collection, where, query } from "firebase/firestore"
@@ -372,6 +372,13 @@ watch(() => props.source, (characterSource) => {
       ...characterSource,
     }
     initCharacter.value = JSON.parse(JSON.stringify(currentCharacter.value))
+    if (currentCharacter.value.name ) {
+        store.pageTitle = `${store.selectedGame} - ${currentCharacter.value.name}`
+    }
+})
+
+watchEffect(() => {
+    if (currentCharacter.value.name ) store.pageTitle = `${store.selectedGame} - ${currentCharacter.value.name}` 
 })
 
 
@@ -381,15 +388,7 @@ watch(() => props.source, (characterSource) => {
 
 
 
-
-
-
 <style scoped lang="scss">
-
-
-
-
-
 .label {
     width: 50%;
 }

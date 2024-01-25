@@ -39,22 +39,18 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { RouterView } from 'vue-router'
 import { useRouter, useRoute  } from 'vue-router'
 import { useTestStore } from './stores/test'
-import { useAuthStore } from './stores/auth'
 import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 import { signOut } from '@firebase/auth'
-
 
 const router = useRouter()
 const route = useRoute()
 const store = useTestStore()
-const authStore = useAuthStore()
 const auth = useFirebaseAuth()
 const user = useCurrentUser()
-const currentUser = authStore.getCurrentUser
 
 store.selectGame()
 
@@ -78,6 +74,10 @@ async function signOutOfFirebase() {
     })
 }
 
+
+watch(() => store.pageTitle, () => {
+    document.title = store.pageTitle
+})
 
 </script>
 

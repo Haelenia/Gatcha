@@ -120,13 +120,11 @@ import { reactive, ref, computed, watch } from "vue";
 import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query,  deleteDoc, doc } from "firebase/firestore";
-import { useRouter } from "vue-router";
 import { GENSHIN_ATTRIBUTES, GENSHIN_EQUIPMENT } from "../../../tools/constants";
 import { sortByName, copy } from '../../../tools/tools';
 
 const db = useFirestore()
 const store = useTestStore()
-const router = useRouter()
 
 let charactersRef = collection(db, 'characters')
 let q = query(charactersRef, where("game", "==", store.getSelectedGame))

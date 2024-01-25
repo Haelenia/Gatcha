@@ -155,6 +155,12 @@
         .roles-list {
             column-gap: 16px;
             row-gap: 16px;
+
+            &.read-only.hsr-form {
+                .fieldset-card {
+                    border: unset;
+                }
+            }
         
             .fieldset-card {
                 padding: 16px;
@@ -183,7 +189,7 @@
                     display: flex;
                     flex-wrap: wrap;
                     justify-content: space-between;
-                    gap: 32px;
+                    //gap: 16px;
 
                     .set-content {
                         min-width: 600px;
