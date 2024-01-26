@@ -67,7 +67,7 @@ const isLoggedIn = computed(() => {
 async function signOutOfFirebase() {
   signOut(auth)
     .then(() => {
-      console.log('Logged out!')
+      console.log('Bye bye :)')
     })
     .catch((error) => {
       console.error(error)

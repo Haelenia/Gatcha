@@ -79,7 +79,7 @@ router.beforeEach((to) => {
     if (to.meta?.title) {
         document.title = to.meta.title
     } else {
-        document.title = null
+        document.title = game
     }
 
     if (game && !store.getSelectedGame) {

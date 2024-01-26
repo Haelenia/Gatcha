@@ -65,7 +65,6 @@ let getElement = HSR_ELEMENT
 onMounted(() => {
     characterIdentity.value = copy(props.currentCharacter)
     initCharacter.value = copy(props.currentCharacter)
-    console.log('character.value',characterIdentity.value)
 })
 
 

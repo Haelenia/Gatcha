@@ -185,10 +185,9 @@ const filteredList = computed(() => {
     if (owned) {
         list = list.filter(el => el.isOwned === true)
     }
-    if (fourstars) {
+    if (fourstars && !fivestars) {
         list = list.filter(el => el.star == 4)
-    }
-    if (fivestars) {
+    } else if (fivestars && !fourstars) {
         list = list.filter(el => el.star == 5)
     }
     if (todo) {

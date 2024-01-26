@@ -16,20 +16,18 @@
     </div>
 
     <div v-if="isLoggedIn" class="identity hsr-form">
-        <v-text-field label="Nom" v-model="currentCharacter.name" class="label" :disabled="!isLoggedIn"></v-text-field>
+        <v-text-field label="Nom" v-model="currentCharacter.name" class="label" ></v-text-field>
         <v-select label="Voix"
                 clearable
                 :items="getRoles.sort()"
                 v-model="currentCharacter.role"
-                :disabled="!isLoggedIn"
         ></v-select>
         <v-select label="Element"
                 clearable
                 :items="getElement.sort()"
                 v-model="currentCharacter.type"
-                :disabled="!isLoggedIn"
         ></v-select>
-        <v-radio-group v-model="currentCharacter.star" inline :disabled="!isLoggedIn">
+        <v-radio-group v-model="currentCharacter.star" inline>
             <v-radio :value="5">
                 <template v-slot:label>
                     <v-icon icon="mdi-star" class="text-yellow-darken-2"></v-icon>
@@ -43,9 +41,9 @@
         </v-radio-group>
 
         <!-- For admin only, to see if profile as been updated -->
-        <v-checkbox v-if="isLoggedIn" label="video check" v-model="currentCharacter.isUpdated" :disabled="!isLoggedIn"></v-checkbox>
-        <v-checkbox v-if="isLoggedIn" label="complet" v-model="currentCharacter.completed" :disabled="!isLoggedIn"></v-checkbox>
-        <v-checkbox v-if="isLoggedIn" label="possédé" v-model="currentCharacter.isOwned" :disabled="!isLoggedIn"></v-checkbox>
+        <v-checkbox v-if="isLoggedIn" label="video check" v-model="currentCharacter.isUpdated" ></v-checkbox>
+        <v-checkbox v-if="isLoggedIn" label="complet" v-model="currentCharacter.completed" ></v-checkbox>
+        <v-checkbox v-if="isLoggedIn" label="possédé" v-model="currentCharacter.isOwned" ></v-checkbox>
     </div>
 
     <div class="roles-list hsr-form" :class="{ 'read-only': !isLoggedIn }">
@@ -58,8 +56,8 @@
                         <v-card-subtitle class="text-subtitle-1">Reliques des cavernes</v-card-subtitle>
                         <v-card-text>
                             <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
-                                <div v-if="set.type === 'relic'" class="set-line">
-                                    <v-radio-group v-model="set.nbPieces" inline :disabled="!isLoggedIn">
+                                <div v-if="set.type === 'relic'" class="set-line mb-4">
+                                    <v-radio-group v-model="set.nbPieces" inline :readonly="!isLoggedIn" >
                                         <v-radio :value="4" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 4">
                                             <template v-slot:label>
                                                 <span>4 pièces</span>
@@ -71,25 +69,22 @@
                                             </template>
                                         </v-radio>
                                     </v-radio-group>
-                                    <!-- <div v-if="!isLoggedIn" class="">
-                                        <span>{{ `${set.nbPieces} pièces` }}</span>
-                                    </div> -->
                                     <div>
                                         <v-select
                                             :items="relicSetList"
                                             :item-props="itemProps"
                                             v-model="set.relic[0]"
-                                            :disabled="!isLoggedIn"
+                                            :readonly="!isLoggedIn"
                                         ></v-select>
                                         <v-select v-if="set.nbPieces === 2"
                                             :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
                                             :item-props="itemProps"
                                             v-model="set.relic[1]"
-                                            :disabled="!isLoggedIn"
+                                            :readonly="!isLoggedIn"
                                         ></v-select>
                                     </div>
                                     
-                                    <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow :disabled="!isLoggedIn"></v-textarea>
+                                    <v-textarea class="" label="Notes" v-model="set.comment" rows="1" auto-grow :readonly="!isLoggedIn"></v-textarea>
                                     <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
                                         <v-icon icon="mdi-trash-can-outline"></v-icon>
                                     </v-btn>
@@ -105,14 +100,14 @@
                         <v-card-subtitle class="text-subtitle-1">Ornement planaire</v-card-subtitle>
                         <v-card-text>
                             <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
-                                <div v-if="set.type === 'ornment'" class="set-line">                                    
+                                <div v-if="set.type === 'ornment'" class="set-line mb-4">
                                     <v-select
                                         :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
                                         :item-props="itemProps"
                                         v-model="set.ornment"
-                                        :disabled="!isLoggedIn"
+                                        :readonly="!isLoggedIn"
                                     ></v-select>
-                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow :disabled="!isLoggedIn"></v-textarea>
+                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow :readonly="!isLoggedIn"></v-textarea>
 
                                     <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
                                         <v-icon icon="mdi-trash-can-outline"></v-icon>
@@ -139,10 +134,10 @@
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
-                                    clearable
+                                    :clearable="isLoggedIn"
                                     density="compact"
                                     v-model="role.torse"
-                                    :disabled="!isLoggedIn"
+                                    :readonly="!isLoggedIn"
                         ></v-select>
                         </v-card-text>
                     </div>
@@ -154,10 +149,10 @@
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
-                                    clearable
+                                    :clearable="isLoggedIn"
                                     density="compact"
                                     v-model="role.botte"
-                                    :disabled="!isLoggedIn"
+                                    :readonly="!isLoggedIn"
                             ></v-select>
                         </v-card-text>
                         
@@ -170,10 +165,10 @@
                             <v-select :items="getStats.sort()"
                                         multiple
                                         chips
-                                        clearable
+                                        :clearable="isLoggedIn"
                                         density="compact"
                                         v-model="role.orbe"
-                                        :disabled="!isLoggedIn"
+                                        :readonly="!isLoggedIn"
                             ></v-select>
                         </v-card-text>
                     </div>
@@ -185,10 +180,10 @@
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
-                                    clearable
+                                    :clearable="isLoggedIn"
                                     density="compact"
                                     v-model="role.chaine"
-                                    :disabled="!isLoggedIn"
+                                    :readonly="!isLoggedIn"
                             ></v-select>
                         </v-card-text>
                         
@@ -205,9 +200,9 @@
                             multiple
                             chips
                             density="compact"
-                            clearable
+                            :clearable="isLoggedIn"
                             v-model="role.statToFocus"
-                            :disabled="!isLoggedIn"
+                            :readonly="!isLoggedIn"
                     ></v-select>
                 </v-card-text>
             </v-card>
@@ -217,21 +212,21 @@
                 <v-card>
                     <v-card-title>Armes</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.weapons" auto-grow :disabled="!isLoggedIn"></v-textarea>
+                        <v-textarea v-model="role.weapons" auto-grow :readonly="!isLoggedIn"></v-textarea>
                     </v-card-text>
                 </v-card>
                 <!-- Team -->
                 <v-card>
                     <v-card-title>Team</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.team" auto-grow :disabled="!isLoggedIn"></v-textarea>
+                        <v-textarea v-model="role.team" auto-grow :readonly="!isLoggedIn"></v-textarea>
                     </v-card-text>
                 </v-card>
                 <!-- Notes -->
                 <v-card>
                     <v-card-title>Notes</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.note" auto-grow :disabled="!isLoggedIn"></v-textarea>
+                        <v-textarea v-model="role.note" auto-grow :readonly="!isLoggedIn"></v-textarea>
                     </v-card-text>
                 </v-card>
             </div>

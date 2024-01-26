@@ -155,10 +155,20 @@
         .roles-list {
             column-gap: 16px;
             row-gap: 16px;
+            .v-input__details {
+                display: none;
+            }
 
             &.read-only.hsr-form {
                 .fieldset-card {
                     border: unset;
+                    .sets-content .set-line {
+                        .v-radio-group {
+                            width: 150px;
+                        }
+                    }
+                
+                
                 }
             }
         
@@ -188,12 +198,12 @@
                 .sets-content {
                     display: flex;
                     flex-wrap: wrap;
-                    justify-content: space-between;
+                    //justify-content: space-between;
                     //gap: 16px;
 
                     .set-content {
                         min-width: 600px;
-                        //max-width: 900px;
+                        width: 50%;
                         .set-line {
                             display: flex;
                             gap: 32px;
@@ -202,10 +212,12 @@
                                 max-width: 200px;
                             }
                             .v-textarea--no-resize {
-                                min-width: 230px;
+                                width: 230px;
+                                //max-width: 300px;
+                                flex-grow: 2;
                             }
                             .v-input:not(.v-radio-group):not(.v-textarea--no-resize) {
-                                min-width: 320px;
+                                width: 320px;
                             }
                         }
                     }
@@ -267,6 +279,8 @@
         margin-top: 16px;
         height: 40px;
         flex-grow: 0;
+        justify-content: right;
+        font-size: 12px;
     }
 
     .m-right16 {

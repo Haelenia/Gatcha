@@ -49,17 +49,17 @@ const auth = useFirebaseAuth()
 
 async function createUser() {
     return
-    createUserWithEmailAndPassword(auth, userInput.value.email, userInput.value.password)
-    .then((userCredential) => {
-        // Signed up 
-        const user = userCredential.user;
-        store.setCurrentUser(user)
-    })
-    .catch((error) => {
-        console.log('error on user creation')
-        const errorCode = error.code
-        const errorMessage = error.message
-    });
+    // createUserWithEmailAndPassword(auth, userInput.value.email, userInput.value.password)
+    // .then((userCredential) => {
+    //     // Signed up 
+    //     const user = userCredential.user;
+    //     store.setCurrentUser(user)
+    // })
+    // .catch((error) => {
+    //     console.log('error on user creation')
+    //     const errorCode = error.code
+    //     const errorMessage = error.message
+    // });
 
 }
 
@@ -78,8 +78,8 @@ async function signInToFirebase() {
     })
     .catch((error) => {
         console.log('error on login', error)
-        const errorCode = error.code
-        const errorMessage = error.message
+        //const errorCode = error.code
+        //const errorMessage = error.message
     })
 }
 
