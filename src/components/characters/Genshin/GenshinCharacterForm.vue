@@ -1,13 +1,21 @@
 <template>
-    <div class="header genshin-form">
+    <div class="header genshin-form" :class="{ 'read-only': !isLoggedIn }">
         <h1>{{props.isEditMode ? currentCharacter.name : 'Nouveau personnage'}}</h1>
-        <div class="actions">
+        <div v-if="isLoggedIn" class="actions">
             <v-btn @click="resetElement">Annuler</v-btn>
             <v-btn @click="$emit('save', currentCharacter)">Enregistrer</v-btn>
         </div>
+        <template v-else>
+            <span>
+                <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" size="small" :class="currentCharacter?.star === 5 ? 'text-yellow-darken-2' : 'text-deep-purple-lighten-1'"></v-icon>
+                <v-icon v-if="currentCharacter?.star == 5" icon="mdi-star" size="small" :class="'text-yellow-darken-2'"></v-icon>
+            </span>
+            <span class="text-h6 mr-4 ml-4 mt-1"> {{ currentCharacter?.element }}</span>
+            <span class="text-h6 mt-1"> {{ currentCharacter?.weapon }}</span>
+        </template>
     </div>
 
-    <div class="identity genshin-form">
+    <div v-if="isLoggedIn" class="identity genshin-form">
         <v-text-field label="Nom" v-model="currentCharacter.name" class="label"></v-text-field>
         <v-select label="Element"
                 :items="getElement"
@@ -39,24 +47,29 @@
     </div>
 
 
-    <div class="roles-list genshin-form">
+    <div class="roles-list genshin-form" :class="{ 'read-only': !isLoggedIn }">
         <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
-            <v-text-field label="Nom du rôle" v-model="role.name" placeholder="nom du rôle"></v-text-field>
+            <v-text-field label="Nom du rôle"
+                v-model="role.name"
+                placeholder="nom du rôle"
+                :readonly="!isLoggedIn"
+                class="mb-8"
+            ></v-text-field>
 
             <!-- Equipment Sets -->
             <div class="sets-content multiple-card-zone">
                 <v-card class="set-content">
-                    <v-card-title>Sets à privilégier</v-card-title>
+                    <v-card-title>Set d'artefacts à privilégier</v-card-title>
                     <v-card-text>
                         <template v-for="(set, indexSet) in role.set" :key="indexSet">
-                            <div class="set-line">
-                                <v-radio-group v-model="set.nbPieces" inline>
-                                    <v-radio :value="4">
+                            <div class="set-line mb-4">
+                                <v-radio-group v-model="set.nbPieces" inline :readonly="!isLoggedIn">
+                                    <v-radio :value="4" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 4">
                                         <template v-slot:label>
                                             <span>4 pièces</span>
                                         </template>
                                     </v-radio>
-                                    <v-radio :value="2">
+                                    <v-radio :value="2" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 2">
                                         <template v-slot:label>
                                             <span>2 pièces</span>
                                         </template>
@@ -67,22 +80,24 @@
                                         :items="sortByName(setList)"
                                         :item-props="itemProps"
                                         v-model="set.data[0]"
+                                        :readonly="!isLoggedIn"
                                     ></v-select>
                                     <v-select v-if="set.nbPieces === 2 && set.data"
                                         :items="sortByName(setList)"
                                         :item-props="itemProps"
                                         v-model="set.data[1]"
+                                        :readonly="!isLoggedIn"
                                     ></v-select>
                                 </div>
                                 
-                                <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow></v-textarea>
-                                <v-btn v-if="role.set.length > 1" @click="removeElement('set', index, indexSet, set)">
+                                <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow :readonly="!isLoggedIn"></v-textarea>
+                                <v-btn v-if="isLoggedIn && role.set.length > 1" @click="removeElement('set', index, indexSet, set)">
                                     <v-icon icon="mdi-trash-can-outline"></v-icon>
                                 </v-btn>
                             </div>
                         </template>
                     </v-card-text>
-                    <v-card-actions>
+                    <v-card-actions v-if="isLoggedIn">
                         <v-btn @click="addElement('set', index)">+ Ajouter une relique</v-btn>
                     </v-card-actions>
                 </v-card>
@@ -90,7 +105,7 @@
                 <v-card>
                     <v-card-title>Armes</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.weapons"  auto-grow></v-textarea>
+                        <v-textarea v-model="role.weapons" auto-grow :readonly="!isLoggedIn"></v-textarea>
                     </v-card-text>
                 </v-card>
             </div>
@@ -102,49 +117,31 @@
                     <div class="group">
                         <!-- Stat for Hourglass -->
                         <div class="card short-text">
-                            <div class="group-bloc">
-                                <div v-for="(sa, index2) in role.sablier" :key="index2" class="individual-bloc">
-                                    <template v-if="!getStats.includes(role.sablier[index2])">
-                                        <v-text-field label="Sablier" v-model="role.sablier[index2]"
-                                            placeholder="PV%"></v-text-field>
-                                        <v-btn v-if="role.sablier.length > 1" @click="removeElement('sablier', index, index2)">
-                                            <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                        </v-btn>
-                                    </template>
-                                </div>
-                            </div>
-                            
+                            <v-card-subtitle>Sablier</v-card-subtitle>
                             <v-card-text>
-                                <v-select label="Sablier"
+                                <v-select 
                                         :items="getStats"
                                         multiple
                                         chips
-                                        clearable
+                                        :clearable="isLoggedIn"
                                         v-model="role.sablier"
+                                        :readonly="!isLoggedIn"
+                                        density="compact"
                             ></v-select>
                             </v-card-text>
                         </div>
 
                         <!-- Stat for Cup -->
                         <div class="card short-text">
-                            <div class="group-bloc">
-                                <div v-for="(c, index2) in role.coupe" :key="index2" class="individual-bloc">
-                                    <template v-if="!getStats.includes(role.coupe[index2])">
-                                        <v-text-field label="Coupe" v-model="role.coupe[index2]" placeholder="PV%"></v-text-field>
-                                        <v-btn v-if="role.coupe.length > 1" @click="removeElement('coupe', index, index2)">
-                                            <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                        </v-btn>
-                                    </template> 
-                                </div>
-                            </div>
-                            
+                            <v-card-subtitle>Coupe</v-card-subtitle>
                             <v-card-text>
-                                <v-select label="Coupe" 
-                                        :items="getStats"
+                                <v-select :items="getStats"
                                         multiple
                                         chips
-                                        clearable
+                                        :clearable="isLoggedIn"
                                         v-model="role.coupe"
+                                        :readonly="!isLoggedIn"
+                                        density="compact"
                                 ></v-select>
                             </v-card-text>
                             
@@ -152,25 +149,15 @@
 
                         <!-- Stat for Crown -->
                         <div class="card short-text">
-                            <div class="group-bloc">
-                                <div v-for="(p, index2) in role.couronne" :key="index2" class="individual-bloc">
-                                    <template v-if="!getStats.includes(role.couronne[index2])">
-                                        <v-text-field label="Couronne" v-model="role.couronne[index2]" placeholder="PV%"></v-text-field>
-                                        <v-btn v-if="role.couronne.length > 1" @click="removeElement('couronne', index, index2)">
-                                            <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                        </v-btn>
-                                    </template> 
-                                </div>
-                            </div>
-                            
+                            <v-card-subtitle>Diadème</v-card-subtitle>
                             <v-card-text>
-                                <v-select 
-                                    label="Diadème"
-                                    :items="getStats"
+                                <v-select :items="getStats"
                                             multiple
                                             chips
-                                            clearable
+                                            :clearable="isLoggedIn"
                                             v-model="role.couronne"
+                                            :readonly="!isLoggedIn"
+                                            density="compact"
                                 ></v-select>
                             </v-card-text>
                         </div>
@@ -180,22 +167,15 @@
                 <!-- Substat to focus -->
                 <v-card class="card short-text m-top32">
                     <v-card-title>Substat à focus</v-card-title>
-                    <v-card-text class="m-top16">
-                        <div class="group-bloc">
-                            <div v-for="(st, index2) in role.statToFocus" :key="index2" class="individual-bloc">
-                                <v-text-field v-if="!getStats.includes(role.statToFocus[index2])" label="Stat a privilégier" v-model="role.statToFocus[index2]" placeholder="PV%"></v-text-field>
-                                <v-btn v-if="role.statToFocus.length > 1 && !getStats.includes(role.statToFocus[index2])"
-                                    @click="removeElement('statToFocus', index, index2)">
-                                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                </v-btn>
-                            </div>
-                        </div>
-                        <v-select label="Par ordre de priorité"
-                                :items="getStats"
-                                multiple
-                                chips
-                                clearable
-                                v-model="role.statToFocus"
+                    <v-card-subtitle>Par ordre de priorité</v-card-subtitle>
+                    <v-card-text>
+                        <v-select :items="getStats"
+                                    multiple
+                                    chips
+                                    :clearable="isLoggedIn"
+                                    :readonly="!isLoggedIn"
+                                    v-model="role.statToFocus"
+                                    density="compact"
                         ></v-select>
                     </v-card-text>
                     
@@ -207,21 +187,18 @@
                 <!-- Aptitude -->
                 <v-card>
                     <v-card-title>Aptitudes</v-card-title>
+                    <v-card-subtitle>Ordre de priorité</v-card-subtitle>
                     <v-card-text>
-                        <v-text-field label="ordre de priorité" v-model="role.aptitude.priority"></v-text-field>
-                        <!-- <v-select
-                                label="Matériaux"
-                                multiple
-                                chips
-                                :items="['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']"
-                                v-model="role.aptitude.materials"
-                    ></v-select> -->
-                        <v-select
-                                label="Jours de farm"
-                                multiple
+                        <v-text-field density="compact" v-model="role.aptitude.priority" :readonly="!isLoggedIn" ></v-text-field>
+                    </v-card-text>
+                    <v-card-subtitle>Jours de farm</v-card-subtitle>
+                    <v-card-text>
+                        <v-select multiple
                                 chips
                                 :items="['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']"
                                 v-model="role.aptitude.days"
+                                :readonly="!isLoggedIn"
+                                density="compact"
                     ></v-select>
                     </v-card-text>
                 </v-card>
@@ -229,20 +206,20 @@
                 <v-card>
                     <v-card-title>Notes</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.note"></v-textarea>
+                        <v-textarea v-model="role.note" :readonly="!isLoggedIn" auto-grow></v-textarea>
                     </v-card-text>
                 </v-card>
 
             </div>
             
 
-            <v-btn v-if="currentCharacter.roles.length > 1" @click="removeRole(index)">
+            <v-btn v-if="isLoggedIn && currentCharacter.roles.length > 1" @click="removeRole(index)">
                 <v-icon icon="mdi-trash-can-outline"></v-icon>
             </v-btn>
         </div>
 
     </div>
-    <v-btn @click="addRole">+ Ajouter un rôle</v-btn>
+    <v-btn  v-if="isLoggedIn" @click="addRole">+ Ajouter un rôle</v-btn>
 </template>
 
 

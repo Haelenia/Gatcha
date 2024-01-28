@@ -389,8 +389,6 @@ watchEffect(() => {
 }
 
 
-#app main .roles-list .group {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
+
 
 </style>

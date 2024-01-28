@@ -194,10 +194,9 @@ const filteredList = computed(() => {
     if (owned) {
         list = list.filter(el => el.isOwned === true)
     }
-    if (fourstars) {
+    if (fourstars && !fivestars) {
         list = list.filter(el => el.star == 4)
-    }
-    if (fivestars) {
+    } else if (fivestars && !fourstars) {
         list = list.filter(el => el.star == 5)
     }
     if (todo) {
@@ -211,9 +210,12 @@ const filteredList = computed(() => {
         const chosenDjId = dj.id
         list = list.filter(character => {
             let roles = character.roles?.filter(r => {
-                let test2 =  r.set && r.set.filter(s => {
-                    if (s.data?.length && s.data.some(el => el.dj == chosenDjId)) {
-                        surligne.value.push(s.data)
+                let test2 = r.set && r.set.filter(s => {
+                    let matchedArte = s.data?.length && s.data.filter(el => el.dj == chosenDjId) || []
+                    if (matchedArte.length) {
+                        matchedArte.forEach(rel => {
+                            surligne.value.push(rel.name)
+                        })
                         return true
                     }
                 })
@@ -228,9 +230,11 @@ const filteredList = computed(() => {
         list = list.filter(character => {
             let roles =  character.roles?.filter(role => {
                 let test2 =  role?.set?.filter(s => {
-                    const hasSet = s.data?.length && s?.data?.some(el => el.id === selectedSetId) || false
-                    if (hasSet) {
-                        surligne.value.push(hasSet.name)
+                    let matchedRelic = s.data?.length && s.data.filter(el => el.id === selectedSetId) || []
+                    if (matchedRelic.length) {
+                        matchedRelic.forEach(rel => {
+                            surligne.value.push(rel.name)
+                        })
                         return true
                     }
                 })
@@ -333,7 +337,6 @@ function reduceCard() {
 }
 
 async function deleteCharacter(pnj, isActive) {
-    console.log('deleteCharacter', pnj, pnj.value)
     // let toto = copy(charactersList.value)
     // let index = toto.findIndex(el => el.id === pnj.id)
     // toto.splice(index, 1)
@@ -360,14 +363,14 @@ function itemProps2 (item) {
     }
 }
 
-watch(() => (filter.dj), (newFilter, oldFilter) => {
-    if (newFilter.dj?.name != oldFilter.dj?.name) {
+watch(() => ({ ...filter}),(newFilter, oldFilter) => {
+    if (newFilter?.dj?.name != oldFilter?.dj?.name) {
         surligne.value = []
     }
-    if (newFilter.set?.name != oldFilter.set?.name) {
+    if (newFilter?.set?.name != oldFilter?.set?.name) {
         surligne.value = []
     }
-    if (newFilter.stat != oldFilter.stat) {
+    if (newFilter?.stat != oldFilter?.stat) {
         surligne.value = []
     }
 })

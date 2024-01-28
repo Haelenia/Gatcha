@@ -160,7 +160,10 @@
                 display: none;
             }
 
-            &.read-only.hsr-form {
+            &.read-only {
+                &.genshin-form {
+                    
+                }
                 .fieldset-card {
                     border: unset;
                     .sets-content .set-line {
@@ -170,6 +173,7 @@
                     }
                 }
             }
+
         
             .fieldset-card {
                 padding: 16px;
@@ -243,8 +247,8 @@
         
             .group {
                 display: grid;
-                grid-template-columns: minmax(350px, 1fr) repeat(auto-fit, minmax(200px, 1fr));
-                grid-gap: 32px;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                //grid-gap: 32px;
         
                 .group-bloc {
                     display: grid;

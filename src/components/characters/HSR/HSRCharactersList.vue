@@ -370,30 +370,17 @@ function getOrnments(set) {
 
 
 watch(() => ({...filter}), (newFilter, oldFilter) =>{
-    if (newFilter.dj?.name != oldFilter.dj?.name) {
+    if (newFilter?.dj?.name != oldFilter?.dj?.name) {
         surligne.value = []
     }
-    if (newFilter.set?.name != oldFilter.set?.name) {
+    if (newFilter?.set?.name != oldFilter?.set?.name) {
         surligne.value = []
     }
-    if (newFilter.stat != oldFilter.stat) {
+    if (newFilter?.stat != oldFilter?.stat) {
         surligne.value = []
     }
     
 })
-
-/* without vueFire
-const q = query(collection(db, "characters"));//, where("capital", "==", true));
-const q = query(citiesRef, where("regions", "array-contains", "west_coast"));
-const charactersList = ref([])
-onMounted(async () => {
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        charactersList.value.push(doc.data())
-    })
-})*/
 
 </script>
 

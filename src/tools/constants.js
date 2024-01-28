@@ -26,11 +26,11 @@ export const HSR_ELEMENT = ['Foudre', 'Feu', 'Vent', 'Physique', 'Glace', 'Quant
 export const GENSHIN_ATTRIBUTES = ['TC', 'DC', 'Hydro', 'Pyro', 'Geo', 'Cryo','Electro','Anemo','PV','PV%','DEF','DEF%','RE', 'ME', 'Dendro', 'ATQ', 'ATQ%']
 
 export const GENSHIN_EQUIPMENT = [
-    { key: 'head', label: 'Fleur' },
-    { key: 'hand', label: 'Plume' },
-    { key: 'torse', label: 'Sablier' },
-    { key: 'botte', label: 'Coupe' },
-    { key: 'orbe', label: 'Diadème' },
+    { key: 'fleur', label: 'Fleur' },
+    { key: 'plume', label: 'Plume' },
+    { key: 'sablier', label: 'Sablier' },
+    { key: 'coupe', label: 'Coupe' },
+    { key: 'couronne', label: 'Diadème' },
 ]
 
 export const GENSHIN_WEAPON = [
