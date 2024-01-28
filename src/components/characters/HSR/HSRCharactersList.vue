@@ -68,7 +68,7 @@
                 <router-link :to="{ name: 'character-edit', params: {id: character.id }}" class="mr-4" :class="getEyeColor(character?.type)"><v-icon icon="mdi-eye"></v-icon></router-link>
                 <v-btn v-if="isLoggedIn" @click="deleteCharacter(character)">
                     <v-icon icon="mdi-trash-can-outline" class="text-white"></v-icon>
-                 </v-btn>
+                </v-btn>
             </v-toolbar>
         
             <v-list lines="two" v-for="(role, index) in character.roles" :key="index">
@@ -142,14 +142,16 @@
 <script setup>
 import { ref, computed, watch, reactive } from "vue"
 import { useTestStore } from '../../../stores/test'
-import { useFirestore, useCollection, useCurrentUser } from "vuefire"
+import { useFirestore, useCollection } from "vuefire"
 import { collection, where, query, deleteDoc, doc } from "firebase/firestore"
 import { sortByName, copy } from '../../../tools/tools'
+import { useTools } from '../../../composables/tools';
 import { HSR_ATTRIBUTES, HSR_EQUIPMENT } from '../../../tools/constants'
 
 const db = useFirestore()
 const store = useTestStore()
-const connectedUser = useCurrentUser()
+const { isLoggedIn } = useTools()
+
 
 let charactersRef = collection(db, 'characters')
 let q = query(charactersRef, where("game", "==", store.getSelectedGame))
@@ -173,10 +175,6 @@ let surligne = ref([])
 let getStats = HSR_ATTRIBUTES
 let getEquipment = HSR_EQUIPMENT
 let isReduced = ref(false)
-
-const isLoggedIn = computed(() => {
-    return connectedUser?.value?.email
-})
 
 const filteredList = computed(() => {
     const { type, stat, dj, set, owned, fourstars, fivestars, todo, completed } = filter

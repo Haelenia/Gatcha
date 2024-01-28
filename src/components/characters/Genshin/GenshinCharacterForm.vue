@@ -64,12 +64,12 @@
                                 </v-radio-group>
                                 <div>
                                     <v-select v-if="set.data"
-                                        :items="setList.sort()"
+                                        :items="sortByName(setList)"
                                         :item-props="itemProps"
                                         v-model="set.data[0]"
                                     ></v-select>
                                     <v-select v-if="set.nbPieces === 2 && set.data"
-                                        :items="setList.sort()"
+                                        :items="sortByName(setList)"
                                         :item-props="itemProps"
                                         v-model="set.data[1]"
                                     ></v-select>
@@ -247,7 +247,7 @@
 
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, watchEffect } from "vue";
 import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query } from "firebase/firestore";
@@ -380,6 +380,10 @@ watch(() => props.source, (characterSource) => {
         }
     }
     initCharacter.value = JSON.parse(JSON.stringify(currentCharacter.value))
+})
+
+watchEffect(() => {
+    if (currentCharacter.value.name ) store.pageTitle = `${store.selectedGame} - ${currentCharacter.value.name}` 
 })
 
 </script>

@@ -1,10 +1,13 @@
 <template>
     <v-app>
         <v-app-bar color="teal" class="-main-header">
-        <v-app-bar-title>{{ store.selectedGame }}</v-app-bar-title>
+        <v-app-bar-title>
+            <v-btn :class="{ 'v-btn--active': store.selectedGame === 'Genshin'}" @click="goToList('Genshin')">Genshin</v-btn>
+            <v-btn :class="{ 'v-btn--active': store.selectedGame === 'HSR'}" @click="goToList('HSR')">HSR</v-btn>
+        </v-app-bar-title>
         <v-spacer></v-spacer>
         <nav class="pr-4">
-            <v-btn v-if="store.getSelectedGame" to="/"><v-icon icon="mdi-home"></v-icon></v-btn>
+            <!-- <v-btn v-if="store.getSelectedGame" to="/"><v-icon icon="mdi-home"></v-icon></v-btn> -->
             <v-btn v-if="store.getSelectedGame" to="/characters">Personnages</v-btn>
             <v-btn v-if="store.getSelectedGame && isLoggedIn" :to="{ name: 'character-create'}">Ajouter un personnage</v-btn>
             <v-btn v-if="store.getSelectedGame" :to="{ name: 'dungeons'}">Donjons</v-btn>
@@ -13,10 +16,6 @@
                 :to="{ name: 'sets'}">{{ `Sets ${store.getSelectedGame === 'Genshin' ? 'd\'artefacts' : 'de reliques'}`}}</v-btn>
             <v-btn v-if="store.getSelectedGame && isLoggedIn"
                 :to="{ name: 'set-create'}">{{ `Ajouter un set ${store.getSelectedGame === 'Genshin' ? 'd\'artefacts' : 'de reliques'}`}}</v-btn>
-            
-
-            <v-btn v-if="isLoggedIn" @click="goToList('Genshin')">Genshin</v-btn>
-            <v-btn v-if="isLoggedIn"  @click="goToList('HSR')">HSR</v-btn>
 
             <v-btn v-if="isLoggedIn" @click="signOutOfFirebase">Sign Out</v-btn>
             <v-btn v-else to="/login">Sign in</v-btn>
@@ -32,14 +31,25 @@
         </Suspense>
     </v-main>
 
+    <div v-if="isSourceDisplayed" class="sources">
+        <ul>
+            <li><a href="https://www.youtube.com/@AlexYukiii">AlexYukii</a></li>
+            <li><a href="https://www.youtube.com/@Nokapt">Nokapt</a></li>
+            <li><a href="https://sephijin.fr/">Sephijin</a></li>
+        </ul>
+    </div>
+
     <v-footer>
-        Made with love & hairballs by <a href = "mailto: haelovescats@gmail.com" class="ml-1">HaeLovesCats</a>
+        <div @click="isSourceDisplayed = !isSourceDisplayed" >
+            Sources
+        </div>
+        <span>Made with love & hairballs by <a href="mailto: haelovescats@gmail.com" class="ml-1">HaeLovesCats</a></span>
     </v-footer>
   </v-app>
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { useRouter, useRoute  } from 'vue-router'
 import { useTestStore } from './stores/test'
@@ -51,6 +61,8 @@ const route = useRoute()
 const store = useTestStore()
 const auth = useFirebaseAuth()
 const user = useCurrentUser()
+
+let isSourceDisplayed = ref(false)
 
 store.selectGame()
 

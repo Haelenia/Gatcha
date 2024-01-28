@@ -1,11 +1,13 @@
 <template>
     <div class="header">
         <h1>{{`Liste des personnages (${filteredList.length})`}}</h1>
-        <v-btn :to="{ name: 'character-create' }"> + Nouveau</v-btn>
+        <v-btn v-if="isLoggedIn" :to="{ name: 'character-create' }"> + Nouveau</v-btn>
     </div>
+
     <!-- Filters zone -->
-    <div class="filters-bloc">
-        <div class="filters-bloc__input">
+    <div class="filters-zone">
+        <span class="notice">Utilisez les filtres ci-dessous pour savoir quel personnage pourrait avoir besoin de l'artefact que vous avez, ou pour savoir si un donjon est rentable à farmer.</span>
+        <div class="filters-bloc mt-2">
             <v-select
                 label="Artefact"
                 :items="sortByName(setList)"
@@ -36,75 +38,104 @@
                 clearable
                 ></v-select>
 
-            <v-checkbox label="owned" v-model="filter.owned"></v-checkbox>
-            <v-checkbox label="video a check" v-model="filter.todo"></v-checkbox>
-            <v-checkbox label="incomplet" v-model="filter.completed"></v-checkbox>
+            <v-checkbox v-if="isLoggedIn" label="owned" v-model="filter.owned"></v-checkbox>
+            <v-checkbox v-if="isLoggedIn" label="video a check" v-model="filter.todo"></v-checkbox>
+            <v-checkbox v-if="isLoggedIn" label="incomplet" v-model="filter.completed"></v-checkbox>
             <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
             <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
-        </div>
-        <div class="filters-bloc__action">
-            <v-btn @click="clearFilter">Reset</v-btn>
-            <v-btn @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
             
+            <v-spacer></v-spacer>
+
+            <v-btn class="mb-5" variant="text" @click="clearFilter">Reset</v-btn>
+            <v-btn class="mb-5" variant="text" @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
         </div>
     </div>
-    
+
+    <!-- Content Zone -->
     <div class="characters-list" :class="{ 'mini': isReduced }">
         <v-card class="mx-auto" v-for="character in filteredList" :key="character.id" >
-            <v-toolbar :color="getColor(character?.element?.toLowerCase())">
+            <!-- Title zone -->
+            <v-toolbar :color="getColor(character?.element?.toLowerCase())" class="card-title-zone">
                 <v-toolbar-title>
                     <span>{{ character.name }}</span>
                     <template v-if="character.star">
-                        <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" :class="character.star == 5 ? 'text-yellow-darken-2' : 'text-deep-purple-lighten-1' "></v-icon>
-                        <v-icon v-if="character.star == 5" icon="mdi-star" :class="'text-yellow-darken-2'"></v-icon>
+                        <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" size="x-small" :class="getStarColor(character.star, character?.element)"></v-icon>
+                        <v-icon v-if="character.star == 5" icon="mdi-star" size="x-small" :class="getStarColor(5, character?.element)"></v-icon>
                     </template>
                 </v-toolbar-title>
                 <v-icon v-if="!character.isUpdated" icon="mdi-video-box"></v-icon>
                 <v-icon v-if="!character.completed" icon="mdi-alert-circle"></v-icon>
-                <router-link :to="{ name: 'character-edit', params: {id: character.id }}"><v-icon icon="mdi-pencil"></v-icon></router-link>
-                <v-btn @click="deleteCharacter(character)">
-                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                 </v-btn>
+                <router-link :to="{ name: 'character-edit', params: {id: character.id }}" class="mr-4" :class="getEyeColor(character?.element)"><v-icon icon="mdi-eye"></v-icon></router-link>
+                <v-dialog width="500">
+                    <template v-slot:activator="{ props }">
+                        <v-btn v-if="isLoggedIn" v-bind="props" class="ml-n3">
+                            <v-icon icon="mdi-trash-can-outline" :class="getEyeColor(character?.element)"></v-icon>
+                        </v-btn>
+                    </template>
+
+                    <template v-slot:default="{ isActive }">
+                        <v-card title="Confirmation">
+                        <v-card-text>
+                            Etes vous sûr de vouloir supprimer {{ character.name }} ?
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+
+                            <v-btn text="Confirmer" @click="deleteCharacter(character, isActive)"
+                            ></v-btn>
+                        </v-card-actions>
+                        </v-card>
+                    </template>
+                </v-dialog>
             </v-toolbar>
         
             <v-list lines="two" v-for="(role, index) in character.roles" :key="index">
                 <v-list-subheader>{{ role.name }}</v-list-subheader>
-        
-                <v-list-item>
-                    <v-list-item-title>Substat à privilégier</v-list-item-title>
-                    <v-list-item-subtitle >
-                        <span v-for="(el, index2) in role.statToFocus" :key="index2" class="m-right16">{{ el }}</span>
-                    </v-list-item-subtitle>
-                </v-list-item>
-        
+
+                <!-- Recommanded Sets of relic -->
                 <v-list-item>
                     <v-list-item-title>Set d'artefact</v-list-item-title>
                     <v-list-item-subtitle class="long-item">
-                        <div v-for="(el, index2) in role.set"
-                        :key="index2"
-                        :class="{ 'toto' : surligne.includes(el)}"
-                        class="m-right16">{{ el }}</div>
+                        <ul>
+                            <li v-for="(set, setIndex) in role.set" :key="setIndex">
+                                <span v-if="set.nbPieces == 4 && set.data && set.data[0]" :class="{ 'match-filter' : surligne.includes(set.data[0].name)}">{{ `4p ${set.data[0].name}` }}</span>
+                                <span v-if="set.nbPieces == 2 && set.data && set.data[0]">
+                                    <span :class="{ 'match-filter' : surligne.includes(set.data[0].name)}">{{ `2p ${set.data[0].name} / ` }}</span>
+                                    <span :class="{ 'match-filter' : surligne.includes(set.data[1].name)}">{{ `2p ${set.data[1].name}` }}</span>
+                                </span>
+                            </li>
+                        </ul>
                     </v-list-item-subtitle>
                 </v-list-item>
 
-                <v-list-item class="small">
-                    <v-list-item-title>Sablier</v-list-item-title>
+                <!-- Main stat for each equipment -->
+                <v-list-item>
+                    <v-list-item-title>Main stat</v-list-item-title>
                     <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.sablier" :key="index2" class="m-right16">{{ el }}</span>
+                        <span class="title m-right16 underline">Sablier</span>
+                        <span v-for="(el, index2) in role.sablier" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
+                    </v-list-item-subtitle>
+
+                    <v-list-item-subtitle>
+                        <span class="title m-right16 underline">Coupe</span>
+                        <span v-for="(el, index2) in role.coupe" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
+                    </v-list-item-subtitle>
+
+                    <v-list-item-subtitle>
+                        <span class="title m-right16 underline">Couronne</span>
+                        <span v-for="(el, index2) in role.couronne" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
-                <v-list-item class="small">
-                    <v-list-item-title>Coupe</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.coupe" :key="index2" class="m-right16">{{ el }}</span>
-                    </v-list-item-subtitle>
-                </v-list-item>
-
-                <v-list-item class="small">
-                    <v-list-item-title>Couronne</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <span v-for="(el, index2) in role.couronne" :key="index2" class="m-right16">{{ el }}</span>
+                <!-- Substat to focus -->
+                <v-list-item>
+                    <v-list-item-title>Substat à privilégier</v-list-item-title>
+                    <v-list-item-subtitle >
+                        <span v-for="(el, index2) in role.statToFocus" :key="index2"
+                        class="m-right16"
+                        :class="{ 'match-filter' : surligne.includes(el)}"
+                        >{{ el }}</span>
                     </v-list-item-subtitle>
                 </v-list-item>
 
@@ -113,22 +144,30 @@
     
         </v-card>
     </div>
-  </template>
+</template>
 
 <script setup>
 import { reactive, ref, computed, watch } from "vue";
 import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
-import { collection, where, query,  deleteDoc, doc } from "firebase/firestore";
+import { collection, where, query, deleteDoc, doc } from "firebase/firestore";
 import { GENSHIN_ATTRIBUTES, GENSHIN_EQUIPMENT } from "../../../tools/constants";
 import { sortByName, copy } from '../../../tools/tools';
+import { useTools } from '../../../composables/tools';
 
 const db = useFirestore()
 const store = useTestStore()
+const { isLoggedIn } = useTools()
 
 let charactersRef = collection(db, 'characters')
-let q = query(charactersRef, where("game", "==", store.getSelectedGame))
-let charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })
+let characterQuery
+
+if (isLoggedIn.value) {
+    characterQuery = query(charactersRef, where("game", "==", store.getSelectedGame))
+} else {
+    characterQuery = query(charactersRef, where("game", "==", store.getSelectedGame), where("completed", "==", true))
+}
+let charactersList = useCollection(characterQuery, { ssrKey: 'justToStopWarning' })
 
 // Dungeons list
 let djRef = collection(db, 'dungeons')
@@ -269,20 +308,39 @@ function getColor(element) {
     if (element === 'anemo') {
         return 'teal-accent-3'
     }
-    
+}
+
+function getStarColor(nbStars, element) {
+    if (nbStars ===  5) {
+        if ([ 'Imaginaire'].includes(element)) return 'text-yellow-darken-4';
+        if ([ 'Cryo'].includes(element)) return 'text-amber-darken-4';
+        return 'text-yellow-darken-2'
+    } else if (nbStars === 4) {
+        if (['Electro'].includes(element)) return 'text-deep-purple-lighten-3';
+        if (['Physique', 'Quantique'].includes(element)) return 'text-deep-purple-lighten-2';
+        if (['Pyro', 'Vent', 'Cryo, '].includes(element)) return 'text-deep-purple-darken-1';
+        return 'text-deep-purple-lighten-1'
+    }
+}
+
+function getEyeColor(element) {
+    if ([ 'Cryo', 'Geo', 'Anemo'].includes(element)) return 'text-grey-darken-4';
+    return 'text-white'
 }
 
 function reduceCard() {
     isReduced.value = !isReduced.value
 }
 
-async function deleteCharacter(pnj) {
-    // TODO ajouter une popup de confirmation...
-    return
+async function deleteCharacter(pnj, isActive) {
+    console.log('deleteCharacter', pnj, pnj.value)
+    // let toto = copy(charactersList.value)
+    // let index = toto.findIndex(el => el.id === pnj.id)
+    // toto.splice(index, 1)
+    // console.log('toto', toto)
+    // charactersList.value = toto
     await deleteDoc(doc(db, 'characters', pnj.id))
-    charactersRef = collection(db, 'characters')
-    q = query(charactersRef, where("game", "==", store.getSelectedGame))
-    charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })
+    return isActive.value = false
 }
 
 function itemProps1 (item) {
@@ -313,6 +371,7 @@ watch(() => (filter.dj), (newFilter, oldFilter) => {
         surligne.value = []
     }
 })
+
 
 </script>
 
