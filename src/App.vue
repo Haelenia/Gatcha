@@ -4,7 +4,10 @@
         <v-app-bar-title>
             <v-btn :class="{ 'v-btn--active': store.selectedGame === 'Genshin'}" @click="goToList('Genshin')">Genshin</v-btn>
             <v-btn :class="{ 'v-btn--active': store.selectedGame === 'HSR'}" @click="goToList('HSR')">HSR</v-btn>
+            
         </v-app-bar-title>
+        <v-spacer></v-spacer>
+        <span>	&#x1F477; Site en cours de développement &#x1F609;</span>
         <v-spacer></v-spacer>
         <nav class="pr-4">
             <!-- <v-btn v-if="store.getSelectedGame" to="/"><v-icon icon="mdi-home"></v-icon></v-btn> -->
