@@ -65,6 +65,22 @@ const router = createRouter({
           component: () => import('../components/set/EditSet.vue'),
         },
         {
+          path: '/weapons',
+          name: 'weapons',
+          component: () => import('../components/Weapons/WeaponList.vue'),
+          meta: { title: `${game} - Armes`}
+        },
+        {
+          path: '/weapon',
+          name: 'weapon-create',
+          component: () => import('../components/Weapons/WeaponForm.vue'),
+        },
+        {
+          path: '/weapon/:id',
+          name: 'weapon-edit',
+          component: () => import('../components/Weapons/WeaponForm.vue'),
+        },
+        {
           path: '/login',
           name: 'login',
           component: () => import('@/views/LoginPage.vue'),

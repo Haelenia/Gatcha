@@ -34,6 +34,7 @@ import { useFirestore, useDocument } from "vuefire";
 import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { useRoute, useRouter } from 'vue-router'
 import { useTools } from '../../composables/tools';
+import { copy } from '../../tools/tools';
 
 const router = useRouter()
 const route = useRoute()
@@ -58,6 +59,9 @@ onMounted(() => {
 
 
 async function saveElement(element) {
+    console.log('element', element,copy(element))
+    console.log('docRef', copy(docRef))
+    console.log("sdf", copy({...element}))
     if (isEditMode.value) {
         await updateDoc(docRef, {
             ...element,

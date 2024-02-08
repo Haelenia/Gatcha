@@ -229,6 +229,7 @@ import { useTestStore } from '../../../stores/test'
 import { useFirestore, useCollection } from "vuefire";
 import { collection, where, query } from "firebase/firestore";
 import { sortByName, sortByKey, copy } from '../../../tools/tools';
+import { useTools } from '../../../composables/tools';
 import { GENSHIN_ATTRIBUTES, GENSHIN_ELEMENT, GENSHIN_WEAPON } from '../../../tools/constants';
 
 defineEmits(['cancel', 'save'])
@@ -236,6 +237,7 @@ const props = defineProps(['id', 'isEditMode', 'source'])
 
 const db = useFirestore()
 const store = useTestStore()
+const { isLoggedIn } = useTools()
 
 const set = { data: [],  comment: null, nbPieces: 4 }
 const role = {

@@ -134,7 +134,7 @@
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
-                                    :clearable="isLoggedIn"
+                                    :clearable="!!isLoggedIn"
                                     density="compact"
                                     v-model="role.torse"
                                     :readonly="!isLoggedIn"
@@ -149,7 +149,7 @@
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
-                                    :clearable="isLoggedIn"
+                                    :clearable="!!isLoggedIn"
                                     density="compact"
                                     v-model="role.botte"
                                     :readonly="!isLoggedIn"
@@ -165,7 +165,7 @@
                             <v-select :items="getStats.sort()"
                                         multiple
                                         chips
-                                        :clearable="isLoggedIn"
+                                        :clearable="!!isLoggedIn"
                                         density="compact"
                                         v-model="role.orbe"
                                         :readonly="!isLoggedIn"
@@ -180,7 +180,7 @@
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
-                                    :clearable="isLoggedIn"
+                                    :clearable="!!isLoggedIn"
                                     density="compact"
                                     v-model="role.chaine"
                                     :readonly="!isLoggedIn"
@@ -192,41 +192,79 @@
             </v-card>
             
 
-            <!-- Substat to focus -->
-            <v-card class="card short-text m-top32">
-                <v-card-title>Substat à focus</v-card-title>
-                <v-card-text>
-                    <v-select :items="getStats.sort()"
-                            multiple
-                            chips
-                            density="compact"
-                            :clearable="isLoggedIn"
-                            v-model="role.statToFocus"
-                            :readonly="!isLoggedIn"
-                    ></v-select>
-                </v-card-text>
-            </v-card>
-
-            <div class="multiple-card-zone m-top32">
-                <!-- Weapons -->
-                <v-card>
-                    <v-card-title>Armes</v-card-title>
+            <!-- Substat to focus and Trace priority-->
+            <div class="m-top32 d-flex flex-wrap ga-8">
+                <v-card class="card short-text flex-grow-1">
+                    <v-card-title>Substat à focus</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.weapons" auto-grow :readonly="!isLoggedIn"></v-textarea>
+                        <v-select :items="getStats.sort()"
+                                multiple
+                                chips
+                                density="compact"
+                                :clearable="!!isLoggedIn"
+                                v-model="role.statToFocus"
+                                :readonly="!isLoggedIn"
+                        ></v-select>
                     </v-card-text>
                 </v-card>
+                <v-card class="card short-text flex-grow-1">
+                    <v-card-title>Objectif de stat</v-card-title>
+                    <v-card-text>
+                        <v-textarea v-model="role.obj" rows="1" auto-grow :readonly="!isLoggedIn" density="compact"></v-textarea>
+                    </v-card-text>
+                </v-card>
+                <v-card class="card short-text flex-grow-1">
+                    <v-card-title>Ordre de priorité des traces</v-card-title>
+                    <v-card-text>
+                        <v-textarea v-model="role.priority" rows="1" auto-grow :readonly="!isLoggedIn" density="compact"></v-textarea>
+                    </v-card-text>
+                </v-card>
+            </div>
+            
+
+            <div class="d-flex flex-wrap ga-8 m-top32">
+                <!-- Weapons -->
+                <v-card class="flex-grow-1" max-width="45%" min-width="800px">
+                    <v-card-title>Cônes de lumière</v-card-title>
+                    <v-card-text v-if="typeof role.weapons === 'string'">
+                        <v-textarea v-model="role.weapons" auto-grow :readonly="!isLoggedIn"></v-textarea>
+                    </v-card-text>
+                    <v-card-text v-else class="weapon-content">
+                            <template v-for="(weapon, indexW) in role.weapons" :key="indexW">
+                                <div class="weapon-line mb-4">
+                                    <v-select
+                                        :items="sortByName(getWeaponList)"
+                                        :item-props="itemPropsWeapon"
+                                        v-model="weapon.data"
+                                        :readonly="!isLoggedIn"
+                                        density="compact"
+                                    ></v-select>
+                                    <v-textarea label="Notes" density="compact" v-model="weapon.comment"  rows="1" auto-grow :readonly="!isLoggedIn"></v-textarea>
+
+                                    <v-btn v-if="role.weapons.length > 1 && isLoggedIn" @click="removeElement('weapons', index, indexW, weapon)">
+                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                    </v-btn>
+                                </div>
+                            </template>
+
+                        </v-card-text>
+                        <v-card-actions v-if="isLoggedIn">
+                            <v-btn @click="addElement('weapons', index)">+ Ajouter un cône de lumière</v-btn>
+                        </v-card-actions>
+                    
+                </v-card>
                 <!-- Team -->
-                <v-card>
+                <v-card class="flex-grow-1">
                     <v-card-title>Team</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.team" auto-grow :readonly="!isLoggedIn"></v-textarea>
+                        <v-textarea v-model="role.team" auto-grow :readonly="!isLoggedIn" density="compact"></v-textarea>
                     </v-card-text>
                 </v-card>
                 <!-- Notes -->
-                <v-card>
+                <v-card class="flex-grow-1">
                     <v-card-title>Notes</v-card-title>
                     <v-card-text>
-                        <v-textarea v-model="role.note" auto-grow :readonly="!isLoggedIn"></v-textarea>
+                        <v-textarea v-model="role.note" auto-grow :readonly="!isLoggedIn" density="compact"></v-textarea>
                     </v-card-text>
                 </v-card>
             </div>
@@ -245,18 +283,20 @@
 <script setup>
 import { ref, watch, computed, watchEffect } from "vue"
 import { useTestStore } from '../../../stores/test'
-import { useFirestore, useCollection, useCurrentUser } from "vuefire"
+import { useFirestore, useCollection } from "vuefire"
 import { collection, where, query } from "firebase/firestore"
-import { sortByName } from '../../../tools/tools'
+import { sortByName, copy } from '../../../tools/tools'
 import { HSR_ATTRIBUTES, HSR_ELEMENT, HSR_ROLE } from '../../../tools/constants'
+import { useTools } from '../../../composables/tools';
+
+
+// Global declaration
+const db = useFirestore()
+const store = useTestStore()
+const { isLoggedIn } = useTools()
 
 defineEmits(['cancel', 'save'])
 const props = defineProps(['id', 'isEditMode', 'source'])
-
-
-const db = useFirestore()
-const store = useTestStore()
-const connectedUser = useCurrentUser()
 
 const initCharacter = ref()
 
@@ -292,13 +332,15 @@ let setRef = collection(db, 'sets')
 let q2 = query(setRef, where("game", "==", store.getSelectedGame))
 let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
 
+// list of weapons
+let weaponRef = collection(db, 'weapons')
+let qW = query(weaponRef, where("game", "==", store.getSelectedGame))
+let getWeaponList = useCollection(qW, { ssrKey: 'justToStopWarning' })
+
 let getStats = HSR_ATTRIBUTES
 let getRoles = HSR_ROLE
 let getElement = HSR_ELEMENT
 
-const isLoggedIn = computed(() => {
-    return connectedUser?.value?.email
-})
 
 const relicSetList = computed(() => {
     return sortByName(setList.value.filter(e => e.type === 'Relique des cavernes'))
@@ -320,6 +362,10 @@ function addElement(type, roleIndex, setType) {
             const set = setType === 'relic' ? relicSet : ornmentSet
             currentCharacter.value.roles[roleIndex][type].push(JSON.parse(JSON.stringify(set)))
         }
+    } else if (type === 'weapons') {
+        currentCharacter.value.roles[roleIndex][type]
+            ? currentCharacter.value.roles[roleIndex][type].push({ data: null, comment: null})
+            : (currentCharacter.value.roles[roleIndex][type] = [{ data: null, comment: null }])
     } else {
         currentCharacter.value.roles[roleIndex][type].push('')
     }
@@ -358,6 +404,16 @@ function itemProps (item) {
             id: item.id,
             name: item.name,
             dj: item.dj
+        }
+    }
+}
+
+function itemPropsWeapon (item) {
+    return {
+        title: `${item.name} ${item.stars}* - ${item.origin}`,
+        value: {
+            id: item.id,
+            name: item.name
         }
     }
 }

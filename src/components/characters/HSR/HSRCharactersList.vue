@@ -336,10 +336,10 @@ function getEyeColor(element) {
 async function deleteCharacter(pnj) {
     // TODO ajouter une popup de confirmation...
     return
-    await deleteDoc(doc(db, 'characters', pnj.id))
+   /* await deleteDoc(doc(db, 'characters', pnj.id))
     charactersRef = collection(db, 'characters')
     q = query(charactersRef, where("game", "==", store.getSelectedGame))
-    charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })
+    charactersList = useCollection(q, { ssrKey: 'justToStopWarning' })*/
 }
 
 function itemProps1 (item) {

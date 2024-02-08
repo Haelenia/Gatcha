@@ -1,10 +1,9 @@
 <template>
     <v-app>
-        <v-app-bar color="teal" class="-main-header">
-        <v-app-bar-title>
+        <v-app-bar color="teal">
+        <v-app-bar-title class="game-choice">
             <v-btn :class="{ 'v-btn--active': store.selectedGame === 'Genshin'}" @click="goToList('Genshin')">Genshin</v-btn>
             <v-btn :class="{ 'v-btn--active': store.selectedGame === 'HSR'}" @click="goToList('HSR')">HSR</v-btn>
-            
         </v-app-bar-title>
         <v-spacer></v-spacer>
         <span>	&#x1F477; Site en cours de développement &#x1F609;</span>
@@ -18,7 +17,11 @@
             <v-btn v-if="store.getSelectedGame"
                 :to="{ name: 'sets'}">{{ `Sets ${store.getSelectedGame === 'Genshin' ? 'd\'artefacts' : 'de reliques'}`}}</v-btn>
             <v-btn v-if="store.getSelectedGame && isLoggedIn"
-                :to="{ name: 'set-create'}">{{ `Ajouter un set ${store.getSelectedGame === 'Genshin' ? 'd\'artefacts' : 'de reliques'}`}}</v-btn>
+                :to="{ name: 'set-create'}">{{ `Ajouter un set`}}</v-btn>
+            <v-btn v-if="store.getSelectedGame"
+                :to="{ name: 'weapons'}">{{ `${store.getSelectedGame === 'Genshin' ? 'Armes' : 'Cônes de lumière'}`}}</v-btn>
+            <v-btn v-if="store.getSelectedGame && isLoggedIn"
+                :to="{ name: 'weapon-create'}">{{ `Ajouter ${store.getSelectedGame === 'Genshin' ? 'une arme' : 'un cône'}`}}</v-btn>
 
             <v-btn v-if="isLoggedIn" @click="signOutOfFirebase">Sign Out</v-btn>
             <v-btn v-else to="/login">Sign in</v-btn>

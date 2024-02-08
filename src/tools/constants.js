@@ -18,6 +18,8 @@ export const HSR_ROLE = ['Abondance', 'Erudition', 'Chasse', 'Nihilité', 'Harmo
 
 export const HSR_ELEMENT = ['Foudre', 'Feu', 'Vent', 'Physique', 'Glace', 'Quantique', 'Imaginaire']
 
+export const HSR_WEAPON_ORIGIN = ['Bannières 5*', 'Boutique', 'Bannières', 'Boutique univers simulé', 'Boutique Salle Oubliée', 'Battle Pass']
+
 
 /***************************************************** 
  *    Genshin
@@ -40,6 +42,8 @@ export const GENSHIN_WEAPON = [
     { key: '1hSword', label: 'Epée a 1 main'},
     { key: 'catalyst', label: 'Catalyseur'}
 ]
+
+export const GENSHIN_WEAPON_ORIGIN = ['Bannières 5*', 'Boutique', 'Bannières', 'Boutique univers simulé', 'Boutique Salle Oubliée']
 
 export const GENSHIN_ELEMENT = ['Hydro', 'Pyro', 'Geo', 'Cryo','Electro','Anemo', 'Dendro']
 
