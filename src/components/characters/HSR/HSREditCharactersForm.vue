@@ -276,7 +276,7 @@
         </div>
 
     </div>
-    <v-btn v-if="isLoggedIn" @click="addRole">+ Ajouter un rôle</v-btn>
+    <v-btn v-show="false" v-if="isLoggedIn" @click="addRole">+ Ajouter un rôle</v-btn>
 </template>
 
 

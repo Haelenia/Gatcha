@@ -168,6 +168,13 @@
                 }
             }
 
+            &.hsr-form {
+                .fieldset-card {
+                    padding: unset;
+                    border: unset;
+                }
+            }
+
         
             .fieldset-card {
                 padding: 16px;
