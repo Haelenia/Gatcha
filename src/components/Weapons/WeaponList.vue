@@ -35,7 +35,7 @@
                         <v-icon v-if="weapon.stars == 5" icon="mdi-star" size="x-small" :class="getStarColor(weapon.stars, weapon?.type)"></v-icon>
                     </template>
                 </v-toolbar-title>
-                <router-link :to="{ name: 'weapon-edit', params: {id: weapon.id }}" class="mr-4" :class="getEyeColor(weapon?.type)"><v-icon icon="mdi-eye"></v-icon></router-link>
+                <router-link v-if="isLoggedIn" :to="{ name: 'weapon-edit', params: {id: weapon.id }}" class="mr-4" :class="getEyeColor(weapon?.type)"><v-icon icon="mdi-eye"></v-icon></router-link>
                 <v-btn v-if="isLoggedIn" @click="deleteWeapon(weapon)">
                     <v-icon icon="mdi-trash-can-outline" class="text-white"></v-icon>
                 </v-btn>

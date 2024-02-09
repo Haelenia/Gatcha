@@ -59,9 +59,6 @@ onMounted(() => {
 
 
 async function saveElement(element) {
-    console.log('element', element,copy(element))
-    console.log('docRef', copy(docRef))
-    console.log("sdf", copy({...element}))
     if (isEditMode.value) {
         await updateDoc(docRef, {
             ...element,

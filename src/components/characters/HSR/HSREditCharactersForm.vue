@@ -337,6 +337,10 @@ let weaponRef = collection(db, 'weapons')
 let qW = query(weaponRef, where("game", "==", store.getSelectedGame))
 let getWeaponList = useCollection(qW, { ssrKey: 'justToStopWarning' })
 
+if (getWeaponList && currentCharacter.value.role) {
+    getWeaponList.value = getWeaponList.value.filter(el => el.type === currentCharacter.value.role)
+}
+
 let getStats = HSR_ATTRIBUTES
 let getRoles = HSR_ROLE
 let getElement = HSR_ELEMENT
@@ -434,10 +438,13 @@ watchEffect(() => {
 
 
 
+watch(() => currentCharacter.value.role, role => {
+    if (role) {
+        getWeaponList.value = getWeaponList.value.filter(el => el.type === role)
+    }
+})
+
 </script>
-
-
-
 
 <style scoped lang="scss">
 .label {
