@@ -1,11 +1,6 @@
 <template>
-    <div class="header">
-        <h1>{{`Liste des personnages (${filteredList.length})`}}</h1>
-        <v-btn v-if="isLoggedIn" :to="{ name: 'character-create'}"> + Nouveau</v-btn>
-    </div>
-    
     <!-- Filters zone -->
-    <div class="filters-zone">
+    <div v-if="false" class="filters-zone">
         <span class="notice">Utilisez les filtres ci-dessous pour savoir quel personnage pourrait avoir besoin de la relique ou de l'ornement planaire que vous avez, ou pour savoir si un donjon est rentable à farmer.</span>
         <div class="filters-bloc mt-2">
             <v-select
@@ -50,93 +45,172 @@
             <v-btn class="mb-5" variant="text" @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
         </div>
     </div>
+
+    <v-navigation-drawer location="right">
+      <v-list>
+            <v-btn class="mb-5" variant="text" @click="clearFilter">Reset</v-btn>
+            <v-btn class="mb-5" variant="text" @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
+        <v-divider></v-divider>
+        <v-list-item title="un titre">
+            <v-select
+                label="Reliques et ornements"
+                :items="sortByName(setList)"
+                :item-props="itemProps1"
+                v-model="filter.set"
+                clearable
+                ></v-select>
+        </v-list-item>
+        <v-list-item >
+            <v-select
+                label="Type d'équipement"
+                :items="getEquipment.sort()"
+                item-title="label"
+                item-value="key"
+                v-model="filter.type"
+                clearable
+                ></v-select>
+        </v-list-item>
+        <v-list-item title="">
+            <v-select
+                label="Stat"
+                :items="getStats.sort()"
+                v-model="filter.stat"
+                clearable
+                ></v-select>
+        </v-list-item>
+        <v-list-item title="">
+            <v-select
+                label="Donjon"
+                :items="sortByName(djList)"
+                :item-props="itemProps2"
+                v-model="filter.dj"
+                clearable
+                ></v-select>
+        </v-list-item>
+        
+        <v-divider></v-divider>
+        <v-list-item title="Drawer right">
+            <v-checkbox v-if="isLoggedIn" label="owned" v-model="filter.owned"></v-checkbox>
+
+        </v-list-item>
+        <v-list-item title="Drawer right">
+            <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
+            <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
+
+        </v-list-item>
+
+        <v-divider></v-divider>
+        <v-list-item title="Admin">
+            <v-checkbox v-if="isLoggedIn" label="video a check" v-model="filter.todo"></v-checkbox>
+            <v-checkbox v-if="isLoggedIn" label="incomplet" v-model="filter.completed"></v-checkbox>
+        </v-list-item>
+            
+            
+            
+            
+            
+
+            
+            
+            <v-spacer></v-spacer>
+
+            
+      </v-list>
+    </v-navigation-drawer>
     
     <!-- Content Zone -->
-    <div class="characters-list" :class="{ 'mini': isReduced }">
-        <v-card class="mx-auto" v-for="character in filteredList" :key="character.id" >
-            <!-- Title zone -->
-            <v-toolbar :color="getColor(character?.type?.toLowerCase())">
-                <v-toolbar-title>
-                    <span>{{ character.name }}</span>
-                    <template v-if="character.star">
-                        <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" size="x-small" :class="getStarColor(character.star, character?.type)"></v-icon>
-                        <v-icon v-if="character.star == 5" icon="mdi-star" size="x-small" :class="getStarColor(5, character?.type)"></v-icon>
-                    </template>
-                </v-toolbar-title>
-                <v-icon v-if="!character.isUpdated && isLoggedIn" icon="mdi-video-box"></v-icon>
-                <v-icon v-if="!character.completed && isLoggedIn" icon="mdi-alert-circle"></v-icon>
-                <router-link :to="{ name: 'character-edit', params: {id: character.id }}" class="mr-4" :class="getEyeColor(character?.type)"><v-icon icon="mdi-eye"></v-icon></router-link>
-                <v-btn v-if="isLoggedIn" @click="deleteCharacter(character)">
-                    <v-icon icon="mdi-trash-can-outline" class="text-white"></v-icon>
-                </v-btn>
-            </v-toolbar>
+    <v-main>
+        <div class="header">
+            <h1>{{`Liste des personnages (${filteredList.length})`}}</h1>
+            <v-btn v-if="isLoggedIn" :to="{ name: 'character-create'}"> + Nouveau</v-btn>
+        </div>
+        <div class="characters-list" :class="{ 'mini': isReduced }">
+            <v-card class="mx-auto" v-for="character in filteredList" :key="character.id" >
+                <!-- Title zone -->
+                <v-toolbar :color="getColor(character?.type?.toLowerCase())">
+                    <v-toolbar-title>
+                        <span>{{ character.name }}</span>
+                        <template v-if="character.star">
+                            <v-icon v-for="(el, index) in [1,1,1,1]" :key=index icon="mdi-star" size="x-small" :class="getStarColor(character.star, character?.type)"></v-icon>
+                            <v-icon v-if="character.star == 5" icon="mdi-star" size="x-small" :class="getStarColor(5, character?.type)"></v-icon>
+                        </template>
+                    </v-toolbar-title>
+                    <v-icon v-if="!character.isUpdated && isLoggedIn" icon="mdi-video-box"></v-icon>
+                    <v-icon v-if="!character.completed && isLoggedIn" icon="mdi-alert-circle"></v-icon>
+                    <router-link :to="{ name: 'character-edit', params: {id: character.id }}" class="mr-4" :class="getEyeColor(character?.type)"><v-icon icon="mdi-eye"></v-icon></router-link>
+                    <v-btn v-if="isLoggedIn" @click="deleteCharacter(character)">
+                        <v-icon icon="mdi-trash-can-outline" class="text-white"></v-icon>
+                    </v-btn>
+                </v-toolbar>
+            
+                <v-list lines="two" v-for="(role, index) in character.roles" :key="index">
+                    <v-list-subheader>{{ character.role }}</v-list-subheader>
+                    
+                    <!-- Recommanded Sets of relic -->
+                    <v-list-item>
+                        <v-list-item-title>Set d'artefact</v-list-item-title>
+                        <v-list-item-subtitle class="long-item">
+                            <div class="underline">Relique des cavernes :</div>
+                            <ul>
+                                <li v-for="(set, setIndex) in getRelics(role.set)" :key="setIndex">
+                                    <span v-if="set.nbPieces == 4 && set.relic && set.relic[0]" :class="{ 'match-filter' : surligne.includes(set.relic[0].name)}">{{ `4p ${set.relic[0].name}` }}</span>
+                                    <span v-if="set.nbPieces == 2 && set.relic && set.relic[0]">
+                                        <span :class="{ 'match-filter' : surligne.includes(set.relic[0].name)}">{{ `2p ${set.relic[0].name} / ` }}</span>
+                                        <span :class="{ 'match-filter' : surligne.includes(set.relic[1].name)}">{{ `2p ${set.relic[1].name}` }}</span>
+                                    </span>
+                                </li>
+                            </ul>
+                            <div class="underline m-top16">Ornement planaire : </div>
+                            <ul>
+                                <li v-for="(el, setIndex) in getOrnments(role.set)" :key="setIndex" :class="{ 'match-filter' : surligne.includes(el.ornment?.name)}">
+                                    {{ el.ornment?.name }}
+                                </li>
+                            </ul>
+                        </v-list-item-subtitle>
+                    </v-list-item>
+
+                    <!-- Main stat for each equipment -->
+                    <v-list-item>
+                        <v-list-item-title>Main stat</v-list-item-title>
+                        <v-list-item-subtitle>
+                            <span class="title m-right16 underline">Torse</span>
+                            <span v-for="(el, index2) in role.torse" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
+                        </v-list-item-subtitle>
+
+                        <v-list-item-subtitle>
+                            <span class="title m-right16 underline">Bottes</span>
+                            <span v-for="(el, index2) in role.botte" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
+                        </v-list-item-subtitle>
+
+                        <v-list-item-subtitle>
+                            <span class="title m-right16 underline">Sphère planaire</span>
+                            <span v-for="(el, index2) in role.orbe" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
+                        </v-list-item-subtitle>
+
+                        <v-list-item-subtitle>
+                            <span class="title m-right16 underline">Corde de liaison</span>
+                            <span v-for="(el, index2) in role.chaine" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
+                        </v-list-item-subtitle>
+                    </v-list-item>
+
+                    <!-- Substat to focus -->
+                    <v-list-item>
+                        <v-list-item-title>Substat à privilégier</v-list-item-title>
+                        <v-list-item-subtitle >
+                            <span v-for="(el, index2) in role.statToFocus" :key="index2"
+                            class="m-right16"
+                            :class="{ 'match-filter' : surligne.includes(el)}"
+                            >{{ el }}</span>
+                        </v-list-item-subtitle>
+                    </v-list-item>
+
+                    <v-divider v-if="index + 1 !== character.roles.length"></v-divider>
+                </v-list>
         
-            <v-list lines="two" v-for="(role, index) in character.roles" :key="index">
-                <v-list-subheader>{{ character.role }}</v-list-subheader>
-                
-                <!-- Recommanded Sets of relic -->
-                <v-list-item>
-                    <v-list-item-title>Set d'artefact</v-list-item-title>
-                    <v-list-item-subtitle class="long-item">
-                        <div class="underline">Relique des cavernes :</div>
-                        <ul>
-                            <li v-for="(set, setIndex) in getRelics(role.set)" :key="setIndex">
-                                <span v-if="set.nbPieces == 4 && set.relic && set.relic[0]" :class="{ 'match-filter' : surligne.includes(set.relic[0].name)}">{{ `4p ${set.relic[0].name}` }}</span>
-                                <span v-if="set.nbPieces == 2 && set.relic && set.relic[0]">
-                                    <span :class="{ 'match-filter' : surligne.includes(set.relic[0].name)}">{{ `2p ${set.relic[0].name} / ` }}</span>
-                                    <span :class="{ 'match-filter' : surligne.includes(set.relic[1].name)}">{{ `2p ${set.relic[1].name}` }}</span>
-                                </span>
-                            </li>
-                        </ul>
-                        <div class="underline m-top16">Ornement planaire : </div>
-                        <ul>
-                            <li v-for="(el, setIndex) in getOrnments(role.set)" :key="setIndex" :class="{ 'match-filter' : surligne.includes(el.ornment?.name)}">
-                                {{ el.ornment?.name }}
-                            </li>
-                        </ul>
-                    </v-list-item-subtitle>
-                </v-list-item>
-
-                <!-- Main stat for each equipment -->
-                <v-list-item>
-                    <v-list-item-title>Main stat</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <span class="title m-right16 underline">Torse</span>
-                        <span v-for="(el, index2) in role.torse" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle>
-                        <span class="title m-right16 underline">Bottes</span>
-                        <span v-for="(el, index2) in role.botte" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle>
-                        <span class="title m-right16 underline">Sphère planaire</span>
-                        <span v-for="(el, index2) in role.orbe" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
-                    </v-list-item-subtitle>
-
-                    <v-list-item-subtitle>
-                        <span class="title m-right16 underline">Corde de liaison</span>
-                        <span v-for="(el, index2) in role.chaine" :key="index2" class="m-right16" :class="{ 'match-filter' : surligne.includes(el)}">{{ el }}</span>
-                    </v-list-item-subtitle>
-                </v-list-item>
-
-                <!-- Substat to focus -->
-                <v-list-item>
-                    <v-list-item-title>Substat à privilégier</v-list-item-title>
-                    <v-list-item-subtitle >
-                        <span v-for="(el, index2) in role.statToFocus" :key="index2"
-                        class="m-right16"
-                        :class="{ 'match-filter' : surligne.includes(el)}"
-                        >{{ el }}</span>
-                    </v-list-item-subtitle>
-                </v-list-item>
-
-                <v-divider v-if="index + 1 !== character.roles.length"></v-divider>
-            </v-list>
+            </v-card>
+        </div>
+    </v-main>
     
-        </v-card>
-    </div>
   </template>
 
 <script setup>

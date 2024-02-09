@@ -28,14 +28,7 @@
         </nav>
     </v-app-bar>
 
-    <v-main>
-        <Suspense>
-            <RouterView :key="route.fullPath" />
-            <template v-slot:fallback>
-            <p>Content not found. Contact your developer for more info.</p>
-            </template>
-        </Suspense>
-    </v-main>
+    <RouterView :key="route.fullPath" />
 
     <div v-if="isSourceDisplayed" class="sources">
         <ul>
