@@ -50,82 +50,96 @@
     <div class="roles-list hsr-form" :class="{ 'read-only': !isLoggedIn }">
         <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
             <!-- Equipment Sets -->
-            <v-card>
-                <v-card-title class="mb-2">Set de reliques et d'ornements planaires recommandés</v-card-title>
+            <v-sheet rounded>
+                <h2 class="mb-2 v-card-title">Set de reliques et d'ornements planaires recommandés</h2>
                 <!-- <div class="sets-content ga-1"> -->
-                    <v-card class="-set-content">
-                        <v-card-subtitle class="text-subtitle-1">Reliques des cavernes</v-card-subtitle>
-                        <v-card-text>
-                            <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
-                                <div v-if="set.type === 'relic'" class="set-line mb-4">
-                                    <v-radio-group v-model="set.nbPieces" inline :readonly="!isLoggedIn" >
-                                        <v-radio :value="4" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 4">
-                                            <template v-slot:label>
-                                                <span>4 pièces</span>
-                                            </template>
-                                        </v-radio>
-                                        <v-radio :value="2" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 2">
-                                            <template v-slot:label>
-                                                <span>2 pièces</span>
-                                            </template>
-                                        </v-radio>
-                                    </v-radio-group>
-                                    <div>
-                                        <v-select
-                                            :items="relicSetList"
-                                            :item-props="itemProps"
-                                            v-model="set.relic[0]"
-                                            :readonly="!isLoggedIn"
-                                            density="comfortable"
-                                        ></v-select>
-                                        <v-select v-if="set.nbPieces === 2"
-                                            :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
-                                            :item-props="itemProps"
-                                            v-model="set.relic[1]"
-                                            :readonly="!isLoggedIn"
-                                            density="comfortable"
-                                        ></v-select>
+                    <div class="d-flex ga-6 justify-space-between flex-wrap">
+                        <v-card min-width="600" max-width="964" flat class="flex-grow-1">
+                            <v-card-subtitle class="text-subtitle-1">Reliques des cavernes</v-card-subtitle>
+                            <v-card-text>
+                                <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
+                                    <div v-if="set.type === 'relic'" class="set-line mb-4">
+                                        <div class="set-line-radio flex-grow-0 flex-shrink-0">
+                                            <v-radio-group v-model="set.nbPieces" inline :readonly="!isLoggedIn" density="comfortable">
+                                            <v-radio :value="4" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 4">
+                                                <template v-slot:label>
+                                                    <span>4 pièces</span>
+                                                </template>
+                                            </v-radio>
+                                            <v-radio :value="2" v-if="isLoggedIn || !isLoggedIn && set.nbPieces === 2">
+                                                <template v-slot:label>
+                                                    <span>2 pièces</span>
+                                                </template>
+                                            </v-radio>
+                                        </v-radio-group>
+                                        </div>
+                                        
+                                        <div class="set-line-select relic flex-grow-1 flex-shrink-0">
+                                            <v-select
+                                                :items="relicSetList"
+                                                :item-props="itemProps"
+                                                v-model="set.relic[0]"
+                                                :readonly="!isLoggedIn"
+                                                density="comfortable"
+                                            ></v-select>
+                                            <v-select v-if="set.nbPieces === 2"
+                                                :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
+                                                :item-props="itemProps"
+                                                v-model="set.relic[1]"
+                                                :readonly="!isLoggedIn"
+                                                density="comfortable"
+                                            ></v-select>
+                                        </div>
+                                        
+                                        <div class="set-line-textarea flex-grow-1 flex-shrink-0 relic">
+                                            <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow :readonly="!isLoggedIn" density="comfortable"></v-textarea>
+                                        </div>
+                                        
+                                        <v-btn v-if="role.set.length > 1 && isLoggedIn"
+                                            class="set-line-radio flex-grow-0 flex-shrink-0"
+                                            @click="removeElement('set', index, indexRelic, set)">
+                                            <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                        </v-btn>
                                     </div>
-                                    
-                                    <v-textarea class="" label="Notes" v-model="set.comment" rows="1" auto-grow :readonly="!isLoggedIn" density="comfortable"></v-textarea>
-                                    <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
-                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                    </v-btn>
-                                </div>
-                            </template>
-                        </v-card-text>
-                        <v-card-actions v-if="isLoggedIn">
-                            <v-btn @click="addElement('set', index, 'relic')">+ Ajouter une relique</v-btn>
-                        </v-card-actions>
-                    </v-card>  
+                                </template>
+                            </v-card-text>
+                            <v-card-actions v-if="isLoggedIn">
+                                <v-btn @click="addElement('set', index, 'relic')">+ Ajouter une relique</v-btn>
+                            </v-card-actions>
+                        </v-card>  
 
-                    <v-card class="-set-content">
-                        <v-card-subtitle class="text-subtitle-1">Ornement planaire</v-card-subtitle>
-                        <v-card-text>
-                            <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
-                                <div v-if="set.type === 'ornment'" class="set-line mb-4">
-                                    <v-select
-                                        :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
-                                        :item-props="itemProps"
-                                        v-model="set.ornment"
-                                        :readonly="!isLoggedIn"
-                                        density="comfortable"
-                                    ></v-select>
-                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow :readonly="!isLoggedIn" density="comfortable"></v-textarea>
+                        <v-card class="flex-grow-1" flat min-width="400" max-width="800">
+                            <v-card-subtitle class="text-subtitle-1">Ornement planaire</v-card-subtitle>
+                            <v-card-text>
+                                <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
+                                    <div v-if="set.type === 'ornment'" class="set-line mb-4">
+                                        <v-select class="set-line-select ornment flex-grow-1 flex-shrink-0"
+                                            :items="sortByName(setList.filter(el => el.type === 'Ornement planaire'))"
+                                            :item-props="itemProps"
+                                            v-model="set.ornment"
+                                            :readonly="!isLoggedIn"
+                                            density="comfortable"
+                                        ></v-select>
 
-                                    <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
-                                        <v-icon icon="mdi-trash-can-outline"></v-icon>
-                                    </v-btn>
-                                </div>
-                            </template>
+                                        <div class="set-line-textarea flex-grow-1 flex-shrink-0 ornment">
+                                            <v-textarea label="Notes" v-model="set.comment" rows="1" auto-grow :readonly="!isLoggedIn" density="comfortable"></v-textarea>
+                                        </div>
 
-                        </v-card-text>
-                        <v-card-actions v-if="isLoggedIn">
-                            <v-btn @click="addElement('set', index, 'ornment')">+ Ajouter un ornement planaire</v-btn>
-                        </v-card-actions>
-                    </v-card>
+                                        <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
+                                            <v-icon icon="mdi-trash-can-outline"></v-icon>
+                                        </v-btn>
+                                    </div>
+                                </template>
+
+                            </v-card-text>
+                            <v-card-actions v-if="isLoggedIn">
+                                <v-btn @click="addElement('set', index, 'ornment')">+ Ajouter un ornement planaire</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </div>
+                
                 <!-- </div> -->
-            </v-card>
+            </v-sheet>
 
             <!-- Equipment Main Stat -->
             <v-card class="m-top32">
