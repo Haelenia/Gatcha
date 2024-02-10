@@ -116,7 +116,7 @@
                     <v-card-title> Stat par equipement </v-card-title>
                     <div class="group">
                         <!-- Stat for Hourglass -->
-                        <div class="card short-text">
+                        <div class="card ">
                             <v-card-subtitle>Sablier</v-card-subtitle>
                             <v-card-text>
                                 <v-select 
@@ -132,7 +132,7 @@
                         </div>
 
                         <!-- Stat for Cup -->
-                        <div class="card short-text">
+                        <div class="card ">
                             <v-card-subtitle>Coupe</v-card-subtitle>
                             <v-card-text>
                                 <v-select :items="getStats"
@@ -148,7 +148,7 @@
                         </div>
 
                         <!-- Stat for Crown -->
-                        <div class="card short-text">
+                        <div class="card ">
                             <v-card-subtitle>Diadème</v-card-subtitle>
                             <v-card-text>
                                 <v-select :items="getStats"
@@ -165,7 +165,7 @@
                 </v-card>
 
                 <!-- Substat to focus -->
-                <v-card class="card short-text m-top32">
+                <v-card class="card  m-top32">
                     <v-card-title>Substat à focus</v-card-title>
                     <v-card-subtitle>Par ordre de priorité</v-card-subtitle>
                     <v-card-text>

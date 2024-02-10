@@ -1,4 +1,5 @@
 <template>
+    <v-main>
     <div class="header hsr-form" :class="{ 'read-only': !isLoggedIn }">
         <h1>{{props.isEditMode ? currentCharacter.name : 'Nouveau personnage'}}</h1>
         <div v-if="isLoggedIn" class="actions">
@@ -50,9 +51,9 @@
         <div v-for="(role, index) in currentCharacter.roles" :key="index" class="fieldset-card">
             <!-- Equipment Sets -->
             <v-card>
-                <v-card-title>Set de reliques et d'ornements planaires recommandés</v-card-title>
-                <div class="sets-content">
-                    <div class="set-content">
+                <v-card-title class="mb-2">Set de reliques et d'ornements planaires recommandés</v-card-title>
+                <!-- <div class="sets-content ga-1"> -->
+                    <v-card class="-set-content">
                         <v-card-subtitle class="text-subtitle-1">Reliques des cavernes</v-card-subtitle>
                         <v-card-text>
                             <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
@@ -75,16 +76,18 @@
                                             :item-props="itemProps"
                                             v-model="set.relic[0]"
                                             :readonly="!isLoggedIn"
+                                            density="comfortable"
                                         ></v-select>
                                         <v-select v-if="set.nbPieces === 2"
                                             :items="sortByName(setList.filter(el => el.type === 'Relique des cavernes'))"
                                             :item-props="itemProps"
                                             v-model="set.relic[1]"
                                             :readonly="!isLoggedIn"
+                                            density="comfortable"
                                         ></v-select>
                                     </div>
                                     
-                                    <v-textarea class="" label="Notes" v-model="set.comment" rows="1" auto-grow :readonly="!isLoggedIn"></v-textarea>
+                                    <v-textarea class="" label="Notes" v-model="set.comment" rows="1" auto-grow :readonly="!isLoggedIn" density="comfortable"></v-textarea>
                                     <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
                                         <v-icon icon="mdi-trash-can-outline"></v-icon>
                                     </v-btn>
@@ -94,9 +97,9 @@
                         <v-card-actions v-if="isLoggedIn">
                             <v-btn @click="addElement('set', index, 'relic')">+ Ajouter une relique</v-btn>
                         </v-card-actions>
-                    </div>  
+                    </v-card>  
 
-                    <div class="set-content">
+                    <v-card class="-set-content">
                         <v-card-subtitle class="text-subtitle-1">Ornement planaire</v-card-subtitle>
                         <v-card-text>
                             <template v-for="(set, indexRelic) in role.set" :key="indexRelic">
@@ -106,8 +109,9 @@
                                         :item-props="itemProps"
                                         v-model="set.ornment"
                                         :readonly="!isLoggedIn"
+                                        density="comfortable"
                                     ></v-select>
-                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow :readonly="!isLoggedIn"></v-textarea>
+                                    <v-textarea label="Notes" v-model="set.comment"  rows="1" auto-grow :readonly="!isLoggedIn" density="comfortable"></v-textarea>
 
                                     <v-btn v-if="role.set.length > 1 && isLoggedIn" @click="removeElement('set', index, indexRelic, set)">
                                         <v-icon icon="mdi-trash-can-outline"></v-icon>
@@ -119,18 +123,18 @@
                         <v-card-actions v-if="isLoggedIn">
                             <v-btn @click="addElement('set', index, 'ornment')">+ Ajouter un ornement planaire</v-btn>
                         </v-card-actions>
-                    </div>
-                </div>
+                    </v-card>
+                <!-- </div> -->
             </v-card>
 
             <!-- Equipment Main Stat -->
             <v-card class="m-top32">
-                <v-card-title> Stat par equipement </v-card-title>
+                <v-card-title class="mb-2"> Main stat par equipement </v-card-title>
                 <div class="group">
                     <!-- Stat for Chest -->
-                    <div class="card short-text">
+                    <div class="card ">
                         <v-card-subtitle>Torse</v-card-subtitle>
-                        <v-card-text>
+                        <v-card-text class="pt-1">
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
@@ -143,9 +147,9 @@
                     </div>
 
                     <!-- Stat for Boots-->
-                    <div class="card short-text">
+                    <div class="card ">
                         <v-card-subtitle>Bottes</v-card-subtitle>
-                        <v-card-text>
+                        <v-card-text  class="pt-1">
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
@@ -159,9 +163,9 @@
                     </div>
 
                     <!-- Stat for Sphere -->
-                    <div class="card short-text">
+                    <div class="card ">
                         <v-card-subtitle>Sphère planaire</v-card-subtitle>
-                        <v-card-text>
+                        <v-card-text  class="pt-1">
                             <v-select :items="getStats.sort()"
                                         multiple
                                         chips
@@ -174,9 +178,9 @@
                     </div>
 
                     <!-- Stat for Cord -->
-                    <div class="card short-text">
+                    <div class="card">
                         <v-card-subtitle>Corde de liaison</v-card-subtitle>
-                        <v-card-text>
+                        <v-card-text class="pt-1">
                             <v-select :items="getStats.sort()"
                                     multiple
                                     chips
@@ -194,8 +198,8 @@
 
             <!-- Substat to focus and Trace priority-->
             <div class="m-top32 d-flex flex-wrap ga-8">
-                <v-card class="card short-text flex-grow-1">
-                    <v-card-title>Substat à focus</v-card-title>
+                <v-card class="card  flex-grow-1">
+                    <v-card-title class="mb-2">Substat à focus</v-card-title>
                     <v-card-text>
                         <v-select :items="getStats.sort()"
                                 multiple
@@ -207,14 +211,14 @@
                         ></v-select>
                     </v-card-text>
                 </v-card>
-                <v-card class="card short-text flex-grow-1">
-                    <v-card-title>Objectif de stat</v-card-title>
+                <v-card class="card  flex-grow-1">
+                    <v-card-title class="mb-2">Objectif de stat</v-card-title>
                     <v-card-text>
                         <v-textarea v-model="role.obj" rows="1" auto-grow :readonly="!isLoggedIn" density="compact"></v-textarea>
                     </v-card-text>
                 </v-card>
-                <v-card class="card short-text flex-grow-1">
-                    <v-card-title>Ordre de priorité des traces</v-card-title>
+                <v-card class="card  flex-grow-1">
+                    <v-card-title class="mb-2">Ordre de priorité des traces</v-card-title>
                     <v-card-text>
                         <v-textarea v-model="role.priority" rows="1" auto-grow :readonly="!isLoggedIn" density="compact"></v-textarea>
                     </v-card-text>
@@ -225,7 +229,7 @@
             <div class="d-flex flex-wrap ga-8 m-top32">
                 <!-- Weapons -->
                 <v-card class="flex-grow-1" max-width="45%" min-width="800px">
-                    <v-card-title>Cônes de lumière</v-card-title>
+                    <v-card-title class="mb-2">Cônes de lumière</v-card-title>
                     <v-card-text v-if="typeof role.weapons === 'string'">
                         <v-textarea v-model="role.weapons" auto-grow :readonly="!isLoggedIn"></v-textarea>
                     </v-card-text>
@@ -255,14 +259,14 @@
                 </v-card>
                 <!-- Team -->
                 <v-card class="flex-grow-1">
-                    <v-card-title>Team</v-card-title>
+                    <v-card-title class="mb-2">Team</v-card-title>
                     <v-card-text>
                         <v-textarea v-model="role.team" auto-grow :readonly="!isLoggedIn" density="compact"></v-textarea>
                     </v-card-text>
                 </v-card>
                 <!-- Notes -->
                 <v-card class="flex-grow-1">
-                    <v-card-title>Notes</v-card-title>
+                    <v-card-title class="mb-2">Notes</v-card-title>
                     <v-card-text>
                         <v-textarea v-model="role.note" auto-grow :readonly="!isLoggedIn" density="compact"></v-textarea>
                     </v-card-text>
@@ -277,6 +281,7 @@
 
     </div>
     <v-btn v-show="false" v-if="isLoggedIn" @click="addRole">+ Ajouter un rôle</v-btn>
+</v-main>
 </template>
 
 

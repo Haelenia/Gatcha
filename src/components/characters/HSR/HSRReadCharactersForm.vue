@@ -50,8 +50,8 @@
                 <v-card-title> Stat par equipement </v-card-title>
                 <div class="group">
                     <!-- Stat for Chest -->
-                    <div class="card short-text">
-                        <v-card-subtitle>Torse</v-card-subtitle>
+                    <div class="card ">
+                        <v-card-subtitle >Torse</v-card-subtitle>
                         <v-card-text>
                             <v-select :items="getStats.sort()"
                                     multiple
@@ -65,7 +65,7 @@
                     </div>
 
                     <!-- Stat for Boots-->
-                    <div class="card short-text">
+                    <div class="card ">
                         <v-card-subtitle>Bottes</v-card-subtitle>
                         <v-card-text>
                             <v-select :items="getStats.sort()"
@@ -81,7 +81,7 @@
                     </div>
 
                     <!-- Stat for Sphere -->
-                    <div class="card short-text">
+                    <div class="card ">
                         <v-card-subtitle>Sphère planaire</v-card-subtitle>
                         <v-card-text>
                             <v-select :items="getStats.sort()"
@@ -96,7 +96,7 @@
                     </div>
 
                     <!-- Stat for Cord -->
-                    <div class="card short-text">
+                    <div class="card ">
                         <v-card-subtitle>Corde de liaison</v-card-subtitle>
                         <v-card-text>
                             <v-select :items="getStats.sort()"
@@ -115,7 +115,7 @@
             
 
             <!-- Substat to focus -->
-            <v-card class="card short-text m-top32">
+            <v-card class="card  m-top32">
                 <v-card-title>Substat à focus</v-card-title>
                 <v-card-text>
                     <v-select :items="getStats.sort()"

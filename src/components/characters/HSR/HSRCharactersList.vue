@@ -1,73 +1,33 @@
 <template>
-    <!-- Filters zone -->
-    <div v-if="false" class="filters-zone">
-        <span class="notice">Utilisez les filtres ci-dessous pour savoir quel personnage pourrait avoir besoin de la relique ou de l'ornement planaire que vous avez, ou pour savoir si un donjon est rentable à farmer.</span>
-        <div class="filters-bloc mt-2">
-            <v-select
-                label="Reliques et ornements"
-                :items="sortByName(setList)"
-                :item-props="itemProps1"
-                v-model="filter.set"
-                clearable
-                ></v-select>
-            <v-select
-                label="Type d'équipement"
-                :items="getEquipment.sort()"
-                item-title="label"
-                item-value="key"
-                v-model="filter.type"
-                clearable
-                ></v-select>
-            <v-select
-                label="Stat"
-                :items="getStats.sort()"
-                v-model="filter.stat"
-                clearable
-                ></v-select>
-            
-            <v-select
-                label="Donjon"
-                :items="sortByName(djList)"
-                :item-props="itemProps2"
-                v-model="filter.dj"
-                clearable
-                ></v-select>
-
-            <v-checkbox v-if="isLoggedIn" label="owned" v-model="filter.owned"></v-checkbox>
-            <v-checkbox v-if="isLoggedIn" label="video a check" v-model="filter.todo"></v-checkbox>
-            <v-checkbox v-if="isLoggedIn" label="incomplet" v-model="filter.completed"></v-checkbox>
-            <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
-            <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
-            
-            <v-spacer></v-spacer>
-
-            <v-btn class="mb-5" variant="text" @click="clearFilter">Reset</v-btn>
-            <v-btn class="mb-5" variant="text" @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
-        </div>
-    </div>
-
     <v-navigation-drawer location="right">
       <v-list>
+        <v-list-item-action class="justify-space-between">
             <v-btn class="mb-5" variant="text" @click="clearFilter">Reset</v-btn>
             <v-btn class="mb-5" variant="text" @click="reduceCard"><v-icon icon="mdi-apps"></v-icon></v-btn>
+        </v-list-item-action>
+
         <v-divider></v-divider>
-        <v-list-item title="un titre">
+
+        <v-list-subheader>Equipement</v-list-subheader>
+        <v-list-item>
             <v-select
                 label="Reliques et ornements"
                 :items="sortByName(setList)"
                 :item-props="itemProps1"
                 v-model="filter.set"
                 clearable
+                density="comfortable"
                 ></v-select>
         </v-list-item>
         <v-list-item >
             <v-select
-                label="Type d'équipement"
+                label="Pièce d'équipement"
                 :items="getEquipment.sort()"
                 item-title="label"
                 item-value="key"
                 v-model="filter.type"
                 clearable
+                density="comfortable"
                 ></v-select>
         </v-list-item>
         <v-list-item title="">
@@ -76,6 +36,7 @@
                 :items="getStats.sort()"
                 v-model="filter.stat"
                 clearable
+                density="comfortable"
                 ></v-select>
         </v-list-item>
         <v-list-item title="">
@@ -85,36 +46,49 @@
                 :item-props="itemProps2"
                 v-model="filter.dj"
                 clearable
+                density="comfortable"
                 ></v-select>
         </v-list-item>
-        
         <v-divider></v-divider>
-        <v-list-item title="Drawer right">
-            <v-checkbox v-if="isLoggedIn" label="owned" v-model="filter.owned"></v-checkbox>
 
+        <v-list-subheader>Cône de lumière</v-list-subheader>
+        <v-list-item>
+            <v-select
+                :items="sortByName(weaponList)"
+                :item-props="itemProps2"
+                v-model="filter.weapon"
+                clearable
+                density="comfortable"
+                ></v-select>
         </v-list-item>
-        <v-list-item title="Drawer right">
-            <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
-            <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
-
-        </v-list-item>
-
         <v-divider></v-divider>
-        <v-list-item title="Admin">
-            <v-checkbox v-if="isLoggedIn" label="video a check" v-model="filter.todo"></v-checkbox>
-            <v-checkbox v-if="isLoggedIn" label="incomplet" v-model="filter.completed"></v-checkbox>
+
+        <v-list-item>
+            <v-list-item-action class="justify-space-around mb-n4">
+                <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
+                <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
+            </v-list-item-action>
         </v-list-item>
-            
-            
-            
-            
-            
+        <v-divider></v-divider>
 
-            
-            
-            <v-spacer></v-spacer>
+        <v-list-subheader v-if="isLoggedIn" >Admin</v-list-subheader>
+        <v-list-item v-if="isLoggedIn" class="mb-n4">
+            <v-list-item-action class="mb-n4">
+                <v-checkbox label="owned" v-model="filter.owned" density="comfortable"></v-checkbox>
+            </v-list-item-action>
+        </v-list-item>
+        <v-list-item v-if="isLoggedIn" class="mb-n4">
+            <v-list-item-action class="mb-n4">
+                <v-checkbox v-if="isLoggedIn" label="video a check" v-model="filter.todo" density="comfortable"></v-checkbox>
+            </v-list-item-action>
+        </v-list-item>
+        <v-list-item v-if="isLoggedIn" >
+            <v-list-item-action class="mb-n4">
+                <v-checkbox v-if="isLoggedIn" label="incomplet" v-model="filter.completed" density="comfortable"></v-checkbox>
+            </v-list-item-action>
+        </v-list-item>
+        <v-divider></v-divider>
 
-            
       </v-list>
     </v-navigation-drawer>
     
@@ -241,7 +215,22 @@ let setRef = collection(db, 'sets')
 let q2 = query(setRef, where("game", "==", store.getSelectedGame))
 let setList = useCollection(q2, { ssrKey: 'justToStopWarning' })
 
-const defaultFilter = { type: null, stat: null, dj: null, set: null, owned: false, fourstars: false, fivestars: false, todo: false, completed: false }
+// Light cone list
+let q3 = query(collection(db, 'weapons'), where("game", "==", store.getSelectedGame))
+let weaponList = useCollection(q3, { ssrKey: 'justToStopWarning' })
+
+const defaultFilter = { 
+    type: null,
+    stat: null,
+    dj: null,
+    set: null,
+    owned: false,
+    fourstars: false,
+    fivestars: false,
+    todo: false,
+    completed: false,
+    weapon: null
+}
 let filter = reactive(copy(defaultFilter))
 
 let surligne = ref([])
@@ -251,7 +240,7 @@ let getEquipment = HSR_EQUIPMENT
 let isReduced = ref(false)
 
 const filteredList = computed(() => {
-    const { type, stat, dj, set, owned, fourstars, fivestars, todo, completed } = filter
+    const { type, stat, dj, set, owned, fourstars, fivestars, todo, completed, weapon } = filter
 
     let list = charactersList.value
     if (owned) {
@@ -349,6 +338,16 @@ const filteredList = computed(() => {
         list = list.filter(character => {
             let test =  character.roles?.filter(r => r[type] && r[type].includes(stat)) || []
             return test.length > 0
+        })
+    }
+    // Sort by weapon
+    if (weapon) {
+        list = list.filter(character => {
+            return character.roles.filter(r => {
+                return r.weapons.some(w => {
+                    return w.data.id === weapon.id
+                })
+            }).length > 0
         })
     }
     return list && sortByName(list) || []
