@@ -1,29 +1,31 @@
 <template>
-    <div class="header">
-        <h1>{{`Liste des Sets (${filteredList.length})`}}</h1>
-        <v-btn v-if="isLoggedIn" :to="{ name: 'set-create' }"> + Nouveau</v-btn>
-    </div>
+    <v-main>
+        <div class="header">
+            <h1>{{`Liste des Sets (${filteredList.length})`}}</h1>
+            <v-btn v-if="isLoggedIn" :to="{ name: 'set-create' }"> + Nouveau</v-btn>
+        </div>
 
-    <div class="characters-list">
-        <v-card class="mx-auto" v-for="set in filteredList" :key="set.id" >
-            <v-toolbar :color="getColor(set.region)">
-                <v-toolbar-title>{{ set.name }}</v-toolbar-title>
-                <v-btn v-if="isLoggedIn" @click="updateSet(set)">
-                    <v-icon icon="mdi-pencil"></v-icon>
-                </v-btn>
-                <v-btn v-if="isLoggedIn" @click="deleteSet(set)">
-                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                 </v-btn>
-            </v-toolbar>
+        <div class="characters-list">
+            <v-card class="mx-auto" v-for="set in filteredList" :key="set.id" >
+                <v-toolbar :color="getColor(set.region)">
+                    <v-toolbar-title>{{ set.name }}</v-toolbar-title>
+                    <v-btn v-if="isLoggedIn" @click="updateSet(set)">
+                        <v-icon icon="mdi-pencil"></v-icon>
+                    </v-btn>
+                    <v-btn v-if="isLoggedIn" @click="deleteSet(set)">
+                        <v-icon icon="mdi-trash-can-outline"></v-icon>
+                    </v-btn>
+                </v-toolbar>
 
-            <div>{{ set.djName }}</div>
+                <div>{{ set.djName }}</div>
 
-            <!-- ornement planaire ou relique des cavernes-->
-            <div v-if="store.selectGame === 'HSR'">{{ set.djType }}</div>
-    
-            
-        </v-card>
-    </div>
+                <!-- ornement planaire ou relique des cavernes-->
+                <div v-if="store.selectGame === 'HSR'">{{ set.djType }}</div>
+        
+                
+            </v-card>
+        </div>
+    </v-main>
 </template>
 
 <script setup>

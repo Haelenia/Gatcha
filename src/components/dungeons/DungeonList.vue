@@ -1,34 +1,36 @@
 <template>
-    <div class="header">
-        <h1>{{`Liste des donjons (${filteredList.length})`}}</h1>
-        <v-btn v-if="isLoggedIn" :to="{ name: 'dungeon-create' }"> + Nouveau</v-btn>
-    </div>
+    <v-main>
+        <div class="header">
+            <h1>{{`Liste des donjons (${filteredList.length})`}}</h1>
+            <v-btn v-if="isLoggedIn" :to="{ name: 'dungeon-create' }"> + Nouveau</v-btn>
+        </div>
 
-    <div class="characters-list">
-        <v-card class="mx-auto" v-for="dj in filteredList" :key="dj.id">
-            <v-toolbar :color="getColor(dj?.region)">
-                <v-toolbar-title>{{ dj.name }}</v-toolbar-title>
-                <v-btn v-if="isLoggedIn" @click="updateDj(dj)">
-                    <v-icon icon="mdi-pencil"></v-icon>
-                </v-btn>
-                <v-btn v-if="isLoggedIn" @click="deleteDj(dj)">
-                    <v-icon icon="mdi-trash-can-outline"></v-icon>
-                 </v-btn>
-            </v-toolbar>
-    
-            <v-list lines="five">
-                <v-list-item >
-                    <v-list-item-title>{{ dj.typeLabel }}</v-list-item-title>
-                </v-list-item>
-                <v-list-item >
-                    <v-list-item-title>Sets disponibles</v-list-item-title>
-                    <v-list-item-subtitle>
-                        <div v-for="(el, index2) in dj.set" :key="index2" class="m-right16">{{ el }}</div>
-                    </v-list-item-subtitle>
-                </v-list-item>
-            </v-list>
-        </v-card>
-    </div>
+        <div class="characters-list">
+            <v-card class="mx-auto" v-for="dj in filteredList" :key="dj.id">
+                <v-toolbar :color="getColor(dj?.region)">
+                    <v-toolbar-title>{{ dj.name }}</v-toolbar-title>
+                    <v-btn v-if="isLoggedIn" @click="updateDj(dj)">
+                        <v-icon icon="mdi-pencil"></v-icon>
+                    </v-btn>
+                    <v-btn v-if="isLoggedIn" @click="deleteDj(dj)">
+                        <v-icon icon="mdi-trash-can-outline"></v-icon>
+                    </v-btn>
+                </v-toolbar>
+        
+                <v-list lines="five">
+                    <v-list-item >
+                        <v-list-item-title>{{ dj.typeLabel }}</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item >
+                        <v-list-item-title>Sets disponibles</v-list-item-title>
+                        <v-list-item-subtitle>
+                            <div v-for="(el, index2) in dj.set" :key="index2" class="m-right16">{{ el }}</div>
+                        </v-list-item-subtitle>
+                    </v-list-item>
+                </v-list>
+            </v-card>
+        </div>
+    </v-main>
 </template>
 
 <script setup>

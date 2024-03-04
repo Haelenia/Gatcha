@@ -130,7 +130,7 @@
                                     <span v-if="set.nbPieces == 4 && set.relic && set.relic[0]" :class="{ 'match-filter' : surligne.includes(set.relic[0].name)}">{{ `4p ${set.relic[0].name}` }}</span>
                                     <span v-if="set.nbPieces == 2 && set.relic && set.relic[0]">
                                         <span :class="{ 'match-filter' : surligne.includes(set.relic[0].name)}">{{ `2p ${set.relic[0].name} / ` }}</span>
-                                        <span :class="{ 'match-filter' : surligne.includes(set.relic[1].name)}">{{ `2p ${set.relic[1].name}` }}</span>
+                                        <span :class="{ 'match-filter' : surligne.includes(set.relic[1]?.name)}">{{ `2p ${set.relic[1]?.name}` }}</span>
                                     </span>
                                 </li>
                             </ul>

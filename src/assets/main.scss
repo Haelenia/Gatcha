@@ -147,103 +147,15 @@
             }
         }
 
-        .roles-list {
-            column-gap: 16px;
-            row-gap: 16px;
-            .v-input__details {
-                display: none;
-            }
+        &.genshin-form, &.hsr-form {
+            .roles-list {
+                column-gap: 16px;
+                row-gap: 16px;
 
-            &.read-only {
-                &.genshin-form {
-                    
-                }
-                .fieldset-card {
-                    border: unset;
-                    .sets-content .set-line {
-                        .v-radio-group {
-                            width: 150px;
-                        }
-                    }
-                }
-            }
-
-            &.hsr-form {
-                .fieldset-card {
-                    padding: unset;
-                    border: unset;
-                }
-            }
-
-        
-            .fieldset-card {
-                padding: 16px;
-                border: 1px solid gray;
-                border-radius: 5px;
-                margin-bottom: 8px;
-
-                .group-bloc {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                    column-gap: 16px;
-                }
-        
-                .individual-bloc {
-                    display: flex;
-                    align-items: center;
-                    gap: 16px;
-        
-                    button {
-                        width: 40px;
-                        min-width: 40px;
-                    }
+                .v-input__details {
+                    display: none;
                 }
 
-                .sets-content {
-                    display: flex;
-                    flex-wrap: wrap;
-                    //justify-content: space-between;
-                    //gap: 16px;
-
-                    .set-content {
-                        min-width: 600px;
-                        width: 50%;
-                        .set-line {
-                            display: flex;
-                            gap: 32px;
-                            align-items: flex-start;
-                            .v-radio-group {
-                                max-width: 200px;
-                            }
-                            .v-textarea--no-resize {
-                                width: 230px;
-                                //max-width: 300px;
-                                flex-grow: 2;
-                            }
-                            .v-input:not(.v-radio-group):not(.v-textarea--no-resize) {
-                                width: 320px;
-                            }
-                        }
-                    }
-                }
-                .weapon-content {
-                    .weapon-line {
-                            display: flex;
-                            gap: 32px;
-                            align-items: flex-start;
-                            .v-input:not(.v-radio-group):not(.v-textarea--no-resize) {
-                                width: 500px;
-                            }
-                            .v-textarea--no-resize {
-                                width: 200px;
-                                //max-width: 300px;
-                                flex-grow: 2;
-                            }
-                    }
-                }
-            }
-
-            &.read-only {
                 .set-line {
                     display: flex;
                     gap: 32px;
@@ -252,7 +164,7 @@
                         width: 100px;
                     }
                     .set-line-select.relic {
-                        width: 50%;
+                        width: calc(100% - 200px - 30px - 230px);
                         max-width: 500px;
                     }
                     .set-line-select.ornment {
@@ -263,48 +175,103 @@
                         min-width: 200px;
                         max-width: 300px;
                     }
-                }
-            }
-
-            .multiple-card-zone {
-                display: flex;
-                gap: 32px;
-                .v-card {
-                    flex-grow: 2;
-                }
-            }
-        
-            .group {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                //grid-gap: 32px;
-        
-                .group-bloc {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                    column-gap: 16px;
-                }
-        
-                .individual-bloc {
-                    display: flex;
-                    align-items: center;
-                    gap: 16px;
-        
-                    button {
-                        width: 40px;
-                        min-width: 40px;
+                    .set-line-delete {
+                        width: 30px;
                     }
-        
                 }
-        
-                .card {
-                    //padding: 16px;
+
+                &.read-only {
+                    .fieldset-card {
+                        border: unset;
+                        .sets-content .set-line {
+                            .v-radio-group {
+                                width: 150px;
+                            }
+                        }
+                    }
+                    .set-line {
+                        .set-line-radio {
+                            width: 100px;
+                        }
+                        .set-line-select.relic {
+                            width: 50%;
+                            max-width: 500px;
+                        }
+                        .set-line-select.ornment {
+                            width: 50%;
+                            max-width: 450px;
+                        }
+                        .set-line-textarea {
+                            min-width: 200px;
+                            max-width: 300px;
+                        }
+                    }
                 }
-        
-            }
-        
-        }
+            
+                .fieldset-card {
+                    padding: unset;
+                    border: unset;
+                    border-radius: 5px;
+                    margin-bottom: 8px;
     
+                    .sets-content {
+                        display: flex;
+                        flex-wrap: wrap;
+                        //justify-content: space-between;
+                        //gap: 16px;
+    
+                        .set-content {
+                            min-width: 600px;
+                            width: 50%;
+                            .set-line {
+                                display: flex;
+                                gap: 32px;
+                                align-items: flex-start;
+                                .v-radio-group {
+                                    max-width: 200px;
+                                }
+                                .v-textarea--no-resize {
+                                    width: 230px;
+                                    //max-width: 300px;
+                                    flex-grow: 2;
+                                }
+                                .v-input:not(.v-radio-group):not(.v-textarea--no-resize) {
+                                    width: 320px;
+                                }
+                            }
+                        }
+                    }
+                    .weapon-content {
+                        .weapon-line {
+                                display: flex;
+                                gap: 32px;
+                                align-items: flex-start;
+                                .v-input:not(.v-radio-group):not(.v-textarea--no-resize) {
+                                    width: 500px;
+                                }
+                                .v-textarea--no-resize {
+                                    width: 200px;
+                                    //max-width: 300px;
+                                    flex-grow: 2;
+                                }
+                        }
+                    }
+                }
+    
+                .multiple-card-zone {
+                    display: flex;
+                    gap: 32px;
+                    .v-card {
+                        flex-grow: 2;
+                    }
+                }
+            
+                .group {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                }
+            }
+        }
     }
 
     .sources {
@@ -320,20 +287,16 @@
 }
 
     footer {
-        z-index: 1006;
+        z-index: 1010;
         margin-top: 16px;
         height: 40px;
         flex-grow: 0;
         justify-content: space-between;
         font-size: 12px;
         .sources {
-            
-                position: absolute;
-                top: 35px;
-
-            
+            position: absolute;
+            top: 35px;
         }
-        
     }
 
     .m-right16 {

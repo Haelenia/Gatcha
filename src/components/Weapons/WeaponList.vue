@@ -1,54 +1,56 @@
 <template>
-    <div class="header">
-        <h1>{{`Liste des armes (${filteredList.length})`}}</h1>
-        <v-btn v-if="isLoggedIn" :to="{ name: 'weapon-create' }"> + Nouveau</v-btn>
-    </div>
-
-    <!-- Filters zone -->
-    <div class="filters-zone">
-        <div class="filters-bloc mt-2">
-            <v-select
-                    label="Provenance"
-                    clearable
-                    :items="getOrigin"
-                    v-model="filter.origin"
-            ></v-select>
-
-            <v-checkbox v-if="isLoggedIn" label="possédé" v-model="filter.owned"></v-checkbox>
-            <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
-            <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
-            
-            <v-spacer></v-spacer>
-
-            <v-btn class="mb-5" variant="text" @click="clearFilter">Reset</v-btn>
+    <v-main>
+        <div class="header">
+            <h1>{{`Liste des armes (${filteredList.length})`}}</h1>
+            <v-btn v-if="isLoggedIn" :to="{ name: 'weapon-create' }"> + Nouveau</v-btn>
         </div>
-    </div>
 
-    <div class="characters-list">
-        <v-card class="mx-auto" v-for="weapon in filteredList" :key="weapon.id">
-            <v-toolbar :color="getColor(weapon?.type)">
-                <v-toolbar-title>
-                    <span>{{ weapon.name }}</span>
-                    <template v-if="weapon.stars">
-                        <v-icon v-for="(el, index) in [1,1,1]" :key=index icon="mdi-star" size="x-small" :class="getStarColor(weapon.stars, weapon?.type)"></v-icon>
-                        <v-icon v-if="weapon.stars == 4 || weapon.star == 5" icon="mdi-star" size="x-small" :class="getStarColor(weapon.stars, weapon?.type)"></v-icon>
-                        <v-icon v-if="weapon.stars == 5" icon="mdi-star" size="x-small" :class="getStarColor(weapon.stars, weapon?.type)"></v-icon>
-                    </template>
-                </v-toolbar-title>
-                <router-link v-if="isLoggedIn" :to="{ name: 'weapon-edit', params: {id: weapon.id }}" class="mr-4" :class="getEyeColor(weapon?.type)"><v-icon icon="mdi-eye"></v-icon></router-link>
-                <v-btn v-if="isLoggedIn" @click="deleteWeapon(weapon)">
-                    <v-icon icon="mdi-trash-can-outline" class="text-white"></v-icon>
-                </v-btn>
-            </v-toolbar>
-    
-            <v-list lines="five">
-                <v-list-item >
-                    <v-list-item-title>{{ weapon.type }}</v-list-item-title>
-                    <v-list-item-title>{{ weapon.origin }}</v-list-item-title>
-                </v-list-item>
-            </v-list>
-        </v-card>
-    </div>
+        <!-- Filters zone -->
+        <div class="filters-zone">
+            <div class="filters-bloc mt-2">
+                <v-select
+                        label="Provenance"
+                        clearable
+                        :items="getOrigin"
+                        v-model="filter.origin"
+                ></v-select>
+
+                <v-checkbox v-if="isLoggedIn" label="possédé" v-model="filter.owned"></v-checkbox>
+                <v-checkbox label="4*" v-model="filter.fourstars"></v-checkbox>
+                <v-checkbox label="5*" v-model="filter.fivestars"></v-checkbox>
+                
+                <v-spacer></v-spacer>
+
+                <v-btn class="mb-5" variant="text" @click="clearFilter">Reset</v-btn>
+            </div>
+        </div>
+
+        <div class="characters-list">
+            <v-card class="mx-auto" v-for="weapon in filteredList" :key="weapon.id">
+                <v-toolbar :color="getColor(weapon?.type)">
+                    <v-toolbar-title>
+                        <span>{{ weapon.name }}</span>
+                        <template v-if="weapon.stars">
+                            <v-icon v-for="(el, index) in [1,1,1]" :key=index icon="mdi-star" size="x-small" :class="getStarColor(weapon.stars, weapon?.type)"></v-icon>
+                            <v-icon v-if="weapon.stars == 4 || weapon.star == 5" icon="mdi-star" size="x-small" :class="getStarColor(weapon.stars, weapon?.type)"></v-icon>
+                            <v-icon v-if="weapon.stars == 5" icon="mdi-star" size="x-small" :class="getStarColor(weapon.stars, weapon?.type)"></v-icon>
+                        </template>
+                    </v-toolbar-title>
+                    <router-link v-if="isLoggedIn" :to="{ name: 'weapon-edit', params: {id: weapon.id }}" class="mr-4" :class="getEyeColor(weapon?.type)"><v-icon icon="mdi-eye"></v-icon></router-link>
+                    <v-btn v-if="isLoggedIn" @click="deleteWeapon(weapon)">
+                        <v-icon icon="mdi-trash-can-outline" class="text-white"></v-icon>
+                    </v-btn>
+                </v-toolbar>
+        
+                <v-list lines="five">
+                    <v-list-item >
+                        <v-list-item-title>{{ weapon.type }}</v-list-item-title>
+                        <v-list-item-title>{{ weapon.origin }}</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-card>
+        </div>
+    </v-main>
 </template>
 
 <script setup>
